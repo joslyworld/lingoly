@@ -1,0 +1,2125 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+<title>Lingoly — Ayo Belajar Baca!</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20100%20100'%3E%3Cellipse%20cx%3D'35'%20cy%3D'24'%20rx%3D'10'%20ry%3D'22'%20fill%3D'white'%20stroke%3D'%231E3A5F'%20stroke-width%3D'3'%20transform%3D'rotate(-12%2035%2024)'%2F%3E%3Cellipse%20cx%3D'65'%20cy%3D'24'%20rx%3D'10'%20ry%3D'22'%20fill%3D'white'%20stroke%3D'%231E3A5F'%20stroke-width%3D'3'%20transform%3D'rotate(12%2065%2024)'%2F%3E%3Cellipse%20cx%3D'35'%20cy%3D'26'%20rx%3D'4.5'%20ry%3D'14'%20fill%3D'%23FBCFE8'%20transform%3D'rotate(-12%2035%2026)'%2F%3E%3Cellipse%20cx%3D'65'%20cy%3D'26'%20rx%3D'4.5'%20ry%3D'14'%20fill%3D'%23FBCFE8'%20transform%3D'rotate(12%2065%2026)'%2F%3E%3Ccircle%20cx%3D'50'%20cy%3D'60'%20r%3D'30'%20fill%3D'white'%20stroke%3D'%231E3A5F'%20stroke-width%3D'3'%2F%3E%3Ccircle%20cx%3D'40'%20cy%3D'56'%20r%3D'3.5'%20fill%3D'%231E3A5F'%2F%3E%3Ccircle%20cx%3D'60'%20cy%3D'56'%20r%3D'3.5'%20fill%3D'%231E3A5F'%2F%3E%3Ccircle%20cx%3D'32'%20cy%3D'65'%20r%3D'4.5'%20fill%3D'%23FBCFE8'%2F%3E%3Ccircle%20cx%3D'68'%20cy%3D'65'%20r%3D'4.5'%20fill%3D'%23FBCFE8'%2F%3E%3Cpath%20d%3D'M47%2063%20Q50%2066%2053%2063%20Q50%2060%2047%2063Z'%20fill%3D'%23F06595'%2F%3E%3Cpath%20d%3D'M50%2066%20Q50%2071%2045%2072%20M50%2066%20Q50%2071%2055%2072'%20stroke%3D'%231E3A5F'%20stroke-width%3D'2.2'%20fill%3D'none'%20stroke-linecap%3D'round'%2F%3E%3Crect%20x%3D'38'%20y%3D'76'%20width%3D'24'%20height%3D'14'%20rx%3D'2.5'%20fill%3D'%234D96FF'%20stroke%3D'%231E3A5F'%20stroke-width%3D'2.5'%2F%3E%3Cline%20x1%3D'50'%20y1%3D'76'%20x2%3D'50'%20y2%3D'90'%20stroke%3D'%231E3A5F'%20stroke-width%3D'2'%2F%3E%3C%2Fsvg%3E" />
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20100%20100'%3E%3Cellipse%20cx%3D'35'%20cy%3D'24'%20rx%3D'10'%20ry%3D'22'%20fill%3D'white'%20stroke%3D'%231E3A5F'%20stroke-width%3D'3'%20transform%3D'rotate(-12%2035%2024)'%2F%3E%3Cellipse%20cx%3D'65'%20cy%3D'24'%20rx%3D'10'%20ry%3D'22'%20fill%3D'white'%20stroke%3D'%231E3A5F'%20stroke-width%3D'3'%20transform%3D'rotate(12%2065%2024)'%2F%3E%3Cellipse%20cx%3D'35'%20cy%3D'26'%20rx%3D'4.5'%20ry%3D'14'%20fill%3D'%23FBCFE8'%20transform%3D'rotate(-12%2035%2026)'%2F%3E%3Cellipse%20cx%3D'65'%20cy%3D'26'%20rx%3D'4.5'%20ry%3D'14'%20fill%3D'%23FBCFE8'%20transform%3D'rotate(12%2065%2026)'%2F%3E%3Ccircle%20cx%3D'50'%20cy%3D'60'%20r%3D'30'%20fill%3D'white'%20stroke%3D'%231E3A5F'%20stroke-width%3D'3'%2F%3E%3Ccircle%20cx%3D'40'%20cy%3D'56'%20r%3D'3.5'%20fill%3D'%231E3A5F'%2F%3E%3Ccircle%20cx%3D'60'%20cy%3D'56'%20r%3D'3.5'%20fill%3D'%231E3A5F'%2F%3E%3Ccircle%20cx%3D'32'%20cy%3D'65'%20r%3D'4.5'%20fill%3D'%23FBCFE8'%2F%3E%3Ccircle%20cx%3D'68'%20cy%3D'65'%20r%3D'4.5'%20fill%3D'%23FBCFE8'%2F%3E%3Cpath%20d%3D'M47%2063%20Q50%2066%2053%2063%20Q50%2060%2047%2063Z'%20fill%3D'%23F06595'%2F%3E%3Cpath%20d%3D'M50%2066%20Q50%2071%2045%2072%20M50%2066%20Q50%2071%2055%2072'%20stroke%3D'%231E3A5F'%20stroke-width%3D'2.2'%20fill%3D'none'%20stroke-linecap%3D'round'%2F%3E%3Crect%20x%3D'38'%20y%3D'76'%20width%3D'24'%20height%3D'14'%20rx%3D'2.5'%20fill%3D'%234D96FF'%20stroke%3D'%231E3A5F'%20stroke-width%3D'2.5'%2F%3E%3Cline%20x1%3D'50'%20y1%3D'76'%20x2%3D'50'%20y2%3D'90'%20stroke%3D'%231E3A5F'%20stroke-width%3D'2'%2F%3E%3C%2Fsvg%3E" />
+<script src="https://cdn.jsdelivr.net/npm/react@18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<style>
+  html, body { margin: 0; padding: 0; }
+  #galat { display: none; font-family: sans-serif; margin: 16px; padding: 14px; border-radius: 12px;
+           background: #FEE2E2; color: #991B1B; font-size: 14px; white-space: pre-wrap; word-break: break-word; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<div id="galat"></div>
+<script>
+// Penampil error: kalau ada yang gagal, pesannya muncul di layar (bukan blank putih)
+(function () {
+  function tampil(msg) {
+    var el = document.getElementById("galat");
+    el.style.display = "block";
+    el.textContent = "⚠️ Terjadi kesalahan:
+" + msg + "
+
+Coba muat ulang. Kalau masih begini, screenshot pesan ini ya.";
+  }
+  window.onerror = function (m, s, l, c) { tampil(m + " (baris " + l + ")"); };
+  window.addEventListener("unhandledrejection", function (e) { tampil(String(e.reason && e.reason.message || e.reason)); });
+  window.addEventListener("load", function () {
+    if (!window.React || !window.ReactDOM) tampil("Gagal memuat React dari internet. Pastikan HP tersambung internet lalu muat ulang.");
+  });
+})();
+// ============================================================
+// KONFIGURASI SUPABASE (opsional)
+// Isi url & anonKey untuk sinkronisasi kosa kata & poin antar
+// perangkat. rekamLokal: true berarti file suara TETAP tersimpan
+// di perangkat ini saja (tidak diunggah ke mana pun).
+// ============================================================
+window.SUPABASE_CONFIG = {
+  url: "",
+  anonKey: "",
+  rekamLokal: true,
+};
+// ===== Penyimpanan lokal (IndexedDB) dengan API seragam =====
+(function () {
+  const dbp = new Promise((res, rej) => {
+    const req = indexedDB.open("belajar-baca", 1);
+    req.onupgradeneeded = () => req.result.createObjectStore("kv");
+    req.onsuccess = () => res(req.result);
+    req.onerror = () => rej(req.error);
+  });
+  function idb(mode, fn) {
+    return dbp.then((db) => new Promise((res, rej) => {
+      const tx = db.transaction("kv", mode);
+      const r = fn(tx.objectStore("kv"));
+      r.onsuccess = () => res(r.result);
+      r.onerror = () => rej(r.error);
+    }));
+  }
+  window.storage = {
+    get: async (k) => { const v = await idb("readonly", (s) => s.get(k)); return v == null ? null : { key: k, value: v }; },
+    set: async (k, v) => { await idb("readwrite", (s) => s.put(v, k)); return { key: k, value: v }; },
+    delete: async (k) => { await idb("readwrite", (s) => s.delete(k)); return { key: k, deleted: true }; },
+    list: async (prefix) => { const keys = await idb("readonly", (s) => s.getAllKeys()); return { keys: keys.filter((x) => !prefix || String(x).startsWith(prefix)) }; },
+  };
+})();
+</script>
+<script>
+const {
+  useState,
+  useEffect,
+  useRef,
+  useReducer
+} = React;
+
+// ================= DATA =================
+const ABJAD = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+const NAMA_HURUF = {
+  A: "a",
+  B: "bé",
+  C: "cé",
+  D: "dé",
+  E: "é",
+  F: "èf",
+  G: "gé",
+  H: "ha",
+  I: "i",
+  J: "jé",
+  K: "ka",
+  L: "èl",
+  M: "èm",
+  N: "èn",
+  O: "o",
+  P: "pé",
+  Q: "ki",
+  R: "èr",
+  S: "ès",
+  T: "té",
+  U: "u",
+  V: "vé",
+  W: "wé",
+  X: "èks",
+  Y: "yé",
+  Z: "zèt"
+};
+const CANDY = ["#FF6B6B", "#FFB020", "#3DBE6C", "#4D96FF", "#9B5DE5", "#F06595"];
+const PRAISE = ["Hebat!", "Pintar sekali!", "Keren!", "Bagus banget!", "Wah, jago!"];
+const KONSONAN = ["b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", "p", "r", "s", "t", "v", "w", "y", "z", "ng", "ny", "sy", "kh"];
+const VOKAL = ["a", "i", "u", "e", "o"];
+const DIGRAF = ["ng", "ny", "sy", "kh"];
+
+// Kosa kata bawaan untuk menu Bacaan (bisa ditambah sendiri)
+const KATA_BAWAAN = [{
+  w: "kaki",
+  e: "🦶"
+}, {
+  w: "mata",
+  e: "👀"
+}, {
+  w: "gigi",
+  e: "🦷"
+}, {
+  w: "buku",
+  e: "📚"
+}, {
+  w: "bola",
+  e: "⚽"
+}, {
+  w: "sapi",
+  e: "🐄"
+}, {
+  w: "topi",
+  e: "🎩"
+}, {
+  w: "baju",
+  e: "👕"
+}, {
+  w: "susu",
+  e: "🥛"
+}, {
+  w: "roti",
+  e: "🍞"
+}, {
+  w: "kuda",
+  e: "🐴"
+}, {
+  w: "dadu",
+  e: "🎲"
+}, {
+  w: "pita",
+  e: "🎀"
+}, {
+  w: "palu",
+  e: "🔨"
+}, {
+  w: "batu",
+  e: "🪨"
+}, {
+  w: "hak",
+  e: "👠"
+}, {
+  w: "jam",
+  e: "🕐"
+}, {
+  w: "tas",
+  e: "👜"
+}, {
+  w: "bis",
+  e: "🚌"
+}, {
+  w: "bak",
+  e: "🛁"
+}, {
+  w: "gas",
+  e: "⛽"
+}, {
+  w: "cat",
+  e: "🖌️"
+}, {
+  w: "bel",
+  e: "🔔"
+}, {
+  w: "jus",
+  e: "🧃"
+}, {
+  w: "sup",
+  e: "🍲"
+}, {
+  w: "makan",
+  e: "🍚"
+}, {
+  w: "mandi",
+  e: "🚿"
+}, {
+  w: "rumah",
+  e: "🏠"
+}, {
+  w: "bunga",
+  e: "🌸"
+}, {
+  w: "sepatu",
+  e: "👟"
+}];
+
+// ================= PEMENGGALAN SUKU KATA =================
+// Pola bahasa Indonesia: V, CV, CVC — digraf ng/ny/sy/kh dihitung satu konsonan.
+// Bisa dioverride manual dengan tanda hubung: "se-ko-lah"
+function pecahSuku(kataRaw) {
+  const kata = kataRaw.toLowerCase().trim();
+  if (kata.includes("-")) return kata.split("-").filter(Boolean);
+  const units = [];
+  for (let i = 0; i < kata.length;) {
+    const two = kata.slice(i, i + 2);
+    if (DIGRAF.includes(two)) {
+      units.push(two);
+      i += 2;
+    } else {
+      units.push(kata[i]);
+      i += 1;
+    }
+  }
+  const isV = u => u.length === 1 && "aiueo".includes(u);
+  const syls = [];
+  let cur = [];
+  let k = 0;
+  while (k < units.length) {
+    while (k < units.length && !isV(units[k])) {
+      cur.push(units[k]);
+      k++;
+    }
+    if (k >= units.length) {
+      if (syls.length) syls[syls.length - 1] += cur.join("");else if (cur.length) syls.push(cur.join(""));
+      break;
+    }
+    cur.push(units[k]);
+    k++;
+    const cc = [];
+    let m = k;
+    while (m < units.length && !isV(units[m])) {
+      cc.push(units[m]);
+      m++;
+    }
+    if (m >= units.length) {
+      cur.push(...cc);
+      k = m;
+      syls.push(cur.join(""));
+      cur = [];
+    } else if (cc.length <= 1) {
+      syls.push(cur.join(""));
+      cur = [];
+    } else {
+      cur.push(cc[0]);
+      k++;
+      syls.push(cur.join(""));
+      cur = [];
+    }
+  }
+  return syls.filter(Boolean);
+}
+
+// ================= BACKEND (Supabase / lokal) =================
+// Kalau window.SUPABASE_CONFIG terisi (di file HTML), rekaman & data sinkron antar perangkat.
+// Kalau tidak, jatuh ke penyimpanan lokal (window.storage / IndexedDB).
+const SB = (() => {
+  try {
+    const cfg = typeof window !== "undefined" ? window.SUPABASE_CONFIG : null;
+    if (cfg?.url && cfg?.anonKey && window.supabase?.createClient) {
+      return window.supabase.createClient(cfg.url, cfg.anonKey);
+    }
+  } catch (e) {}
+  return null;
+})();
+const BUCKET = "suara";
+// rekamLokal: true -> file suara SELALU tersimpan di perangkat (tidak diunggah),
+// walaupun Supabase aktif untuk kosa kata & poin.
+const SUARA_LOKAL = !SB || !!(typeof window !== "undefined" && window.SUPABASE_CONFIG?.rekamLokal);
+async function kvGet(key) {
+  if (SB) {
+    const {
+      data
+    } = await SB.from("pengaturan").select("value").eq("key", key).maybeSingle();
+    return data?.value ?? null;
+  }
+  try {
+    const r = await window.storage.get(key);
+    return r?.value ?? null;
+  } catch (e) {
+    return null;
+  }
+}
+async function kvSet(key, value) {
+  if (SB) {
+    await SB.from("pengaturan").upsert({
+      key,
+      value
+    });
+    return;
+  }
+  try {
+    await window.storage.set(key, value);
+  } catch (e) {}
+}
+
+// ================= SUARA =================
+let audioSrc = {}; // key -> sumber audio siap putar (dataURL lokal / URL publik Supabase)
+let fileNames = {}; // key -> nama file di bucket (untuk hapus/timpa)
+let recordedKeys = new Set();
+async function loadRecordedKeys() {
+  if (!SUARA_LOKAL) {
+    try {
+      const {
+        data,
+        error
+      } = await SB.storage.from(BUCKET).list("", {
+        limit: 1000
+      });
+      if (!error && data) {
+        data.forEach(f => {
+          const key = f.name.replace(/\.(webm|mp4|bin)$/, "");
+          recordedKeys.add(key);
+          fileNames[key] = f.name;
+          const {
+            data: pub
+          } = SB.storage.from(BUCKET).getPublicUrl(f.name);
+          audioSrc[key] = pub.publicUrl + "?v=" + encodeURIComponent(f.updated_at || "");
+        });
+      }
+    } catch (e) {}
+    return;
+  }
+  try {
+    const res = await window.storage.list("snd:");
+    (res?.keys || []).forEach(k => recordedKeys.add(k.replace("snd:", "")));
+  } catch (e) {/* belum ada rekaman */}
+}
+async function getRecording(key) {
+  if (audioSrc[key]) return audioSrc[key];
+  if (!recordedKeys.has(key)) return null;
+  if (!SUARA_LOKAL) return null; // dengan cloud, src sudah terisi saat loadRecordedKeys
+  try {
+    const r = await window.storage.get("snd:" + key);
+    if (r?.value) {
+      audioSrc[key] = r.value;
+      return r.value;
+    }
+  } catch (e) {}
+  return null;
+}
+let cachedVoices = {};
+function getVoice(lang = "id-ID") {
+  if (cachedVoices[lang]) return cachedVoices[lang];
+  const voices = window.speechSynthesis?.getVoices?.() || [];
+  const pre = lang.split("-")[0];
+  cachedVoices[lang] = voices.find(v => v.lang === lang) || voices.find(v => v.lang?.startsWith(pre)) || null;
+  return cachedVoices[lang];
+}
+function playUrl(url) {
+  return new Promise(res => {
+    const a = new Audio(url);
+    a.onended = res;
+    a.onerror = res;
+    a.play().catch(res);
+  });
+}
+function speakAsync(text, rate = 0.8, lang = "id-ID") {
+  return new Promise(res => {
+    if (!window.speechSynthesis) return res();
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = lang;
+    u.rate = rate;
+    u.pitch = 1.1;
+    const v = getVoice(lang);
+    if (v) u.voice = v;
+    u.onend = res;
+    u.onerror = res;
+    window.speechSynthesis.speak(u);
+    setTimeout(res, 5000);
+  });
+}
+async function play(key, fallbackText, rate, lang) {
+  const url = await getRecording(key);
+  if (url) return playUrl(url);
+  return speakAsync(fallbackText ?? key, rate, lang);
+}
+async function playSeq(items, gap = 280) {
+  for (const it of items) {
+    await play(it.key, it.fb, it.rate, it.lang);
+    await new Promise(r => setTimeout(r, gap));
+  }
+}
+const kHuruf = l => ({
+  key: "huruf-" + l.toLowerCase(),
+  fb: NAMA_HURUF[l.toUpperCase()] || l,
+  rate: 0.8
+});
+const kHurufEn = l => ({
+  key: "huruf-en-" + l.toLowerCase(),
+  fb: l.toUpperCase(),
+  rate: 0.8,
+  lang: "en-US"
+});
+const kSuku = s => ({
+  key: "suku-" + s,
+  fb: s,
+  rate: 0.7
+});
+const kKata = w => ({
+  key: "kata-" + w,
+  fb: w,
+  rate: 0.75
+});
+async function playPraise() {
+  const i = Math.floor(Math.random() * PRAISE.length);
+  await play("pujian-" + i, PRAISE[i], 0.95);
+  return PRAISE[i];
+}
+
+// ================= POIN HARIAN =================
+function tglHariIni() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+function tglKemarin() {
+  const d = new Date();
+  d.setDate(d.getDate() - 1);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+const BONUS_HARIAN = 5;
+async function muatPoin() {
+  try {
+    const v = await kvGet("poin-data");
+    if (v) return JSON.parse(v);
+  } catch (e) {}
+  return {
+    total: 0,
+    lastDate: null,
+    streak: 0
+  };
+}
+async function tambahPoin(poin, skor) {
+  const hariIni = tglHariIni();
+  const pertamaHariIni = poin.lastDate !== hariIni;
+  const streak = pertamaHariIni ? poin.lastDate === tglKemarin() ? poin.streak + 1 : 1 : poin.streak;
+  const dapat = skor + (pertamaHariIni ? BONUS_HARIAN : 0);
+  const baru = {
+    total: poin.total + dapat,
+    lastDate: hariIni,
+    streak
+  };
+  try {
+    await kvSet("poin-data", JSON.stringify(baru));
+  } catch (e) {}
+  return {
+    baru,
+    dapat,
+    bonusHarian: pertamaHariIni
+  };
+}
+
+// ================= UI DASAR =================
+function Confetti({
+  trigger
+}) {
+  if (!trigger) return null;
+  const bits = Array.from({
+    length: 18
+  }, (_, i) => ({
+    id: `${trigger}-${i}`,
+    left: 10 + Math.random() * 80,
+    delay: Math.random() * 0.25,
+    emoji: ["⭐", "🎉", "✨", "🌟", "💛"][i % 5],
+    size: 22 + Math.random() * 20
+  }));
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: "fixed",
+      inset: 0,
+      pointerEvents: "none",
+      overflow: "hidden",
+      zIndex: 50
+    }
+  }, bits.map(b => /*#__PURE__*/React.createElement("span", {
+    key: b.id,
+    style: {
+      position: "absolute",
+      left: `${b.left}%`,
+      top: "-40px",
+      fontSize: b.size,
+      animation: `fall 1.4s ease-in ${b.delay}s forwards`
+    }
+  }, b.emoji)));
+}
+function Chunky({
+  color = "#4D96FF",
+  onClick,
+  children,
+  style,
+  disabled
+}) {
+  const [pressed, setPressed] = useState(false);
+  return /*#__PURE__*/React.createElement("button", {
+    onClick: onClick,
+    disabled: disabled,
+    onPointerDown: () => setPressed(true),
+    onPointerUp: () => setPressed(false),
+    onPointerLeave: () => setPressed(false),
+    style: {
+      background: disabled ? "#CBD5E1" : color,
+      color: "white",
+      border: "none",
+      borderRadius: 24,
+      boxShadow: pressed ? "0 2px 0 rgba(0,0,0,0.25)" : "0 6px 0 rgba(0,0,0,0.25)",
+      transform: pressed ? "translateY(4px)" : "translateY(0)",
+      transition: "transform 0.08s, box-shadow 0.08s",
+      cursor: disabled ? "default" : "pointer",
+      fontFamily: "inherit",
+      fontWeight: 700,
+      ...style
+    }
+  }, children);
+}
+
+// Maskot Lingoly: kelinci original pembawa buku
+function Bunny({
+  size = 48
+}) {
+  return /*#__PURE__*/React.createElement("svg", {
+    width: size,
+    height: size,
+    viewBox: "0 0 100 100",
+    "aria-hidden": "true"
+  }, /*#__PURE__*/React.createElement("ellipse", {
+    cx: "35",
+    cy: "24",
+    rx: "10",
+    ry: "22",
+    fill: "#fff",
+    stroke: "#1E3A5F",
+    strokeWidth: "3",
+    transform: "rotate(-12 35 24)"
+  }), /*#__PURE__*/React.createElement("ellipse", {
+    cx: "65",
+    cy: "24",
+    rx: "10",
+    ry: "22",
+    fill: "#fff",
+    stroke: "#1E3A5F",
+    strokeWidth: "3",
+    transform: "rotate(12 65 24)"
+  }), /*#__PURE__*/React.createElement("ellipse", {
+    cx: "35",
+    cy: "26",
+    rx: "4.5",
+    ry: "14",
+    fill: "#FBCFE8",
+    transform: "rotate(-12 35 26)"
+  }), /*#__PURE__*/React.createElement("ellipse", {
+    cx: "65",
+    cy: "26",
+    rx: "4.5",
+    ry: "14",
+    fill: "#FBCFE8",
+    transform: "rotate(12 65 26)"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "50",
+    cy: "60",
+    r: "30",
+    fill: "#fff",
+    stroke: "#1E3A5F",
+    strokeWidth: "3"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "40",
+    cy: "56",
+    r: "3.5",
+    fill: "#1E3A5F"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "60",
+    cy: "56",
+    r: "3.5",
+    fill: "#1E3A5F"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "41.2",
+    cy: "54.8",
+    r: "1.2",
+    fill: "#fff"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "61.2",
+    cy: "54.8",
+    r: "1.2",
+    fill: "#fff"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "32",
+    cy: "65",
+    r: "4.5",
+    fill: "#FBCFE8"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "68",
+    cy: "65",
+    r: "4.5",
+    fill: "#FBCFE8"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M47 63 Q50 66 53 63 Q50 60 47 63Z",
+    fill: "#F06595"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M50 66 Q50 71 45 72 M50 66 Q50 71 55 72",
+    stroke: "#1E3A5F",
+    strokeWidth: "2.2",
+    fill: "none",
+    strokeLinecap: "round"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "38",
+    y: "76",
+    width: "24",
+    height: "14",
+    rx: "2.5",
+    fill: "#4D96FF",
+    stroke: "#1E3A5F",
+    strokeWidth: "2.5"
+  }), /*#__PURE__*/React.createElement("line", {
+    x1: "50",
+    y1: "76",
+    x2: "50",
+    y2: "90",
+    stroke: "#1E3A5F",
+    strokeWidth: "2"
+  }));
+}
+function Pills({
+  items,
+  value,
+  onChange,
+  color = "#FFB020"
+}) {
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 6,
+      background: "white",
+      borderRadius: 18,
+      padding: 5,
+      boxShadow: "0 3px 0 rgba(0,0,0,0.1)",
+      flexWrap: "wrap",
+      justifyContent: "center"
+    }
+  }, items.map(t => /*#__PURE__*/React.createElement("button", {
+    key: t.id,
+    onClick: () => onChange(t.id),
+    style: {
+      border: "none",
+      borderRadius: 14,
+      padding: "8px 16px",
+      fontFamily: "inherit",
+      fontWeight: 800,
+      fontSize: 15,
+      cursor: "pointer",
+      background: value === t.id ? color : "transparent",
+      color: value === t.id ? "white" : "#64748B"
+    }
+  }, t.label)));
+}
+
+// ================= MENU: HURUF =================
+function MenuHuruf() {
+  const [besar, setBesar] = useState(true);
+  const [bahasa, setBahasa] = useState("id");
+  const [aktif, setAktif] = useState(null);
+  const ucap = async l => {
+    setAktif(l);
+    const s = bahasa === "id" ? kHuruf(l) : kHurufEn(l);
+    await play(s.key, s.fb, s.rate, s.lang);
+    setAktif(null);
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      gap: 18,
+      width: "100%",
+      maxWidth: 420
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 10,
+      flexWrap: "wrap",
+      justifyContent: "center"
+    }
+  }, /*#__PURE__*/React.createElement(Pills, {
+    value: besar ? "besar" : "kecil",
+    onChange: v => setBesar(v === "besar"),
+    items: [{
+      id: "besar",
+      label: "ABC"
+    }, {
+      id: "kecil",
+      label: "abc"
+    }]
+  }), /*#__PURE__*/React.createElement(Pills, {
+    color: "#4D96FF",
+    value: bahasa,
+    onChange: setBahasa,
+    items: [{
+      id: "id",
+      label: "🇮🇩 Indonesia"
+    }, {
+      id: "en",
+      label: "🇬🇧 Inggris"
+    }]
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "grid",
+      gridTemplateColumns: "repeat(4, 1fr)",
+      gap: 10,
+      width: "100%"
+    }
+  }, ABJAD.map((l, i) => /*#__PURE__*/React.createElement(Chunky, {
+    key: l,
+    color: CANDY[i % CANDY.length],
+    onClick: () => ucap(l),
+    style: {
+      fontSize: 40,
+      padding: "16px 0",
+      borderRadius: 20,
+      transform: aktif === l ? "scale(1.08)" : undefined,
+      transition: "transform 0.15s"
+    }
+  }, besar ? l : l.toLowerCase()))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 14,
+      color: "#94A3B8"
+    }
+  }, "🔊 Sentuh hurufnya untuk dengar namanya"));
+}
+
+// ================= MENU: BA-BI-BU =================
+function MenuBaBiBu({
+  customSuku,
+  setCustomSuku,
+  customKata,
+  setCustomKata
+}) {
+  const [sub, setSub] = useState("dasar");
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      gap: 18,
+      width: "100%"
+    }
+  }, /*#__PURE__*/React.createElement(Pills, {
+    value: sub,
+    onChange: setSub,
+    items: [{
+      id: "dasar",
+      label: "🗣️ ba-bi-bu"
+    }, {
+      id: "bacaan",
+      label: "📖 Bacaan"
+    }]
+  }), sub === "dasar" && /*#__PURE__*/React.createElement(SukuDasar, {
+    customSuku: customSuku,
+    setCustomSuku: setCustomSuku
+  }), sub === "bacaan" && /*#__PURE__*/React.createElement(Bacaan, {
+    customKata: customKata,
+    setCustomKata: setCustomKata
+  }));
+}
+function KonsonanChip({
+  k,
+  aktif,
+  onClick
+}) {
+  return /*#__PURE__*/React.createElement("button", {
+    onClick: onClick,
+    style: {
+      minWidth: 46,
+      height: 46,
+      padding: "0 8px",
+      borderRadius: 14,
+      border: "none",
+      fontFamily: "inherit",
+      fontSize: 20,
+      fontWeight: 800,
+      cursor: "pointer",
+      background: aktif ? "#4D96FF" : "white",
+      color: aktif ? "white" : "#334155",
+      boxShadow: aktif ? "0 4px 0 rgba(0,0,0,0.25)" : "0 3px 0 rgba(0,0,0,0.1)"
+    }
+  }, k);
+}
+function SukuDasar({
+  customSuku,
+  setCustomSuku
+}) {
+  const [kons, setKons] = useState("b");
+  const [input, setInput] = useState("");
+  const [pesan, setPesan] = useState("");
+  const tambah = async () => {
+    const s = input.toLowerCase().trim();
+    setPesan("");
+    if (!s) return;
+    if (!/^[a-z]{1,6}$/.test(s)) {
+      setPesan("Isi huruf saja ya, tanpa spasi/angka.");
+      return;
+    }
+    if (customSuku.includes(s)) {
+      setPesan(`"${s}" sudah ada.`);
+      return;
+    }
+    const baru = [...customSuku, s];
+    setCustomSuku(baru);
+    setInput("");
+    await kvSet("custom-suku", JSON.stringify(baru));
+  };
+  const hapus = async s => {
+    const baru = customSuku.filter(x => x !== s);
+    setCustomSuku(baru);
+    await kvSet("custom-suku", JSON.stringify(baru));
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      gap: 18,
+      width: "100%",
+      maxWidth: 400
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 7,
+      flexWrap: "wrap",
+      justifyContent: "center"
+    }
+  }, KONSONAN.map(k => /*#__PURE__*/React.createElement(KonsonanChip, {
+    key: k,
+    k: k,
+    aktif: kons === k,
+    onClick: () => {
+      setKons(k);
+      play("huruf-" + k, NAMA_HURUF[k.toUpperCase()] || k);
+    }
+  }))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      gap: 12,
+      width: "100%",
+      maxWidth: 360
+    }
+  }, VOKAL.map((v, i) => /*#__PURE__*/React.createElement(Chunky, {
+    key: v,
+    color: CANDY[i % CANDY.length],
+    onClick: () => play("suku-" + kons + v, kons + v, 0.7),
+    style: {
+      fontSize: 42,
+      padding: "14px 0",
+      letterSpacing: 4,
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      gap: 14
+    }
+  }, kons, v, " ", /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 20,
+      opacity: 0.8
+    }
+  }, "🔊")))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: "100%",
+      background: "white",
+      borderRadius: 20,
+      padding: 14,
+      boxShadow: "0 4px 0 rgba(0,0,0,0.08)",
+      display: "flex",
+      flexDirection: "column",
+      gap: 10
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13,
+      fontWeight: 800,
+      color: "#94A3B8",
+      textTransform: "uppercase",
+      letterSpacing: 1,
+      textAlign: "center"
+    }
+  }, "➕ Suku kata tambahanku"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 8
+    }
+  }, /*#__PURE__*/React.createElement("input", {
+    value: input,
+    onChange: e => setInput(e.target.value),
+    onKeyDown: e => e.key === "Enter" && tambah(),
+    placeholder: "misal: buk, nga, pel...",
+    style: {
+      flex: 1,
+      border: "3px solid #E2E8F0",
+      borderRadius: 14,
+      padding: "10px 14px",
+      fontFamily: "inherit",
+      fontSize: 18,
+      fontWeight: 700,
+      outline: "none"
+    }
+  }), /*#__PURE__*/React.createElement(Chunky, {
+    color: "#3DBE6C",
+    onClick: tambah,
+    style: {
+      fontSize: 18,
+      padding: "10px 20px"
+    }
+  }, "Tambah")), pesan && /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13,
+      color: "#DC2626",
+      textAlign: "center"
+    }
+  }, pesan), customSuku.length > 0 && /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 6,
+      flexWrap: "wrap",
+      justifyContent: "center"
+    }
+  }, customSuku.map(s => /*#__PURE__*/React.createElement("div", {
+    key: s,
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 4,
+      background: "#F1F5F9",
+      borderRadius: 14,
+      padding: "6px 8px 6px 14px"
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: () => play("suku-" + s, s, 0.7),
+    style: {
+      border: "none",
+      background: "transparent",
+      fontFamily: "inherit",
+      fontSize: 20,
+      fontWeight: 800,
+      color: "#334155",
+      cursor: "pointer"
+    }
+  }, s, " 🔊"), /*#__PURE__*/React.createElement("button", {
+    onClick: () => hapus(s),
+    style: {
+      border: "none",
+      background: "#FEE2E2",
+      color: "#DC2626",
+      borderRadius: 10,
+      width: 24,
+      height: 24,
+      cursor: "pointer",
+      fontWeight: 800
+    }
+  }, "✕"))))));
+}
+
+// ================= MENU: BACAAN =================
+// Anak berlatih membaca kata utuh: suku kata disentuh satu-satu, lalu dirangkai.
+function Bacaan({
+  customKata,
+  setCustomKata
+}) {
+  const semua = [...KATA_BAWAAN.map(x => ({
+    ...x,
+    custom: false
+  })), ...customKata.map(w => ({
+    w: w.replace(/-/g, ""),
+    raw: w,
+    e: "📖",
+    custom: true
+  }))];
+  const [pilihIdx, setPilihIdx] = useState(0);
+  const [selesai, setSelesai] = useState(false);
+  const [sibuk, setSibuk] = useState(false);
+  const [confetti, setConfetti] = useState(0);
+  const [tambahMode, setTambahMode] = useState(false);
+  const [input, setInput] = useState("");
+  const [pesan, setPesan] = useState("");
+  const item = semua[Math.min(pilihIdx, semua.length - 1)];
+  const sukuList = pecahSuku(item.raw || item.w);
+  const bacaSemua = async () => {
+    if (sibuk) return;
+    setSibuk(true);
+    await playSeq([...sukuList.map(s => kSuku(s)), kKata(item.w)], 320);
+    setSelesai(true);
+    setConfetti(c => c + 1);
+    await playPraise();
+    setSibuk(false);
+  };
+  const pilihKata = i => {
+    setPilihIdx(i);
+    setSelesai(false);
+  };
+  const tambah = async () => {
+    setPesan("");
+    const teks = input.toLowerCase().trim();
+    if (!teks) return;
+    if (!/^[a-z\- ]{2,40}$/.test(teks)) {
+      setPesan("Isi huruf saja ya (boleh pakai - untuk atur pemenggalan).");
+      return;
+    }
+    const kataBaru = teks.split(/\s+/).filter(Boolean);
+    const gabung = [...customKata];
+    for (const k of kataBaru) {
+      if (!gabung.includes(k) && !KATA_BAWAAN.some(x => x.w === k.replace(/-/g, ""))) gabung.push(k);
+    }
+    setCustomKata(gabung);
+    setInput("");
+    setTambahMode(false);
+    await kvSet("bacaan-list", JSON.stringify(gabung));
+  };
+  const hapusKata = async raw => {
+    const baru = customKata.filter(x => x !== raw);
+    setCustomKata(baru);
+    if (pilihIdx >= KATA_BAWAAN.length + baru.length) setPilihIdx(0);
+    await kvSet("bacaan-list", JSON.stringify(baru));
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      gap: 16,
+      width: "100%",
+      maxWidth: 420
+    }
+  }, /*#__PURE__*/React.createElement(Confetti, {
+    trigger: confetti
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: "white",
+      borderRadius: 28,
+      padding: "22px 18px",
+      width: "100%",
+      boxShadow: "0 8px 0 rgba(0,0,0,0.1)",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      gap: 16
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 10,
+      flexWrap: "wrap",
+      justifyContent: "center"
+    }
+  }, sukuList.map((s, i) => /*#__PURE__*/React.createElement(Chunky, {
+    key: `${item.w}-${i}`,
+    color: CANDY[i % CANDY.length],
+    onClick: () => play("suku-" + s, s, 0.7),
+    style: {
+      fontSize: 44,
+      padding: "16px 22px",
+      letterSpacing: 3
+    }
+  }, s))), !selesai ? /*#__PURE__*/React.createElement(Chunky, {
+    color: "#3DBE6C",
+    onClick: bacaSemua,
+    disabled: sibuk,
+    style: {
+      fontSize: 24,
+      padding: "14px 32px"
+    }
+  }, sibuk ? "🔊 ..." : "▶ Baca semuanya") : /*#__PURE__*/React.createElement("button", {
+    onClick: () => play("kata-" + item.w, item.w, 0.75),
+    style: {
+      background: "#F0FDF4",
+      border: "6px solid #3DBE6C",
+      borderRadius: 24,
+      padding: "14px 28px",
+      fontFamily: "inherit",
+      cursor: "pointer",
+      animation: "pop 0.35s ease"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 52
+    }
+  }, item.e), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 40,
+      fontWeight: 800,
+      color: "#166534",
+      letterSpacing: 2
+    }
+  }, item.w))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 6,
+      flexWrap: "wrap",
+      justifyContent: "center",
+      maxHeight: 170,
+      overflowY: "auto"
+    }
+  }, semua.map((x, i) => /*#__PURE__*/React.createElement("div", {
+    key: x.raw || x.w,
+    style: {
+      display: "flex",
+      alignItems: "center",
+      background: i === pilihIdx ? "#FFB020" : "white",
+      borderRadius: 12,
+      boxShadow: "0 2px 0 rgba(0,0,0,0.08)"
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: () => pilihKata(i),
+    style: {
+      border: "none",
+      background: "transparent",
+      fontFamily: "inherit",
+      padding: "7px 10px",
+      fontSize: 15,
+      fontWeight: 800,
+      cursor: "pointer",
+      color: i === pilihIdx ? "white" : "#334155"
+    }
+  }, x.e, " ", x.w), x.custom && /*#__PURE__*/React.createElement("button", {
+    onClick: () => hapusKata(x.raw),
+    style: {
+      border: "none",
+      background: "transparent",
+      color: i === pilihIdx ? "white" : "#DC2626",
+      cursor: "pointer",
+      fontWeight: 800,
+      padding: "0 8px 0 0"
+    }
+  }, "✕")))), !tambahMode ? /*#__PURE__*/React.createElement(Chunky, {
+    color: "#4D96FF",
+    onClick: () => setTambahMode(true),
+    style: {
+      fontSize: 17,
+      padding: "10px 22px"
+    }
+  }, "➕ Tambah kosa kata") : /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: "100%",
+      background: "white",
+      borderRadius: 20,
+      padding: 14,
+      boxShadow: "0 4px 0 rgba(0,0,0,0.08)",
+      display: "flex",
+      flexDirection: "column",
+      gap: 10
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 8
+    }
+  }, /*#__PURE__*/React.createElement("input", {
+    value: input,
+    onChange: e => setInput(e.target.value),
+    onKeyDown: e => e.key === "Enter" && tambah(),
+    placeholder: "misal: sekolah, atau se-ko-lah",
+    style: {
+      flex: 1,
+      border: "3px solid #E2E8F0",
+      borderRadius: 14,
+      padding: "10px 14px",
+      fontFamily: "inherit",
+      fontSize: 17,
+      fontWeight: 700,
+      outline: "none"
+    }
+  }), /*#__PURE__*/React.createElement(Chunky, {
+    color: "#3DBE6C",
+    onClick: tambah,
+    style: {
+      fontSize: 17,
+      padding: "10px 18px"
+    }
+  }, "Simpan")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13,
+      color: "#94A3B8",
+      textAlign: "center"
+    }
+  }, "Pemenggalan otomatis. Kalau kurang pas, tulis pakai tanda hubung: se-ko-lah"), pesan && /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13,
+      color: "#DC2626",
+      textAlign: "center"
+    }
+  }, pesan)));
+}
+
+// ================= MENU: TEBAK (10 soal + poin harian) =================
+const LEVEL = [{
+  id: "mudah",
+  label: "😊 Mudah",
+  desc: "Tebak huruf",
+  types: ["huruf"],
+  nOpsi: 3,
+  color: "#3DBE6C"
+}, {
+  id: "sedang",
+  label: "🤓 Sedang",
+  desc: "Huruf + suku kata",
+  types: ["huruf", "suku"],
+  nOpsi: 3,
+  color: "#FFB020"
+}, {
+  id: "sulit",
+  label: "🔥 Sulit",
+  desc: "Huruf, suku kata, dan kata",
+  types: ["huruf", "suku", "kata"],
+  nOpsi: 4,
+  color: "#FF6B6B"
+}];
+const JUMLAH_SOAL = 10;
+const KONSONAN_TEBAK = KONSONAN.filter(k => k.length === 1);
+function acakAmbil(arr, n, kecuali = []) {
+  const pool = arr.filter(x => !kecuali.includes(x));
+  const out = [];
+  while (out.length < n && pool.length > 0) {
+    const i = Math.floor(Math.random() * pool.length);
+    out.push(pool.splice(i, 1)[0]);
+  }
+  return out;
+}
+function buatSoal(level) {
+  const cfg = LEVEL.find(l => l.id === level);
+  const soal = [];
+  for (let i = 0; i < JUMLAH_SOAL; i++) {
+    const type = cfg.types[Math.floor(Math.random() * cfg.types.length)];
+    if (type === "huruf") {
+      const target = ABJAD[Math.floor(Math.random() * ABJAD.length)];
+      const opsi = [target, ...acakAmbil(ABJAD, cfg.nOpsi - 1, [target])].sort(() => Math.random() - 0.5);
+      soal.push({
+        type,
+        target,
+        opsi
+      });
+    } else if (type === "suku") {
+      const k = KONSONAN_TEBAK[Math.floor(Math.random() * KONSONAN_TEBAK.length)];
+      const v = VOKAL[Math.floor(Math.random() * VOKAL.length)];
+      const target = k + v;
+      const serumpun = VOKAL.filter(x => x !== v).map(x => k + x);
+      const opsi = [target, ...acakAmbil(serumpun, cfg.nOpsi - 1)].sort(() => Math.random() - 0.5);
+      soal.push({
+        type,
+        target,
+        opsi
+      });
+    } else {
+      const kata = KATA_BAWAAN.map(x => x.w);
+      const target = kata[Math.floor(Math.random() * kata.length)];
+      const opsi = [target, ...acakAmbil(kata, cfg.nOpsi - 1, [target])].sort(() => Math.random() - 0.5);
+      soal.push({
+        type,
+        target,
+        opsi
+      });
+    }
+  }
+  return soal;
+}
+async function tanyakan(q) {
+  if (q.type === "huruf") {
+    if (recordedKeys.has("frasa-mana") || recordedKeys.has("huruf-" + q.target.toLowerCase())) {
+      await playSeq([{
+        key: "frasa-mana",
+        fb: "Mana huruf"
+      }, kHuruf(q.target)], 150);
+    } else {
+      await speakAsync(`Mana huruf ${NAMA_HURUF[q.target]}?`, 0.85);
+    }
+  } else {
+    const snd = q.type === "suku" ? kSuku(q.target) : kKata(q.target);
+    if (recordedKeys.has("frasa-manabunyi") || recordedKeys.has(snd.key)) {
+      await playSeq([{
+        key: "frasa-manabunyi",
+        fb: "Yang mana bunyi"
+      }, snd], 150);
+    } else {
+      await speakAsync(`Yang mana bunyi ${q.target}?`, 0.8);
+    }
+  }
+}
+function PoinBadge({
+  poin
+}) {
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 10,
+      background: "white",
+      borderRadius: 16,
+      padding: "8px 16px",
+      boxShadow: "0 3px 0 rgba(0,0,0,0.1)",
+      fontSize: 16,
+      fontWeight: 800,
+      color: "#334155"
+    }
+  }, /*#__PURE__*/React.createElement("span", null, "🪙 ", poin.total), /*#__PURE__*/React.createElement("span", null, "🔥 ", poin.streak, " hari"));
+}
+function MenuTebak() {
+  const [fase, setFase] = useState("setup");
+  const [level, setLevel] = useState("mudah");
+  const [soal, setSoal] = useState([]);
+  const [no, setNo] = useState(0);
+  const [skor, setSkor] = useState(0);
+  const [pertamaKali, setPertamaKali] = useState(true);
+  const [salah, setSalah] = useState(null);
+  const [confetti, setConfetti] = useState(0);
+  const [praise, setPraise] = useState("");
+  const [kunci, setKunci] = useState(false);
+  const [poin, setPoin] = useState({
+    total: 0,
+    lastDate: null,
+    streak: 0
+  });
+  const [hasilPoin, setHasilPoin] = useState(null);
+  useEffect(() => {
+    muatPoin().then(setPoin);
+  }, []);
+  const mulai = lv => {
+    const s = buatSoal(lv);
+    setLevel(lv);
+    setSoal(s);
+    setNo(0);
+    setSkor(0);
+    setPertamaKali(true);
+    setSalah(null);
+    setPraise("");
+    setKunci(false);
+    setHasilPoin(null);
+    setFase("main");
+    setTimeout(() => tanyakan(s[0]), 500);
+  };
+  const selesaiSet = async skorAkhir => {
+    const res = await tambahPoin(poin, skorAkhir);
+    setPoin(res.baru);
+    setHasilPoin(res);
+    setFase("selesai");
+  };
+  const jawab = async pilihan => {
+    if (kunci) return;
+    const q = soal[no];
+    if (pilihan === q.target) {
+      setKunci(true);
+      const skorBaru = pertamaKali ? skor + 1 : skor;
+      if (pertamaKali) setSkor(skorBaru);
+      setConfetti(c => c + 1);
+      const p = await playPraise();
+      setPraise(p);
+      setTimeout(() => {
+        setPraise("");
+        if (no + 1 >= JUMLAH_SOAL) {
+          selesaiSet(skorBaru);
+        } else {
+          setNo(no + 1);
+          setPertamaKali(true);
+          setSalah(null);
+          setKunci(false);
+          setTimeout(() => tanyakan(soal[no + 1]), 350);
+        }
+      }, 1100);
+    } else {
+      setPertamaKali(false);
+      setSalah(pilihan);
+      play("frasa-cobalagi", "Coba lagi ya", 0.9);
+      setTimeout(() => setSalah(null), 700);
+    }
+  };
+  if (fase === "setup") {
+    const sudahHariIni = poin.lastDate === tglHariIni();
+    return /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: 14,
+        width: "100%",
+        maxWidth: 360
+      }
+    }, /*#__PURE__*/React.createElement(PoinBadge, {
+      poin: poin
+    }), !sudahHariIni && /*#__PURE__*/React.createElement("div", {
+      style: {
+        background: "#FEF3C7",
+        border: "2px solid #FCD34D",
+        borderRadius: 14,
+        padding: "8px 14px",
+        fontSize: 14,
+        fontWeight: 700,
+        color: "#92400E"
+      }
+    }, "🎁 Kuis pertama hari ini: bonus +", BONUS_HARIAN, " poin!"), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 20,
+        fontWeight: 800,
+        color: "#1E3A5F"
+      }
+    }, "Pilih tingkat kesulitan"), LEVEL.map(lv => /*#__PURE__*/React.createElement(Chunky, {
+      key: lv.id,
+      color: lv.color,
+      onClick: () => mulai(lv.id),
+      style: {
+        fontSize: 24,
+        padding: "16px 0",
+        width: "100%"
+      }
+    }, lv.label, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 14,
+        fontWeight: 700,
+        opacity: 0.9
+      }
+    }, lv.desc, " · ", JUMLAH_SOAL, " soal"))));
+  }
+  if (fase === "selesai") {
+    const bagus = skor >= 8;
+    return /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: 16,
+        maxWidth: 360,
+        width: "100%"
+      }
+    }, /*#__PURE__*/React.createElement(Confetti, {
+      trigger: bagus ? 1 : 0
+    }), /*#__PURE__*/React.createElement(PoinBadge, {
+      poin: poin
+    }), /*#__PURE__*/React.createElement("div", {
+      style: {
+        background: "white",
+        borderRadius: 32,
+        padding: "26px 34px",
+        textAlign: "center",
+        boxShadow: "0 8px 0 rgba(0,0,0,0.12)",
+        animation: "pop 0.35s ease"
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 56
+      }
+    }, bagus ? "🏆" : skor >= 5 ? "🌟" : "💪"), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 40,
+        fontWeight: 800,
+        color: "#1E3A5F"
+      }
+    }, skor, " / ", JUMLAH_SOAL), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 18,
+        fontWeight: 700,
+        color: "#64748B",
+        marginBottom: 10
+      }
+    }, bagus ? "Luar biasa!" : skor >= 5 ? "Bagus, terus berlatih!" : "Ayo coba lagi, pasti bisa!"), hasilPoin && /*#__PURE__*/React.createElement("div", {
+      style: {
+        background: "#FEF9C3",
+        borderRadius: 16,
+        padding: "10px 14px",
+        fontSize: 16,
+        fontWeight: 800,
+        color: "#854D0E"
+      }
+    }, "🪙 +", skor, " poin dari jawaban benar", hasilPoin.bonusHarian && /*#__PURE__*/React.createElement("div", null, "🎁 +", BONUS_HARIAN, " bonus harian!"))), /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        gap: 12
+      }
+    }, /*#__PURE__*/React.createElement(Chunky, {
+      color: "#3DBE6C",
+      onClick: () => mulai(level),
+      style: {
+        fontSize: 20,
+        padding: "14px 24px"
+      }
+    }, "🔁 Main lagi"), /*#__PURE__*/React.createElement(Chunky, {
+      color: "#94A3B8",
+      onClick: () => setFase("setup"),
+      style: {
+        fontSize: 20,
+        padding: "14px 24px"
+      }
+    }, "Ganti level")));
+  }
+  const q = soal[no];
+  const besar = q.type === "huruf";
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      gap: 18,
+      width: "100%",
+      maxWidth: 400
+    }
+  }, /*#__PURE__*/React.createElement(Confetti, {
+    trigger: confetti
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 12
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 16,
+      fontWeight: 800,
+      color: "#64748B"
+    }
+  }, "Soal ", no + 1, " / ", JUMLAH_SOAL), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 16
+    }
+  }, "⭐".repeat(skor))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: "100%",
+      maxWidth: 300,
+      height: 10,
+      background: "#E2E8F0",
+      borderRadius: 8
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: `${no / JUMLAH_SOAL * 100}%`,
+      height: "100%",
+      background: "#FFB020",
+      borderRadius: 8,
+      transition: "width 0.3s"
+    }
+  })), /*#__PURE__*/React.createElement(Chunky, {
+    color: "#9B5DE5",
+    onClick: () => tanyakan(q),
+    style: {
+      fontSize: 20,
+      padding: "14px 26px"
+    }
+  }, "🔊 Dengar lagi"), praise && /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 28,
+      fontWeight: 800,
+      color: "#3DBE6C",
+      animation: "pop 0.3s ease"
+    }
+  }, praise, " 🎉"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 12,
+      flexWrap: "wrap",
+      justifyContent: "center",
+      width: "100%"
+    }
+  }, q.opsi.map((o, k) => /*#__PURE__*/React.createElement(Chunky, {
+    key: `${no}-${o}`,
+    color: salah === o ? "#94A3B8" : CANDY[k % CANDY.length],
+    onClick: () => jawab(o),
+    style: {
+      fontSize: besar ? 64 : 36,
+      padding: besar ? "22px 0" : "20px 10px",
+      minWidth: besar ? 100 : 120,
+      flex: besar ? "0 1 100px" : "0 1 auto",
+      letterSpacing: besar ? 0 : 2,
+      animation: salah === o ? "wiggle 0.4s ease" : "none"
+    }
+  }, o))));
+}
+
+// ================= MENU: REKAM SUARA =================
+function daftarSuara(customSuku, customKata) {
+  const sukuSet = new Set();
+  KONSONAN.forEach(k => VOKAL.forEach(v => sukuSet.add(k + v)));
+  customSuku.forEach(s => sukuSet.add(s));
+  const kataSet = new Set();
+  KATA_BAWAAN.forEach(x => {
+    kataSet.add(x.w);
+    pecahSuku(x.w).forEach(s => sukuSet.add(s));
+  });
+  customKata.forEach(raw => {
+    kataSet.add(raw.replace(/-/g, ""));
+    pecahSuku(raw).forEach(s => sukuSet.add(s));
+  });
+  return {
+    huruf: [...ABJAD.map(l => ({
+      key: "huruf-" + l.toLowerCase(),
+      label: l,
+      fb: NAMA_HURUF[l]
+    })), ...DIGRAF.map(d => ({
+      key: "huruf-" + d,
+      label: d,
+      fb: d
+    }))],
+    hurufEn: ABJAD.map(l => ({
+      key: "huruf-en-" + l.toLowerCase(),
+      label: l,
+      fb: l,
+      lang: "en-US"
+    })),
+    suku: [...sukuSet].sort().map(s => ({
+      key: "suku-" + s,
+      label: s,
+      fb: s
+    })),
+    kata: [...kataSet].sort().map(w => ({
+      key: "kata-" + w,
+      label: w,
+      fb: w
+    })),
+    lainnya: [{
+      key: "frasa-mana",
+      label: '"Mana huruf..."',
+      fb: "Mana huruf"
+    }, {
+      key: "frasa-manabunyi",
+      label: '"Yang mana bunyi..."',
+      fb: "Yang mana bunyi"
+    }, {
+      key: "frasa-cobalagi",
+      label: '"Coba lagi ya"',
+      fb: "Coba lagi ya"
+    }, ...PRAISE.map((p, i) => ({
+      key: "pujian-" + i,
+      label: `"${p}"`,
+      fb: p
+    }))]
+  };
+}
+function RekamSuara({
+  customSuku,
+  customKata
+}) {
+  const [, force] = useReducer(x => x + 1, 0);
+  const [kat, setKat] = useState("huruf");
+  const [sel, setSel] = useState(null);
+  const [status, setStatus] = useState("idle");
+  const [previewUrl, setPreviewUrl] = useState(null);
+  const [previewBlob, setPreviewBlob] = useState(null);
+  const [pesan, setPesan] = useState("");
+  const mediaRef = useRef({});
+  const fileInputRef = useRef(null);
+  const daftar = daftarSuara(customSuku, customKata);
+  const kategori = [{
+    id: "huruf",
+    label: "Huruf"
+  }, {
+    id: "hurufEn",
+    label: "Huruf 🇬🇧"
+  }, {
+    id: "suku",
+    label: "Suku Kata"
+  }, {
+    id: "kata",
+    label: "Kata"
+  }, {
+    id: "lainnya",
+    label: "Frasa"
+  }];
+  const pilih = item => {
+    hentikanStream();
+    setSel(item);
+    setStatus("idle");
+    setPreviewUrl(null);
+    setPesan("");
+  };
+  const hentikanStream = () => {
+    mediaRef.current.stream?.getTracks?.().forEach(t => t.stop());
+    mediaRef.current = {};
+  };
+  const mulaiRekam = async () => {
+    setPesan("");
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: true
+      });
+      const mime = MediaRecorder.isTypeSupported("audio/webm;codecs=opus") ? "audio/webm;codecs=opus" : MediaRecorder.isTypeSupported("audio/mp4") ? "audio/mp4" : "";
+      const rec = mime ? new MediaRecorder(stream, {
+        mimeType: mime
+      }) : new MediaRecorder(stream);
+      const chunks = [];
+      rec.ondataavailable = e => e.data.size > 0 && chunks.push(e.data);
+      rec.onstop = () => {
+        const blob = new Blob(chunks, {
+          type: rec.mimeType || "audio/webm"
+        });
+        setPreviewBlob(blob);
+        const reader = new FileReader();
+        reader.onload = () => {
+          setPreviewUrl(reader.result);
+          setStatus("preview");
+        };
+        reader.readAsDataURL(blob);
+        hentikanStream();
+      };
+      mediaRef.current = {
+        stream,
+        rec
+      };
+      rec.start();
+      setStatus("rec");
+    } catch (e) {
+      setPesan("Mikrofon diblokir di dalam Claude. Pakai tombol 📁 Pilih File: rekam dulu dengan aplikasi perekam suara di HP, lalu pilih filenya di sini.");
+    }
+  };
+  const stopRekam = () => mediaRef.current.rec?.state === "recording" && mediaRef.current.rec.stop();
+  const pilihFile = e => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    setPesan("");
+    if (file.size > 3_000_000) {
+      setPesan("File terlalu besar (maks ~3 MB). Potong rekaman jadi 1–2 detik ya.");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      setPreviewBlob(file);
+      setPreviewUrl(reader.result);
+      setStatus("preview");
+    };
+    reader.onerror = () => setPesan("Gagal membaca file, coba file lain.");
+    reader.readAsDataURL(file);
+  };
+  const simpan = async () => {
+    if (!previewUrl || !sel) return;
+    setStatus("saving");
+    try {
+      if (!SUARA_LOKAL && previewBlob) {
+        const t = previewBlob.type || "audio/webm";
+        const ext = t.includes("mp4") || t.includes("m4a") ? "mp4" : t.includes("webm") ? "webm" : "bin";
+        const nama = sel.key + "." + ext;
+        const lama = fileNames[sel.key];
+        const {
+          error
+        } = await SB.storage.from(BUCKET).upload(nama, previewBlob, {
+          upsert: true,
+          contentType: t
+        });
+        if (error) throw error;
+        if (lama && lama !== nama) {
+          try {
+            await SB.storage.from(BUCKET).remove([lama]);
+          } catch (e) {}
+        }
+        fileNames[sel.key] = nama;
+        const {
+          data: pub
+        } = SB.storage.from(BUCKET).getPublicUrl(nama);
+        audioSrc[sel.key] = pub.publicUrl + "?v=" + Date.now();
+      } else {
+        if (previewUrl.length > 4_500_000) {
+          setPesan("Rekaman terlalu panjang, coba yang lebih singkat (1–2 detik cukup).");
+          setStatus("preview");
+          return;
+        }
+        await window.storage.set("snd:" + sel.key, previewUrl);
+        audioSrc[sel.key] = previewUrl;
+      }
+      recordedKeys.add(sel.key);
+      setPesan(!SUARA_LOKAL ? "✅ Tersimpan & sinkron ke semua perangkat!" : "✅ Tersimpan di perangkat ini!");
+      setStatus("idle");
+      setPreviewUrl(null);
+      setPreviewBlob(null);
+      force();
+    } catch (e) {
+      setPesan("Gagal menyimpan, coba lagi. " + (e?.message ? `(${e.message})` : ""));
+      setStatus("preview");
+    }
+  };
+  const hapus = async () => {
+    if (!sel) return;
+    try {
+      if (!SUARA_LOKAL) {
+        await SB.storage.from(BUCKET).remove([fileNames[sel.key] || sel.key + ".webm"]);
+        delete fileNames[sel.key];
+      } else {
+        await window.storage.delete("snd:" + sel.key);
+      }
+    } catch (e) {}
+    recordedKeys.delete(sel.key);
+    delete audioSrc[sel.key];
+    setPesan("Rekaman dihapus, kembali pakai suara robot.");
+    force();
+  };
+  useEffect(() => () => hentikanStream(), []);
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      gap: 14,
+      width: "100%",
+      maxWidth: 420
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: "#FEF3C7",
+      border: "2px solid #FCD34D",
+      borderRadius: 16,
+      padding: "10px 14px",
+      fontSize: 14,
+      color: "#92400E",
+      lineHeight: 1.4
+    }
+  }, "🎤 ", /*#__PURE__*/React.createElement("b", null, "Untuk Ayah/Bunda:"), " isi suaramu sendiri supaya pelafalannya pas. Yang sudah terisi (✅) dipakai di semua permainan; sisanya pakai suara robot.", /*#__PURE__*/React.createElement("br", null), "💡 Di dalam Claude mikrofon diblokir — pakai ", /*#__PURE__*/React.createElement("b", null, "📁 Pilih File"), ": rekam dengan aplikasi perekam suara di HP, lalu unggah di sini.", /*#__PURE__*/React.createElement("br", null), "📌 Tips: untuk suku kata, ucapkan bunyinya pelan dan jelas (\"ba\", bukan \"bé-a\") — anak belajar merangkai dari bunyi.", /*#__PURE__*/React.createElement("br", null), !SUARA_LOKAL ? "🌐 Rekaman sinkron antar perangkat via Supabase." : SB ? "📱 Rekaman tersimpan di perangkat ini saja; kosa kata & poin tetap sinkron via Supabase." : "📱 Semua data tersimpan di perangkat ini saja."), /*#__PURE__*/React.createElement(Pills, {
+    color: "#4D96FF",
+    value: kat,
+    onChange: k => {
+      setKat(k);
+      setSel(null);
+    },
+    items: kategori
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 6,
+      flexWrap: "wrap",
+      justifyContent: "center",
+      maxHeight: 260,
+      overflowY: "auto"
+    }
+  }, daftar[kat].map(item => {
+    const sudah = recordedKeys.has(item.key);
+    const aktif = sel?.key === item.key;
+    return /*#__PURE__*/React.createElement("button", {
+      key: item.key,
+      onClick: () => pilih(item),
+      style: {
+        border: aktif ? "3px solid #4D96FF" : "3px solid transparent",
+        borderRadius: 12,
+        padding: "6px 12px",
+        fontFamily: "inherit",
+        fontWeight: 700,
+        fontSize: 15,
+        cursor: "pointer",
+        background: sudah ? "#DCFCE7" : "white",
+        color: "#334155",
+        boxShadow: "0 2px 0 rgba(0,0,0,0.08)"
+      }
+    }, item.label, " ", sudah ? "✅" : "");
+  })), sel && /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: "white",
+      borderRadius: 24,
+      padding: 20,
+      width: "100%",
+      boxShadow: "0 6px 0 rgba(0,0,0,0.1)",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      gap: 12
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 24,
+      fontWeight: 800,
+      color: "#1E3A5F"
+    }
+  }, "Isi suara: ", /*#__PURE__*/React.createElement("span", {
+    style: {
+      color: "#4D96FF"
+    }
+  }, sel.label)), status === "idle" && /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 10,
+      flexWrap: "wrap",
+      justifyContent: "center"
+    }
+  }, /*#__PURE__*/React.createElement(Chunky, {
+    color: "#FF6B6B",
+    onClick: mulaiRekam,
+    style: {
+      fontSize: 18,
+      padding: "12px 22px"
+    }
+  }, "🔴 Mulai Rekam"), /*#__PURE__*/React.createElement(Chunky, {
+    color: "#FFB020",
+    onClick: () => fileInputRef.current?.click(),
+    style: {
+      fontSize: 18,
+      padding: "12px 22px"
+    }
+  }, "📁 Pilih File"), /*#__PURE__*/React.createElement(Chunky, {
+    color: "#9B5DE5",
+    onClick: () => play(sel.key, sel.fb, 0.8, sel.lang),
+    style: {
+      fontSize: 18,
+      padding: "12px 22px"
+    }
+  }, "🔊 Dengar"), recordedKeys.has(sel.key) && /*#__PURE__*/React.createElement(Chunky, {
+    color: "#94A3B8",
+    onClick: hapus,
+    style: {
+      fontSize: 18,
+      padding: "12px 22px"
+    }
+  }, "🗑️ Hapus"), /*#__PURE__*/React.createElement("input", {
+    ref: fileInputRef,
+    type: "file",
+    accept: "audio/*",
+    onChange: pilihFile,
+    style: {
+      display: "none"
+    }
+  })), status === "rec" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 18,
+      color: "#DC2626",
+      fontWeight: 800
+    }
+  }, "● Merekam... ucapkan \"", sel.fb, "\""), /*#__PURE__*/React.createElement(Chunky, {
+    color: "#334155",
+    onClick: stopRekam,
+    style: {
+      fontSize: 20,
+      padding: "14px 28px"
+    }
+  }, "⏹ Selesai")), status === "preview" && /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 10,
+      flexWrap: "wrap",
+      justifyContent: "center"
+    }
+  }, /*#__PURE__*/React.createElement(Chunky, {
+    color: "#9B5DE5",
+    onClick: () => playUrl(previewUrl),
+    style: {
+      fontSize: 18,
+      padding: "12px 22px"
+    }
+  }, "▶️ Dengar"), /*#__PURE__*/React.createElement(Chunky, {
+    color: "#3DBE6C",
+    onClick: simpan,
+    style: {
+      fontSize: 18,
+      padding: "12px 22px"
+    }
+  }, "💾 Simpan"), /*#__PURE__*/React.createElement(Chunky, {
+    color: "#FF6B6B",
+    onClick: mulaiRekam,
+    style: {
+      fontSize: 18,
+      padding: "12px 22px"
+    }
+  }, "🔁 Ulangi"), /*#__PURE__*/React.createElement(Chunky, {
+    color: "#FFB020",
+    onClick: () => fileInputRef.current?.click(),
+    style: {
+      fontSize: 18,
+      padding: "12px 22px"
+    }
+  }, "📁 Ganti File"), /*#__PURE__*/React.createElement("input", {
+    ref: fileInputRef,
+    type: "file",
+    accept: "audio/*",
+    onChange: pilihFile,
+    style: {
+      display: "none"
+    }
+  })), status === "saving" && /*#__PURE__*/React.createElement("div", {
+    style: {
+      color: "#64748B"
+    }
+  }, "Menyimpan..."), pesan && /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 14,
+      color: "#64748B",
+      textAlign: "center"
+    }
+  }, pesan)));
+}
+
+// ================= APP =================
+function App() {
+  const [mode, setMode] = useState("huruf");
+  const [customSuku, setCustomSuku] = useState([]);
+  const [customKata, setCustomKata] = useState([]);
+  const [, force] = useReducer(x => x + 1, 0);
+  useEffect(() => {
+    try {
+      navigator.storage?.persist?.();
+    } catch (e) {}
+    loadRecordedKeys().then(force);
+    (async () => {
+      try {
+        const v = await kvGet("custom-suku");
+        if (v) setCustomSuku(JSON.parse(v));
+      } catch (e) {}
+      try {
+        const v2 = await kvGet("bacaan-list");
+        if (v2) setCustomKata(JSON.parse(v2));
+      } catch (e) {}
+    })();
+    const load = () => {
+      getVoice("id-ID");
+      getVoice("en-US");
+    };
+    load();
+    window.speechSynthesis?.addEventListener?.("voiceschanged", load);
+    return () => window.speechSynthesis?.removeEventListener?.("voiceschanged", load);
+  }, []);
+  const tabs = [{
+    id: "huruf",
+    label: "Huruf",
+    icon: "🔤"
+  }, {
+    id: "babibu",
+    label: "Ba-Bi-Bu",
+    icon: "🗣️"
+  }, {
+    id: "tebak",
+    label: "Tebak",
+    icon: "🎯"
+  }, {
+    id: "rekam",
+    label: "Rekam",
+    icon: "🎤"
+  }];
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      minHeight: "100vh",
+      background: "linear-gradient(180deg, #E3F4FF 0%, #F0FBF4 100%)",
+      fontFamily: "'Baloo 2', 'Comic Sans MS', system-ui, sans-serif",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      padding: "20px 16px 130px"
+    }
+  }, /*#__PURE__*/React.createElement("style", null, `
+        @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&display=swap');
+        @keyframes pop { 0% { transform: scale(0.85); } 60% { transform: scale(1.04); } 100% { transform: scale(1); } }
+        @keyframes wiggle { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
+        @keyframes fall { to { transform: translateY(110vh) rotate(300deg); opacity: 0.6; } }
+        @keyframes hop { 0%, 100% { transform: translateY(0); } 30% { transform: translateY(-7px) rotate(-3deg); } 50% { transform: translateY(0); } }
+        button:focus-visible { outline: 4px solid #1D4ED8; outline-offset: 2px; }
+        @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+      `), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 12,
+      margin: "4px 0 20px"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      animation: "hop 1.8s ease-in-out infinite"
+    }
+  }, /*#__PURE__*/React.createElement(Bunny, {
+    size: 54
+  })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h1", {
+    style: {
+      fontSize: 32,
+      fontWeight: 800,
+      color: "#1E3A5F",
+      margin: 0,
+      lineHeight: 1.05
+    }
+  }, "Lingoly"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 14,
+      fontWeight: 700,
+      color: "#64748B"
+    }
+  }, "Ayo belajar baca! 📚"))), mode === "huruf" && /*#__PURE__*/React.createElement(MenuHuruf, null), mode === "babibu" && /*#__PURE__*/React.createElement(MenuBaBiBu, {
+    customSuku: customSuku,
+    setCustomSuku: setCustomSuku,
+    customKata: customKata,
+    setCustomKata: setCustomKata
+  }), mode === "tebak" && /*#__PURE__*/React.createElement(MenuTebak, null), mode === "rekam" && /*#__PURE__*/React.createElement(RekamSuara, {
+    customSuku: customSuku,
+    customKata: customKata
+  }), /*#__PURE__*/React.createElement("nav", {
+    style: {
+      position: "fixed",
+      bottom: 0,
+      left: 0,
+      right: 0,
+      background: "white",
+      boxShadow: "0 -4px 16px rgba(0,0,0,0.08)",
+      display: "flex",
+      justifyContent: "center",
+      gap: 8,
+      padding: "10px 10px calc(10px + env(safe-area-inset-bottom))"
+    }
+  }, tabs.map(t => /*#__PURE__*/React.createElement("button", {
+    key: t.id,
+    onClick: () => setMode(t.id),
+    style: {
+      flex: 1,
+      maxWidth: 100,
+      border: "none",
+      borderRadius: 18,
+      padding: "8px 0",
+      fontFamily: "inherit",
+      fontWeight: 800,
+      fontSize: 13,
+      cursor: "pointer",
+      background: mode === t.id ? "#FFB020" : "#F1F5F9",
+      color: mode === t.id ? "white" : "#64748B",
+      boxShadow: mode === t.id ? "0 4px 0 rgba(0,0,0,0.2)" : "none"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 24
+    }
+  }, t.icon), t.label))));
+}
+ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(App));
+</script>
+</body>
+</html>
