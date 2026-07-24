@@ -19,6 +19,9 @@
 <div id="root"></div>
 <div id="galat"></div>
 <script>
+// ================================================================
+// Lingoly v5 — satu blok script tunggal (anti blok-mati-sebagian)
+// ================================================================
 (function () {
   function tampil(msg) {
     var el = document.getElementById("galat");
@@ -28,15 +31,11 @@
   }
   window.onerror = function (m, s, l, c) { tampil(m + " (baris " + l + ")"); };
   window.addEventListener("unhandledrejection", function (e) { tampil(String((e.reason && e.reason.message) || e.reason)); });
-  window.addEventListener("load", function () {
-    if (!window.React || !window.ReactDOM) tampil("Gagal memuat React dari internet. Pastikan tersambung internet lalu muat ulang.");
-  });
 })();
-window.SUPABASE_CONFIG = {
-  url: "",
-  anonKey: "",
-  rekamLokal: true
-};
+
+window.SUPABASE_CONFIG = { url: "", anonKey: "", rekamLokal: true };
+
+// Penyimpanan lokal (IndexedDB) — didefinisikan di blok yang SAMA dengan aplikasi
 (function () {
   var dbp = null;
   function bukaDb() {
@@ -68,8 +67,6 @@ window.SUPABASE_CONFIG = {
     list: function (prefix) { return idb("readonly", function (s) { return s.getAllKeys(); }).then(function (keys) { return { keys: keys.filter(function (x) { return !prefix || String(x).indexOf(prefix) === 0; }) }; }); }
   };
 })();
-</script>
-<script>
 const {
   useState,
   useEffect,
@@ -2074,7 +2071,12 @@ function App() {
       fontWeight: 700,
       color: "#64748B"
     }
-  }, "Ayo belajar baca! 📚"))), mode === "huruf" && /*#__PURE__*/React.createElement(MenuHuruf, null), mode === "babibu" && /*#__PURE__*/React.createElement(MenuBaBiBu, {
+  }, "Ayo belajar baca! 📚 ", /*#__PURE__*/React.createElement("span", {
+    style: {
+      opacity: 0.5,
+      fontSize: 11
+    }
+  }, "v5")))), mode === "huruf" && /*#__PURE__*/React.createElement(MenuHuruf, null), mode === "babibu" && /*#__PURE__*/React.createElement(MenuBaBiBu, {
     customSuku: customSuku,
     setCustomSuku: setCustomSuku,
     customKata: customKata,
