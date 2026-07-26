@@ -1792,6 +1792,104 @@ function RekamSuara({
     setPesan("Rekaman dihapus, kembali pakai suara robot.");
     force();
   };
+
+  // ---- Cadangan: ekspor & impor seluruh rekaman + data ----
+  const [cadanganPesan, setCadanganPesan] = useState("");
+  const [sibukCadangan, setSibukCadangan] = useState(false);
+  const imporRef = useRef(null);
+  const ekspor = async () => {
+    setSibukCadangan(true);
+    setCadanganPesan("Mengumpulkan rekaman...");
+    try {
+      const isi = {
+        app: "lingoly",
+        versi: 1,
+        tanggal: new Date().toISOString(),
+        sounds: {},
+        pengaturan: {}
+      };
+      const res = await window.storage.list("snd:");
+      const keys = res?.keys || [];
+      for (const k of keys) {
+        const r = await window.storage.get(k);
+        if (r?.value) isi.sounds[k] = r.value;
+      }
+      for (const pk of ["custom-suku", "bacaan-list", "poin-data"]) {
+        const v = await kvGet(pk);
+        if (v) isi.pengaturan[pk] = v;
+      }
+      const jumlah = Object.keys(isi.sounds).length;
+      if (jumlah === 0 && Object.keys(isi.pengaturan).length === 0) {
+        setCadanganPesan("Belum ada rekaman/data untuk diekspor di wadah ini.");
+        setSibukCadangan(false);
+        return;
+      }
+      const blob = new Blob([JSON.stringify(isi)], {
+        type: "application/json"
+      });
+      const namaFile = "lingoly-cadangan.json";
+      const file = new File([blob], namaFile, {
+        type: "application/json"
+      });
+      if (navigator.canShare && navigator.canShare({
+        files: [file]
+      }) && navigator.share) {
+        await navigator.share({
+          files: [file],
+          title: "Cadangan Lingoly"
+        });
+        setCadanganPesan(`✅ ${jumlah} rekaman dibagikan — simpan ke Files/Drive ya.`);
+      } else {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = namaFile;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 5000);
+        setCadanganPesan(`✅ ${jumlah} rekaman diekspor ke file ${namaFile}.`);
+      }
+    } catch (e) {
+      setCadanganPesan("Gagal mengekspor: " + (e?.message || e));
+    }
+    setSibukCadangan(false);
+  };
+  const impor = e => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    setSibukCadangan(true);
+    setCadanganPesan("Membaca cadangan...");
+    const reader = new FileReader();
+    reader.onload = async () => {
+      try {
+        const isi = JSON.parse(reader.result);
+        if (isi.app !== "lingoly" || !isi.sounds) throw new Error("Bukan file cadangan Lingoly");
+        let n = 0;
+        for (const [k, v] of Object.entries(isi.sounds)) {
+          await window.storage.set(k, v);
+          const key = k.replace("snd:", "");
+          recordedKeys.add(key);
+          audioSrc[key] = v;
+          n++;
+        }
+        for (const [pk, pv] of Object.entries(isi.pengaturan || {})) {
+          await kvSet(pk, pv);
+        }
+        setCadanganPesan(`✅ ${n} rekaman dipulihkan! Muat ulang app untuk melihat kosa kata & poin.`);
+        force();
+      } catch (err) {
+        setCadanganPesan("Gagal mengimpor: " + (err?.message || err));
+      }
+      setSibukCadangan(false);
+    };
+    reader.onerror = () => {
+      setCadanganPesan("Gagal membaca file.");
+      setSibukCadangan(false);
+    };
+    reader.readAsText(file);
+  };
   useEffect(() => () => hentikanStream(), []);
   return /*#__PURE__*/React.createElement("div", {
     style: {
@@ -1979,7 +2077,71 @@ function RekamSuara({
       color: "#64748B",
       textAlign: "center"
     }
-  }, pesan)));
+  }, pesan)), /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: "100%",
+      background: "white",
+      borderRadius: 20,
+      padding: 14,
+      boxShadow: "0 4px 0 rgba(0,0,0,0.08)",
+      display: "flex",
+      flexDirection: "column",
+      gap: 10,
+      alignItems: "center"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13,
+      fontWeight: 800,
+      color: "#94A3B8",
+      textTransform: "uppercase",
+      letterSpacing: 1
+    }
+  }, "🛟 Cadangan Rekaman"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 10,
+      flexWrap: "wrap",
+      justifyContent: "center"
+    }
+  }, /*#__PURE__*/React.createElement(Chunky, {
+    color: "#4D96FF",
+    onClick: ekspor,
+    disabled: sibukCadangan,
+    style: {
+      fontSize: 16,
+      padding: "10px 20px"
+    }
+  }, "💾 Ekspor semua"), /*#__PURE__*/React.createElement(Chunky, {
+    color: "#3DBE6C",
+    onClick: () => imporRef.current?.click(),
+    disabled: sibukCadangan,
+    style: {
+      fontSize: 16,
+      padding: "10px 20px"
+    }
+  }, "📂 Impor cadangan"), /*#__PURE__*/React.createElement("input", {
+    ref: imporRef,
+    type: "file",
+    accept: ".json,application/json",
+    onChange: impor,
+    style: {
+      display: "none"
+    }
+  })), cadanganPesan && /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13,
+      color: "#64748B",
+      textAlign: "center"
+    }
+  }, cadanganPesan), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: "#94A3B8",
+      textAlign: "center",
+      lineHeight: 1.4
+    }
+  }, "Ekspor menyimpan semua rekaman + kosa kata + poin ke satu file. Simpan file-nya di Files/Drive, lalu Impor untuk memulihkan di perangkat/wadah lain.")));
 }
 
 // ================= APP =================
@@ -2078,7 +2240,7 @@ function App() {
       opacity: 0.5,
       fontSize: 11
     }
-  }, "v6")))), mode === "huruf" && /*#__PURE__*/React.createElement(MenuHuruf, null), mode === "babibu" && /*#__PURE__*/React.createElement(MenuBaBiBu, {
+  }, "v7")))), mode === "huruf" && /*#__PURE__*/React.createElement(MenuHuruf, null), mode === "babibu" && /*#__PURE__*/React.createElement(MenuBaBiBu, {
     customSuku: customSuku,
     setCustomSuku: setCustomSuku,
     customKata: customKata,
@@ -2122,6 +2284,7 @@ function App() {
     }
   }, t.icon), t.label))));
 }
-ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(App));</script>
+ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(App));
+</script>
 </body>
 </html>
