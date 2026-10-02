@@ -1214,12 +1214,14 @@ function Bacaan({
 }
 
 // ================= MENU: TEBAK (10 soal + poin harian) =================
+// pengecoh: "acak" (beda jauh) | "campur" (sebagian mirip) | "mirip" (semua menjebak)
 const LEVEL = [{
   id: "mudah",
   label: "😊 Mudah",
   desc: "Tebak huruf",
   types: ["huruf"],
   nOpsi: 3,
+  pengecoh: "acak",
   color: "#3DBE6C"
 }, {
   id: "sedang",
@@ -1227,17 +1229,127 @@ const LEVEL = [{
   desc: "Huruf + suku kata",
   types: ["huruf", "suku"],
   nOpsi: 3,
+  pengecoh: "acak",
   color: "#FFB020"
 }, {
   id: "sulit",
   label: "🔥 Sulit",
-  desc: "Huruf, suku kata, dan kata",
+  desc: "Huruf, suku kata, kata · pilihan campur",
   types: ["huruf", "suku", "kata"],
   nOpsi: 4,
+  pengecoh: "campur",
   color: "#FF6B6B"
+}, {
+  id: "jago",
+  label: "🏆 Jago",
+  desc: "Pilihan mirip-mirip, butuh teliti!",
+  types: ["huruf", "suku", "suku", "kata", "kata"],
+  nOpsi: 4,
+  pengecoh: "mirip",
+  color: "#9B5DE5"
 }];
 const JUMLAH_SOAL = 10;
 const KONSONAN_TEBAK = KONSONAN.filter(k => k.length === 1);
+
+// Huruf yang sering tertukar (bentuk atau bunyi mirip)
+const MIRIP = {
+  a: ["o", "e"],
+  b: ["d", "p"],
+  c: ["e", "o"],
+  d: ["b", "p"],
+  e: ["c", "a"],
+  f: ["t", "v"],
+  g: ["j", "q"],
+  h: ["n", "k"],
+  i: ["j", "l"],
+  j: ["i", "g"],
+  k: ["h", "g"],
+  l: ["i", "t"],
+  m: ["n", "w"],
+  n: ["m", "h"],
+  o: ["c", "a"],
+  p: ["b", "q"],
+  q: ["p", "g"],
+  r: ["n", "l"],
+  s: ["z", "c"],
+  t: ["l", "f"],
+  u: ["n", "v"],
+  v: ["w", "f"],
+  w: ["m", "v"],
+  x: ["k", "z"],
+  y: ["v", "j"],
+  z: ["s", "x"]
+};
+const acak1 = arr => arr[Math.floor(Math.random() * arr.length)];
+const kocok = arr => [...arr].sort(() => Math.random() - 0.5);
+
+// Ambil n pengecoh unik dari daftar kandidat berprioritas
+function pilihPengecoh(target, kandidatMirip, kandidatAcak, n, modus) {
+  const out = [];
+  const tambah = x => {
+    if (x && x !== target && !out.includes(x) && out.length < n) out.push(x);
+  };
+  if (modus === "mirip") {
+    kocok(kandidatMirip).forEach(tambah);
+  } else if (modus === "campur") {
+    kocok(kandidatMirip).slice(0, Math.ceil(n / 2)).forEach(tambah);
+  }
+  kocok(kandidatAcak).forEach(tambah);
+  return out;
+}
+function pengecohHuruf(target, n, modus) {
+  const t = target.toLowerCase();
+  const mirip = (MIRIP[t] || []).map(x => x.toUpperCase());
+  return pilihPengecoh(target, mirip, ABJAD, n, modus);
+}
+function pengecohSuku(k, v, n, modus) {
+  const target = k + v;
+  const vokalLain = VOKAL.filter(x => x !== v);
+  const konsMirip = (MIRIP[k] || []).filter(x => KONSONAN_TEBAK.includes(x));
+  const konsLain = KONSONAN_TEBAK.filter(x => x !== k);
+  // mirip = konsonan mirip + vokal sama (ba/da/pa), atau konsonan sama + vokal beda (ba/bo)
+  const mirip = [...konsMirip.map(x => x + v), ...konsMirip.map(x => x + acak1(vokalLain)), k + acak1(vokalLain)];
+  const acak = [...konsLain.map(x => x + v), ...konsLain.map(x => x + acak1(VOKAL))];
+  let out = pilihPengecoh(target, mirip, acak, n, modus);
+  // pastikan huruf depan TIDAK semuanya sama dengan target
+  if (out.every(x => x[0] === k)) {
+    out[out.length - 1] = acak1(konsMirip.length ? konsMirip : konsLain) + v;
+    out = [...new Set(out)].filter(x => x !== target);
+    while (out.length < n) {
+      const c = acak1(konsLain) + acak1(VOKAL);
+      if (c !== target && !out.includes(c)) out.push(c);
+    }
+  }
+  return out;
+}
+function pengecohKata(target, n, modus) {
+  const semuaKata = KATA_BAWAAN.map(x => x.w);
+  const suku = pecahSuku(target);
+  // kata "plesetan": ubah satu suku kata sedikit (kaki -> kiki, baki, kaku)
+  const plesetan = [];
+  suku.forEach((s, i) => {
+    const m = s.match(/^([^aiueo]*)([aiueo])(.*)$/);
+    if (!m) return;
+    const [, kons, vok, ujung] = m;
+    VOKAL.filter(x => x !== vok).forEach(v2 => {
+      const baru = [...suku];
+      baru[i] = kons + v2 + ujung;
+      plesetan.push(baru.join(""));
+    });
+    if (kons.length === 1 && MIRIP[kons]) {
+      MIRIP[kons].forEach(k2 => {
+        const baru = [...suku];
+        baru[i] = k2 + vok + ujung;
+        plesetan.push(baru.join(""));
+      });
+    }
+  });
+  if (suku.length === 2) plesetan.push(suku[1] + suku[0]); // tukar suku: kaki -> kika
+  // kata asli yang mirip: panjang sama atau huruf awal sama
+  const asliMirip = semuaKata.filter(w => w !== target && (w[0] === target[0] || w.length === target.length));
+  const mirip = modus === "mirip" ? [...plesetan, ...plesetan, ...asliMirip] : [...asliMirip, ...plesetan];
+  return pilihPengecoh(target, mirip, semuaKata, n, modus);
+}
 function acakAmbil(arr, n, kecuali = []) {
   const pool = arr.filter(x => !kecuali.includes(x));
   const out = [];
@@ -1250,37 +1362,36 @@ function acakAmbil(arr, n, kecuali = []) {
 function buatSoal(level) {
   const cfg = LEVEL.find(l => l.id === level);
   const soal = [];
+  let sebelumnya = null;
   for (let i = 0; i < JUMLAH_SOAL; i++) {
-    const type = cfg.types[Math.floor(Math.random() * cfg.types.length)];
+    const type = acak1(cfg.types);
+    const n = cfg.nOpsi - 1;
+    let target, pengecoh;
     if (type === "huruf") {
-      const target = ABJAD[Math.floor(Math.random() * ABJAD.length)];
-      const opsi = [target, ...acakAmbil(ABJAD, cfg.nOpsi - 1, [target])].sort(() => Math.random() - 0.5);
-      soal.push({
-        type,
-        target,
-        opsi
-      });
+      do {
+        target = acak1(ABJAD);
+      } while (target === sebelumnya);
+      pengecoh = pengecohHuruf(target, n, cfg.pengecoh);
     } else if (type === "suku") {
-      const k = KONSONAN_TEBAK[Math.floor(Math.random() * KONSONAN_TEBAK.length)];
-      const v = VOKAL[Math.floor(Math.random() * VOKAL.length)];
-      const target = k + v;
-      const serumpun = VOKAL.filter(x => x !== v).map(x => k + x);
-      const opsi = [target, ...acakAmbil(serumpun, cfg.nOpsi - 1)].sort(() => Math.random() - 0.5);
-      soal.push({
-        type,
-        target,
-        opsi
-      });
+      let k, v;
+      do {
+        k = acak1(KONSONAN_TEBAK);
+        v = acak1(VOKAL);
+        target = k + v;
+      } while (target === sebelumnya);
+      pengecoh = pengecohSuku(k, v, n, cfg.pengecoh);
     } else {
-      const kata = KATA_BAWAAN.map(x => x.w);
-      const target = kata[Math.floor(Math.random() * kata.length)];
-      const opsi = [target, ...acakAmbil(kata, cfg.nOpsi - 1, [target])].sort(() => Math.random() - 0.5);
-      soal.push({
-        type,
-        target,
-        opsi
-      });
+      do {
+        target = acak1(KATA_BAWAAN).w;
+      } while (target === sebelumnya);
+      pengecoh = pengecohKata(target, n, cfg.pengecoh);
     }
+    sebelumnya = target;
+    soal.push({
+      type,
+      target,
+      opsi: kocok([target, ...pengecoh])
+    });
   }
   return soal;
 }
@@ -2486,7 +2597,7 @@ function App() {
       opacity: 0.5,
       fontSize: 11
     }
-  }, "v8")))), /*#__PURE__*/React.createElement("div", {
+  }, "v9")))), /*#__PURE__*/React.createElement("div", {
     key: mode,
     style: {
       width: "100%",
