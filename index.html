@@ -3,11 +3,12 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-<title>Lingoly — Ayo Belajar Baca!</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20100%20100'%3E%3Cellipse%20cx%3D'35'%20cy%3D'24'%20rx%3D'10'%20ry%3D'22'%20fill%3D'white'%20stroke%3D'%231E3A5F'%20stroke-width%3D'3'%20transform%3D'rotate(-12%2035%2024)'%2F%3E%3Cellipse%20cx%3D'65'%20cy%3D'24'%20rx%3D'10'%20ry%3D'22'%20fill%3D'white'%20stroke%3D'%231E3A5F'%20stroke-width%3D'3'%20transform%3D'rotate(12%2065%2024)'%2F%3E%3Cellipse%20cx%3D'35'%20cy%3D'26'%20rx%3D'4.5'%20ry%3D'14'%20fill%3D'%23FBCFE8'%20transform%3D'rotate(-12%2035%2026)'%2F%3E%3Cellipse%20cx%3D'65'%20cy%3D'26'%20rx%3D'4.5'%20ry%3D'14'%20fill%3D'%23FBCFE8'%20transform%3D'rotate(12%2065%2026)'%2F%3E%3Ccircle%20cx%3D'50'%20cy%3D'60'%20r%3D'30'%20fill%3D'white'%20stroke%3D'%231E3A5F'%20stroke-width%3D'3'%2F%3E%3Ccircle%20cx%3D'40'%20cy%3D'56'%20r%3D'3.5'%20fill%3D'%231E3A5F'%2F%3E%3Ccircle%20cx%3D'60'%20cy%3D'56'%20r%3D'3.5'%20fill%3D'%231E3A5F'%2F%3E%3Ccircle%20cx%3D'32'%20cy%3D'65'%20r%3D'4.5'%20fill%3D'%23FBCFE8'%2F%3E%3Ccircle%20cx%3D'68'%20cy%3D'65'%20r%3D'4.5'%20fill%3D'%23FBCFE8'%2F%3E%3Cpath%20d%3D'M47%2063%20Q50%2066%2053%2063%20Q50%2060%2047%2063Z'%20fill%3D'%23F06595'%2F%3E%3Cpath%20d%3D'M50%2066%20Q50%2071%2045%2072%20M50%2066%20Q50%2071%2055%2072'%20stroke%3D'%231E3A5F'%20stroke-width%3D'2.2'%20fill%3D'none'%20stroke-linecap%3D'round'%2F%3E%3Crect%20x%3D'38'%20y%3D'76'%20width%3D'24'%20height%3D'14'%20rx%3D'2.5'%20fill%3D'%234D96FF'%20stroke%3D'%231E3A5F'%20stroke-width%3D'2.5'%2F%3E%3Cline%20x1%3D'50'%20y1%3D'76'%20x2%3D'50'%20y2%3D'90'%20stroke%3D'%231E3A5F'%20stroke-width%3D'2'%2F%3E%3C%2Fsvg%3E" />
-<link rel="apple-touch-icon" sizes="180x180" href="icon-180.png" />
-<link rel="manifest" href="manifest.json" />
-<meta name="theme-color" content="#BFE3FF" />
+<title>Lingoly</title>
+<link rel="icon" type="image/png" href="icon-192.png?v=3" />
+<link rel="apple-touch-icon" sizes="180x180" href="icon-180.png?v=3" />
+<link rel="manifest" href="manifest.json?v=3" />
+<meta name="apple-mobile-web-app-title" content="Lingoly" />
+<meta name="theme-color" content="#8FD3FF" />
 <style>
   html, body { margin: 0; padding: 0; }
   #galat { display: none; font-family: sans-serif; margin: 16px; padding: 14px; border-radius: 12px;
@@ -419,6 +420,74 @@ async function playPraise() {
   return PRAISE[i];
 }
 
+// ================= FOTO BENDA =================
+let fotoSrc = {}; // kata -> dataURL foto (tersimpan lokal di perangkat)
+let KATA_TAMBAHAN = []; // kata buatan sendiri (ikut masuk kuis)
+
+async function loadFoto() {
+  try {
+    const res = await window.storage.list("foto:");
+    for (const k of res?.keys || []) {
+      const r = await window.storage.get(k);
+      if (r?.value) fotoSrc[String(k).slice(5)] = r.value;
+    }
+  } catch (e) {}
+}
+
+// Perkecil foto (maks 480px, JPEG) supaya hemat memori
+function kecilkanFoto(file, maks = 480) {
+  return new Promise((res, rej) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      const skala = Math.min(1, maks / Math.max(img.width, img.height));
+      const c = document.createElement("canvas");
+      c.width = Math.round(img.width * skala);
+      c.height = Math.round(img.height * skala);
+      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url);
+      res(c.toDataURL("image/jpeg", 0.78));
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      rej(new Error("Foto tidak bisa dibaca"));
+    };
+    img.src = url;
+  });
+}
+function blobKeDataUrl(blob) {
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = () => res(r.result);
+    r.onerror = rej;
+    r.readAsDataURL(blob);
+  });
+}
+async function simpanRekamanBlob(key, blob) {
+  const t = blob.type || "audio/webm";
+  if (!SUARA_LOKAL) {
+    const ext = t.includes("mp4") ? "mp4" : t.includes("webm") ? "webm" : "bin";
+    const nama = key + "." + ext;
+    await SB.storage.from(BUCKET).upload(nama, blob, {
+      upsert: true,
+      contentType: t
+    });
+    fileNames[key] = nama;
+    const {
+      data: pub
+    } = SB.storage.from(BUCKET).getPublicUrl(nama);
+    audioSrc[key] = pub.publicUrl + "?v=" + Date.now();
+  } else {
+    const dataUrl = await blobKeDataUrl(blob);
+    await window.storage.set("snd:" + key, dataUrl);
+    audioSrc[key] = dataUrl;
+  }
+  recordedKeys.add(key);
+}
+function pilihMimeRekam() {
+  return MediaRecorder.isTypeSupported("audio/webm;codecs=opus") ? "audio/webm;codecs=opus" : MediaRecorder.isTypeSupported("audio/mp4") ? "audio/mp4" : "";
+}
+
 // ================= POIN HARIAN =================
 function tglHariIni() {
   const d = new Date();
@@ -524,111 +593,98 @@ function Chunky({
   }, children);
 }
 
-// Maskot Lingoly: kelinci original pembawa buku
+// Maskot Lingoly: kelinci simpel, sama dengan ikon app (mata berkedip lewat class .mata)
 function Bunny({
   size = 48
 }) {
   return /*#__PURE__*/React.createElement("svg", {
     width: size,
     height: size,
-    viewBox: "0 0 100 100",
+    viewBox: "0 0 1024 1024",
     "aria-hidden": "true"
+  }, /*#__PURE__*/React.createElement("rect", {
+    width: "1024",
+    height: "1024",
+    rx: "230",
+    fill: "#8FD3FF"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "318",
+    y: "120",
+    width: "150",
+    height: "380",
+    rx: "75",
+    fill: "#FFFFFF",
+    transform: "rotate(-8 393 310)"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "358",
+    y: "170",
+    width: "70",
+    height: "270",
+    rx: "35",
+    fill: "#FFC4D6",
+    transform: "rotate(-8 393 310)"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M560 400 C560 240 640 150 720 170 C800 190 820 300 760 330 C700 360 650 330 640 420 Z",
+    fill: "#FFFFFF"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M600 380 C605 270 660 215 712 228 C760 240 768 300 728 318 C690 336 660 330 650 390 Z",
+    fill: "#FFC4D6"
+  }), /*#__PURE__*/React.createElement("ellipse", {
+    cx: "512",
+    cy: "610",
+    rx: "300",
+    ry: "270",
+    fill: "#FFFFFF"
+  }), /*#__PURE__*/React.createElement("g", {
+    className: "mata"
   }, /*#__PURE__*/React.createElement("ellipse", {
-    cx: "35",
-    cy: "24",
-    rx: "10",
-    ry: "22",
-    fill: "#fff",
-    stroke: "#1E3A5F",
-    strokeWidth: "3",
-    transform: "rotate(-12 35 24)"
+    cx: "400",
+    cy: "600",
+    rx: "40",
+    ry: "48",
+    fill: "#2B2B3A"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "414",
+    cy: "582",
+    r: "15",
+    fill: "#FFFFFF"
+  })), /*#__PURE__*/React.createElement("g", {
+    className: "mata"
+  }, /*#__PURE__*/React.createElement("ellipse", {
+    cx: "624",
+    cy: "600",
+    rx: "40",
+    ry: "48",
+    fill: "#2B2B3A"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "638",
+    cy: "582",
+    r: "15",
+    fill: "#FFFFFF"
+  })), /*#__PURE__*/React.createElement("ellipse", {
+    cx: "330",
+    cy: "690",
+    rx: "52",
+    ry: "32",
+    fill: "#FFB3C7"
   }), /*#__PURE__*/React.createElement("ellipse", {
-    cx: "65",
-    cy: "24",
-    rx: "10",
-    ry: "22",
-    fill: "#fff",
-    stroke: "#1E3A5F",
-    strokeWidth: "3",
-    transform: "rotate(12 65 24)"
+    cx: "694",
+    cy: "690",
+    rx: "52",
+    ry: "32",
+    fill: "#FFB3C7"
   }), /*#__PURE__*/React.createElement("ellipse", {
-    cx: "35",
-    cy: "26",
-    rx: "4.5",
-    ry: "14",
-    fill: "#FBCFE8",
-    transform: "rotate(-12 35 26)"
-  }), /*#__PURE__*/React.createElement("ellipse", {
-    cx: "65",
-    cy: "26",
-    rx: "4.5",
-    ry: "14",
-    fill: "#FBCFE8",
-    transform: "rotate(12 65 26)"
-  }), /*#__PURE__*/React.createElement("circle", {
-    cx: "50",
-    cy: "60",
-    r: "30",
-    fill: "#fff",
-    stroke: "#1E3A5F",
-    strokeWidth: "3"
-  }), /*#__PURE__*/React.createElement("circle", {
-    className: "mata",
-    cx: "40",
-    cy: "56",
-    r: "3.5",
-    fill: "#1E3A5F"
-  }), /*#__PURE__*/React.createElement("circle", {
-    className: "mata",
-    cx: "60",
-    cy: "56",
-    r: "3.5",
-    fill: "#1E3A5F"
-  }), /*#__PURE__*/React.createElement("circle", {
-    cx: "41.2",
-    cy: "54.8",
-    r: "1.2",
-    fill: "#fff"
-  }), /*#__PURE__*/React.createElement("circle", {
-    cx: "61.2",
-    cy: "54.8",
-    r: "1.2",
-    fill: "#fff"
-  }), /*#__PURE__*/React.createElement("circle", {
-    cx: "32",
-    cy: "65",
-    r: "4.5",
-    fill: "#FBCFE8"
-  }), /*#__PURE__*/React.createElement("circle", {
-    cx: "68",
-    cy: "65",
-    r: "4.5",
-    fill: "#FBCFE8"
+    cx: "512",
+    cy: "668",
+    rx: "26",
+    ry: "18",
+    fill: "#FF7FA3"
   }), /*#__PURE__*/React.createElement("path", {
-    d: "M47 63 Q50 66 53 63 Q50 60 47 63Z",
-    fill: "#F06595"
-  }), /*#__PURE__*/React.createElement("path", {
-    d: "M50 66 Q50 71 45 72 M50 66 Q50 71 55 72",
-    stroke: "#1E3A5F",
-    strokeWidth: "2.2",
+    d: "M512 684 Q512 716 478 720 M512 684 Q512 716 546 720",
+    stroke: "#2B2B3A",
+    strokeWidth: "14",
     fill: "none",
     strokeLinecap: "round"
-  }), /*#__PURE__*/React.createElement("rect", {
-    x: "38",
-    y: "76",
-    width: "24",
-    height: "14",
-    rx: "2.5",
-    fill: "#4D96FF",
-    stroke: "#1E3A5F",
-    strokeWidth: "2.5"
-  }), /*#__PURE__*/React.createElement("line", {
-    x1: "50",
-    y1: "76",
-    x2: "50",
-    y2: "90",
-    stroke: "#1E3A5F",
-    strokeWidth: "2"
   }));
 }
 function Pills({
@@ -668,11 +724,10 @@ function Pills({
 // ================= MENU: HURUF =================
 function MenuHuruf() {
   const [besar, setBesar] = useState(true);
-  const [bahasa, setBahasa] = useState("id");
   const [aktif, setAktif] = useState(null);
   const ucap = async l => {
     setAktif(l);
-    const s = bahasa === "id" ? kHuruf(l) : kHurufEn(l);
+    const s = kHuruf(l);
     await play(s.key, s.fb, s.rate, s.lang);
     setAktif(null);
   };
@@ -701,17 +756,6 @@ function MenuHuruf() {
     }, {
       id: "kecil",
       label: "abc"
-    }]
-  }), /*#__PURE__*/React.createElement(Pills, {
-    color: "#4D96FF",
-    value: bahasa,
-    onChange: setBahasa,
-    items: [{
-      id: "id",
-      label: "🇮🇩 Indonesia"
-    }, {
-      id: "en",
-      label: "🇬🇧 Inggris"
     }]
   })), /*#__PURE__*/React.createElement("div", {
     style: {
@@ -973,6 +1017,246 @@ function SukuDasar({
 
 // ================= MENU: BACAAN =================
 // Anak berlatih membaca kata utuh: suku kata disentuh satu-satu, lalu dirangkai.
+// Rekam beberapa suara berurutan (dipakai setelah menambah kata dari foto)
+function RekamBeruntun({
+  items,
+  onSelesai
+}) {
+  const [idx, setIdx] = useState(0);
+  const [status, setStatus] = useState("siap"); // siap | rekam | gagal
+  const [jml, setJml] = useState(0);
+  const ref = useRef({});
+  const tutup = () => {
+    ref.current.stream?.getTracks?.().forEach(t => t.stop());
+    ref.current = {};
+  };
+  useEffect(() => () => tutup(), []);
+  const mulaiItem = () => {
+    const mime = pilihMimeRekam();
+    const rec = mime ? new MediaRecorder(ref.current.stream, {
+      mimeType: mime
+    }) : new MediaRecorder(ref.current.stream);
+    const chunks = [];
+    rec.ondataavailable = e => e.data.size > 0 && chunks.push(e.data);
+    ref.current.rec = rec;
+    ref.current.chunks = chunks;
+    rec.start();
+    setStatus("rekam");
+  };
+  const mulai = async () => {
+    try {
+      ref.current.stream = await navigator.mediaDevices.getUserMedia({
+        audio: true
+      });
+      mulaiItem();
+    } catch (e) {
+      setStatus("gagal");
+    }
+  };
+  const stop = () => new Promise(res => {
+    const rec = ref.current.rec;
+    if (!rec || rec.state !== "recording") return res(null);
+    rec.onstop = () => res(new Blob(ref.current.chunks, {
+      type: rec.mimeType || "audio/webm"
+    }));
+    rec.stop();
+  });
+  const maju = ok => {
+    const n = jml + (ok ? 1 : 0);
+    if (idx + 1 >= items.length) {
+      tutup();
+      onSelesai(n);
+    } else {
+      setJml(n);
+      setIdx(idx + 1);
+      mulaiItem();
+    }
+  };
+  const simpanLanjut = async () => {
+    const blob = await stop();
+    let ok = false;
+    if (blob && blob.size > 0) {
+      try {
+        await simpanRekamanBlob(items[idx].key, blob);
+        ok = true;
+      } catch (e) {}
+    }
+    maju(ok);
+  };
+  const ulangi = async () => {
+    await stop();
+    mulaiItem();
+  };
+  const lewati = async () => {
+    await stop();
+    maju(false);
+  };
+  if (status === "gagal") {
+    return /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        flexDirection: "column",
+        gap: 10,
+        alignItems: "center",
+        textAlign: "center"
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 14,
+        color: "#92400E"
+      }
+    }, "Mikrofon tidak bisa diakses di sini. Rekam nanti dari tab 🎤 Rekam ya."), /*#__PURE__*/React.createElement(Chunky, {
+      color: "#94A3B8",
+      onClick: () => onSelesai(0),
+      style: {
+        fontSize: 16,
+        padding: "10px 20px"
+      }
+    }, "Oke"));
+  }
+  if (status === "siap") {
+    return /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        flexDirection: "column",
+        gap: 10,
+        alignItems: "center"
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 15,
+        fontWeight: 800,
+        color: "#1E3A5F"
+      }
+    }, "Rekam suaranya sekarang?"), /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        gap: 6,
+        flexWrap: "wrap",
+        justifyContent: "center"
+      }
+    }, items.map(it => /*#__PURE__*/React.createElement("span", {
+      key: it.key,
+      style: {
+        background: "#F1F5F9",
+        borderRadius: 10,
+        padding: "4px 10px",
+        fontWeight: 800,
+        color: "#334155"
+      }
+    }, it.label))), /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        gap: 10
+      }
+    }, /*#__PURE__*/React.createElement(Chunky, {
+      color: "#F06595",
+      onClick: mulai,
+      style: {
+        fontSize: 17,
+        padding: "12px 22px"
+      }
+    }, "🎤 Mulai rekam (", items.length, ")"), /*#__PURE__*/React.createElement(Chunky, {
+      color: "#94A3B8",
+      onClick: () => onSelesai(0),
+      style: {
+        fontSize: 16,
+        padding: "12px 18px"
+      }
+    }, "Nanti saja")));
+  }
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      gap: 12,
+      alignItems: "center"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 14,
+      fontWeight: 800,
+      color: "#64748B"
+    }
+  }, idx + 1, " / ", items.length), /*#__PURE__*/React.createElement("div", {
+    key: idx,
+    style: {
+      fontSize: 56,
+      fontWeight: 800,
+      color: "#1E3A5F",
+      letterSpacing: 2,
+      animation: "pop 0.3s ease"
+    }
+  }, items[idx].label), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 8,
+      color: "#DC2626",
+      fontWeight: 800
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      display: "inline-block",
+      width: 12,
+      height: 12,
+      borderRadius: 6,
+      background: "#DC2626",
+      animation: "denyut 1s infinite"
+    }
+  }), "Merekam... ucapkan sekarang"), /*#__PURE__*/React.createElement(Chunky, {
+    color: "#3DBE6C",
+    onClick: simpanLanjut,
+    style: {
+      fontSize: 20,
+      padding: "14px 28px"
+    }
+  }, "✅ Simpan & Lanjut"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 10
+    }
+  }, /*#__PURE__*/React.createElement(Chunky, {
+    color: "#FFB020",
+    onClick: ulangi,
+    style: {
+      fontSize: 15,
+      padding: "9px 16px"
+    }
+  }, "🔁 Ulangi"), /*#__PURE__*/React.createElement(Chunky, {
+    color: "#94A3B8",
+    onClick: lewati,
+    style: {
+      fontSize: 15,
+      padding: "9px 16px"
+    }
+  }, "⏭ Lewati")));
+}
+function GambarKata({
+  item,
+  ukuran = 52
+}) {
+  if (item.foto) {
+    return /*#__PURE__*/React.createElement("img", {
+      src: item.foto,
+      alt: item.w,
+      style: {
+        width: ukuran * 3.2,
+        height: ukuran * 3.2,
+        objectFit: "cover",
+        borderRadius: 18,
+        display: "block",
+        margin: "0 auto 6px",
+        boxShadow: "0 4px 0 rgba(0,0,0,0.12)"
+      }
+    });
+  }
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: ukuran
+    }
+  }, item.e);
+}
 function Bacaan({
   customKata,
   setCustomKata
@@ -980,12 +1264,20 @@ function Bacaan({
   const semua = [...KATA_BAWAAN.map(x => ({
     ...x,
     custom: false
-  })), ...customKata.map(w => ({
-    w: w.replace(/-/g, ""),
-    raw: w,
-    e: "📖",
-    custom: true
-  }))];
+  })), ...customKata.map(w => {
+    const kata = w.replace(/-/g, "");
+    return {
+      w: kata,
+      raw: w,
+      e: "📖",
+      foto: fotoSrc[kata] || null,
+      custom: true
+    };
+  })];
+  const [fotoAlur, setFotoAlur] = useState(null); // null | {tahap:"nama", foto} | {tahap:"rekam", items}
+  const [namaFoto, setNamaFoto] = useState("");
+  const [pesanFoto, setPesanFoto] = useState("");
+  const fotoRef = useRef(null);
   const [pilihIdx, setPilihIdx] = useState(0);
   const [selesai, setSelesai] = useState(false);
   const [sibuk, setSibuk] = useState(false);
@@ -1008,7 +1300,7 @@ function Bacaan({
     setAktifSuku(-1);
     const kw = kKata(item.w);
     await play(kw.key, kw.fb, kw.rate);
-    setSelesai(true);
+    setSelesai(item.w);
     setConfetti(c => c + 1);
     await playPraise();
     setSibuk(false);
@@ -1035,7 +1327,73 @@ function Bacaan({
     setTambahMode(false);
     await kvSet("bacaan-list", JSON.stringify(gabung));
   };
+  const pilihFoto = async e => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    setPesanFoto("");
+    try {
+      const foto = await kecilkanFoto(file);
+      setNamaFoto("");
+      setFotoAlur({
+        tahap: "nama",
+        foto
+      });
+    } catch (err) {
+      setPesanFoto("Foto tidak bisa dibaca, coba foto lain ya.");
+    }
+  };
+  const simpanFoto = async () => {
+    setPesanFoto("");
+    const raw = namaFoto.toLowerCase().trim();
+    if (!/^[a-z\-]{2,30}$/.test(raw)) {
+      setPesanFoto("Tulis satu kata, huruf saja (boleh pakai - untuk pemenggalan).");
+      return;
+    }
+    const kata = raw.replace(/-/g, "");
+    try {
+      await window.storage.set("foto:" + kata, fotoAlur.foto);
+    } catch (err) {
+      setPesanFoto("Gagal menyimpan foto, memori HP mungkin penuh.");
+      return;
+    }
+    fotoSrc[kata] = fotoAlur.foto;
+    let gabung = customKata;
+    if (!customKata.some(x => x.replace(/-/g, "") === kata) && !KATA_BAWAAN.some(x => x.w === kata)) {
+      gabung = [...customKata, raw];
+      setCustomKata(gabung);
+      await kvSet("bacaan-list", JSON.stringify(gabung));
+    }
+    const posisi = KATA_BAWAAN.findIndex(x => x.w === kata);
+    setPilihIdx(posisi >= 0 ? posisi : KATA_BAWAAN.length + gabung.findIndex(x => x.replace(/-/g, "") === kata));
+    setSelesai(false);
+    const items = [];
+    if (!recordedKeys.has("kata-" + kata)) items.push({
+      key: "kata-" + kata,
+      label: kata
+    });
+    pecahSuku(raw).forEach(s => {
+      if (!recordedKeys.has("suku-" + s) && !items.some(x => x.key === "suku-" + s)) items.push({
+        key: "suku-" + s,
+        label: s
+      });
+    });
+    if (items.length) setFotoAlur({
+      tahap: "rekam",
+      items
+    });else {
+      setFotoAlur(null);
+      setPesanFoto(`✅ "${kata}" ditambahkan!`);
+    }
+  };
   const hapusKata = async raw => {
+    const kataHapus = raw.replace(/-/g, "");
+    if (fotoSrc[kataHapus]) {
+      delete fotoSrc[kataHapus];
+      try {
+        await window.storage.delete("foto:" + kataHapus);
+      } catch (e) {}
+    }
     const baru = customKata.filter(x => x !== raw);
     setCustomKata(baru);
     if (pilihIdx >= KATA_BAWAAN.length + baru.length) setPilihIdx(0);
@@ -1083,7 +1441,7 @@ function Bacaan({
       transition: "transform 0.18s ease",
       filter: aktifSuku === i ? "brightness(1.1)" : "none"
     }
-  }, s))), !selesai ? /*#__PURE__*/React.createElement(Chunky, {
+  }, s))), selesai !== item.w ? /*#__PURE__*/React.createElement(Chunky, {
     color: "#3DBE6C",
     onClick: bacaSemua,
     disabled: sibuk,
@@ -1102,11 +1460,9 @@ function Bacaan({
       cursor: "pointer",
       animation: "pop 0.35s ease"
     }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 52
-    }
-  }, item.e), /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement(GambarKata, {
+    item: item
+  }), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 40,
       fontWeight: 800,
@@ -1141,9 +1497,21 @@ function Bacaan({
       fontSize: 15,
       fontWeight: 800,
       cursor: "pointer",
-      color: i === pilihIdx ? "white" : "#334155"
+      color: i === pilihIdx ? "white" : "#334155",
+      display: "flex",
+      alignItems: "center",
+      gap: 5
     }
-  }, x.e, " ", x.w), x.custom && /*#__PURE__*/React.createElement("button", {
+  }, x.foto ? /*#__PURE__*/React.createElement("img", {
+    src: x.foto,
+    alt: "",
+    style: {
+      width: 22,
+      height: 22,
+      borderRadius: 6,
+      objectFit: "cover"
+    }
+  }) : x.e, " ", x.w), x.custom && /*#__PURE__*/React.createElement("button", {
     onClick: () => hapusKata(x.raw),
     style: {
       border: "none",
@@ -1153,14 +1521,138 @@ function Bacaan({
       fontWeight: 800,
       padding: "0 8px 0 0"
     }
-  }, "✕")))), !tambahMode ? /*#__PURE__*/React.createElement(Chunky, {
+  }, "✕")))), fotoAlur && /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: "100%",
+      background: "white",
+      borderRadius: 24,
+      padding: 16,
+      boxShadow: "0 6px 0 rgba(0,0,0,0.1)",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      gap: 12,
+      animation: "muncul 0.25s ease"
+    }
+  }, fotoAlur.tahap === "nama" ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("img", {
+    src: fotoAlur.foto,
+    alt: "",
+    style: {
+      width: 180,
+      height: 180,
+      objectFit: "cover",
+      borderRadius: 18
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 16,
+      fontWeight: 800,
+      color: "#1E3A5F"
+    }
+  }, "Ini benda apa?"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 8,
+      width: "100%"
+    }
+  }, /*#__PURE__*/React.createElement("input", {
+    value: namaFoto,
+    onChange: e => setNamaFoto(e.target.value),
+    onKeyDown: e => e.key === "Enter" && simpanFoto(),
+    placeholder: "misal: kursi",
+    autoFocus: true,
+    style: {
+      flex: 1,
+      minWidth: 0,
+      border: "3px solid #E2E8F0",
+      borderRadius: 14,
+      padding: "10px 14px",
+      fontFamily: "inherit",
+      fontSize: 18,
+      fontWeight: 700,
+      outline: "none"
+    }
+  }), /*#__PURE__*/React.createElement(Chunky, {
+    color: "#3DBE6C",
+    onClick: simpanFoto,
+    style: {
+      fontSize: 17,
+      padding: "10px 18px"
+    }
+  }, "Simpan")), /^[a-z\-]{2,30}$/.test(namaFoto.toLowerCase().trim()) && /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 6,
+      alignItems: "center",
+      flexWrap: "wrap",
+      justifyContent: "center"
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 13,
+      color: "#94A3B8"
+    }
+  }, "Suku kata:"), pecahSuku(namaFoto.toLowerCase().trim()).map((sk, i) => /*#__PURE__*/React.createElement("span", {
+    key: i,
+    style: {
+      background: CANDY[i % CANDY.length],
+      color: "white",
+      borderRadius: 10,
+      padding: "3px 10px",
+      fontWeight: 800
+    }
+  }, sk))), /*#__PURE__*/React.createElement("button", {
+    onClick: () => setFotoAlur(null),
+    style: {
+      border: "none",
+      background: "transparent",
+      color: "#94A3B8",
+      fontFamily: "inherit",
+      fontWeight: 700,
+      cursor: "pointer"
+    }
+  }, "Batal")) : /*#__PURE__*/React.createElement(RekamBeruntun, {
+    items: fotoAlur.items,
+    onSelesai: n => {
+      setFotoAlur(null);
+      setPesanFoto(n > 0 ? `✅ Kata baru siap, ${n} suara terekam. Jangan lupa 💾 Ekspor ya!` : "✅ Kata baru ditambahkan.");
+    }
+  })), pesanFoto && !fotoAlur && /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 14,
+      color: "#64748B",
+      textAlign: "center"
+    }
+  }, pesanFoto), /*#__PURE__*/React.createElement("input", {
+    ref: fotoRef,
+    type: "file",
+    accept: "image/*",
+    onChange: pilihFoto,
+    style: {
+      display: "none"
+    }
+  }), !tambahMode ? /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 10,
+      flexWrap: "wrap",
+      justifyContent: "center"
+    }
+  }, /*#__PURE__*/React.createElement(Chunky, {
+    color: "#F06595",
+    onClick: () => fotoRef.current?.click(),
+    style: {
+      fontSize: 17,
+      padding: "10px 22px"
+    }
+  }, "📷 Foto benda"), /*#__PURE__*/React.createElement(Chunky, {
     color: "#4D96FF",
     onClick: () => setTambahMode(true),
     style: {
       fontSize: 17,
       padding: "10px 22px"
     }
-  }, "➕ Tambah kosa kata") : /*#__PURE__*/React.createElement("div", {
+  }, "➕ Tambah kosa kata")) : /*#__PURE__*/React.createElement("div", {
     style: {
       width: "100%",
       background: "white",
@@ -1234,16 +1726,16 @@ const LEVEL = [{
 }, {
   id: "sulit",
   label: "🔥 Sulit",
-  desc: "Huruf, suku kata, kata · pilihan campur",
-  types: ["huruf", "suku", "kata"],
+  desc: "Suku kata + kata · pilihan campur",
+  types: ["suku", "kata"],
   nOpsi: 4,
   pengecoh: "campur",
   color: "#FF6B6B"
 }, {
   id: "jago",
   label: "🏆 Jago",
-  desc: "Pilihan mirip-mirip, butuh teliti!",
-  types: ["huruf", "suku", "suku", "kata", "kata"],
+  desc: "Kata semua, pilihan mirip-mirip!",
+  types: ["kata"],
   nOpsi: 4,
   pengecoh: "mirip",
   color: "#9B5DE5"
@@ -1323,7 +1815,7 @@ function pengecohSuku(k, v, n, modus) {
   return out;
 }
 function pengecohKata(target, n, modus) {
-  const semuaKata = KATA_BAWAAN.map(x => x.w);
+  const semuaKata = [...KATA_BAWAAN.map(x => x.w), ...KATA_TAMBAHAN];
   const suku = pecahSuku(target);
   // kata "plesetan": ubah satu suku kata sedikit (kaki -> kiki, baki, kaku)
   const plesetan = [];
@@ -1359,39 +1851,39 @@ function acakAmbil(arr, n, kecuali = []) {
   }
   return out;
 }
+const kunciSuara = (type, t) => type === "huruf" ? "huruf-" + t.toLowerCase() : type === "suku" ? "suku-" + t : "kata-" + t;
+const SEMUA_SUKU_TEBAK = KONSONAN_TEBAK.flatMap(k => VOKAL.map(v => k + v));
+function poolTarget(type) {
+  if (type === "huruf") return ABJAD;
+  if (type === "suku") return SEMUA_SUKU_TEBAK;
+  return [...KATA_BAWAAN.map(x => x.w), ...KATA_TAMBAHAN];
+}
+
+// Satu soal baru. Kalau sudah ada rekaman, target HANYA diambil dari yang sudah direkam,
+// jadi soal tanpa suara rekaman tidak akan muncul. Belum ada rekaman sama sekali -> pakai suara robot.
+function buatSatuSoal(cfg, hindari = []) {
+  const n = cfg.nOpsi - 1;
+  const terekam = type => poolTarget(type).filter(t => recordedKeys.has(kunciSuara(type, t)));
+  const tipeAda = cfg.types.filter(type => terekam(type).length > 0);
+  const pakaiRekaman = tipeAda.length > 0;
+  const type = acak1(pakaiRekaman ? tipeAda : cfg.types);
+  const pool = pakaiRekaman ? terekam(type) : poolTarget(type);
+  const segar = pool.filter(t => !hindari.includes(t));
+  const target = acak1(segar.length ? segar : pool);
+  let pengecoh;
+  if (type === "huruf") pengecoh = pengecohHuruf(target, n, cfg.pengecoh);else if (type === "suku") pengecoh = pengecohSuku(target.slice(0, -1), target.slice(-1), n, cfg.pengecoh);else pengecoh = pengecohKata(target, n, cfg.pengecoh);
+  return {
+    type,
+    target,
+    opsi: kocok([target, ...pengecoh])
+  };
+}
 function buatSoal(level) {
   const cfg = LEVEL.find(l => l.id === level);
   const soal = [];
-  let sebelumnya = null;
   for (let i = 0; i < JUMLAH_SOAL; i++) {
-    const type = acak1(cfg.types);
-    const n = cfg.nOpsi - 1;
-    let target, pengecoh;
-    if (type === "huruf") {
-      do {
-        target = acak1(ABJAD);
-      } while (target === sebelumnya);
-      pengecoh = pengecohHuruf(target, n, cfg.pengecoh);
-    } else if (type === "suku") {
-      let k, v;
-      do {
-        k = acak1(KONSONAN_TEBAK);
-        v = acak1(VOKAL);
-        target = k + v;
-      } while (target === sebelumnya);
-      pengecoh = pengecohSuku(k, v, n, cfg.pengecoh);
-    } else {
-      do {
-        target = acak1(KATA_BAWAAN).w;
-      } while (target === sebelumnya);
-      pengecoh = pengecohKata(target, n, cfg.pengecoh);
-    }
-    sebelumnya = target;
-    soal.push({
-      type,
-      target,
-      opsi: kocok([target, ...pengecoh])
-    });
+    const terakhir = soal.slice(-3).map(q => q.target); // hindari pengulangan dekat
+    soal.push(buatSatuSoal(cfg, terakhir));
   }
   return soal;
 }
@@ -1467,6 +1959,17 @@ function MenuTebak() {
     setHasilPoin(null);
     setFase("main");
     setTimeout(() => tanyakan(s[0]), 500);
+  };
+  const gantiSoal = () => {
+    if (kunci) return;
+    const cfg = LEVEL.find(l => l.id === level);
+    const baru = buatSatuSoal(cfg, soal.map(x => x.target));
+    const s2 = [...soal];
+    s2[no] = baru;
+    setSoal(s2);
+    setPertamaKali(true);
+    setSalah(null);
+    setTimeout(() => tanyakan(baru), 250);
   };
   const selesaiSet = async skorAkhir => {
     const res = await tambahPoin(poin, skorAkhir);
@@ -1665,14 +2168,29 @@ function MenuTebak() {
       borderRadius: 8,
       transition: "width 0.3s"
     }
-  })), /*#__PURE__*/React.createElement(Chunky, {
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 10,
+      flexWrap: "wrap",
+      justifyContent: "center"
+    }
+  }, /*#__PURE__*/React.createElement(Chunky, {
     color: "#9B5DE5",
     onClick: () => tanyakan(q),
     style: {
       fontSize: 20,
       padding: "14px 26px"
     }
-  }, "🔊 Dengar lagi"), praise && /*#__PURE__*/React.createElement("div", {
+  }, "🔊 Dengar lagi"), /*#__PURE__*/React.createElement(Chunky, {
+    color: "#94A3B8",
+    onClick: gantiSoal,
+    disabled: kunci,
+    style: {
+      fontSize: 18,
+      padding: "14px 20px"
+    }
+  }, "⏭ Ganti soal")), praise && /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 28,
       fontWeight: 800,
@@ -1778,9 +2296,6 @@ function RekamSuara({
   const kategori = [{
     id: "huruf",
     label: "Huruf"
-  }, {
-    id: "hurufEn",
-    label: "Huruf 🇬🇧"
   }, {
     id: "suku",
     label: "Suku Kata"
@@ -1928,11 +2443,17 @@ function RekamSuara({
     try {
       const isi = {
         app: "lingoly",
-        versi: 1,
+        versi: 2,
         tanggal: new Date().toISOString(),
         sounds: {},
+        foto: {},
         pengaturan: {}
       };
+      const resFoto = await window.storage.list("foto:");
+      for (const k of resFoto?.keys || []) {
+        const r = await window.storage.get(k);
+        if (r?.value) isi.foto[k] = r.value;
+      }
       const res = await window.storage.list("snd:");
       const keys = res?.keys || [];
       for (const k of keys) {
@@ -1998,6 +2519,10 @@ function RekamSuara({
           recordedKeys.add(key);
           audioSrc[key] = v;
           n++;
+        }
+        for (const [fk, fv] of Object.entries(isi.foto || {})) {
+          await window.storage.set(fk, fv);
+          fotoSrc[String(fk).slice(5)] = fv;
         }
         for (const [pk, pv] of Object.entries(isi.pengaturan || {})) {
           await kvSet(pk, pv);
@@ -2494,20 +3019,23 @@ function RekamSuara({
       textAlign: "center",
       lineHeight: 1.4
     }
-  }, "Ekspor menyimpan semua rekaman + kosa kata + poin ke satu file. Simpan file-nya di Files/Drive, lalu Impor untuk memulihkan di perangkat/wadah lain."))));
+  }, "Ekspor menyimpan semua rekaman + foto + kosa kata + poin ke satu file. Simpan file-nya di Files/Drive, lalu Impor untuk memulihkan di perangkat/wadah lain."))));
 }
 
 // ================= APP =================
-function App() {
+function IndonesiaApp({
+  switcher
+}) {
   const [mode, setMode] = useState("huruf");
   const [customSuku, setCustomSuku] = useState([]);
   const [customKata, setCustomKata] = useState([]);
   const [, force] = useReducer(x => x + 1, 0);
+  KATA_TAMBAHAN = customKata.map(w => w.replace(/-/g, ""));
   useEffect(() => {
     try {
       navigator.storage?.persist?.();
     } catch (e) {}
-    loadRecordedKeys().then(force);
+    Promise.all([loadRecordedKeys(), loadFoto()]).then(force);
     (async () => {
       try {
         const v = await kvGet("custom-suku");
@@ -2570,7 +3098,7 @@ function App() {
       display: "flex",
       alignItems: "center",
       gap: 12,
-      margin: "4px 0 20px"
+      margin: "4px 0 12px"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -2597,7 +3125,7 @@ function App() {
       opacity: 0.5,
       fontSize: 11
     }
-  }, "v9")))), /*#__PURE__*/React.createElement("div", {
+  }, "v14")))), switcher, /*#__PURE__*/React.createElement("div", {
     key: mode,
     style: {
       width: "100%",
@@ -2649,6 +3177,2554 @@ function App() {
       fontSize: 24
     }
   }, t.icon), t.label))));
+}
+
+// #####################################################################
+// MODUL ENGLISH — tertutup di dalam fungsi supaya nama-namanya tidak
+// bentrok dengan modul Indonesia. Data disimpan dengan awalan "en/".
+// #####################################################################
+const EnglishApp = (() => {
+  const P = "en/";
+  const ST = {
+    get: k => window.storage.get(P + k).then(r => r ? {
+      key: k,
+      value: r.value
+    } : null),
+    set: (k, v) => window.storage.set(P + k, v),
+    delete: k => window.storage.delete(P + k),
+    list: (pre = "") => window.storage.list(P + pre).then(r => ({
+      keys: (r?.keys || []).map(x => String(x).slice(P.length))
+    }))
+  };
+
+  // =====================================================================
+  // LINGOLY ENGLISH — app phonics bahasa Inggris, terpisah dari Lingoly Indonesia
+  // Penyimpanan: IndexedDB yang sama, semua kunci diberi awalan "en/" supaya terpisah dari bahasa Indonesia
+  // =====================================================================
+
+  // ================= DATA =================
+  const ABC = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+
+  // Bunyi huruf (phonics) + kata contoh. "fb" = perkiraan untuk suara robot kalau belum direkam.
+  const LETTERS = {
+    a: {
+      fb: "ah",
+      word: "apple",
+      e: "🍎"
+    },
+    b: {
+      fb: "buh",
+      word: "ball",
+      e: "⚽"
+    },
+    c: {
+      fb: "kuh",
+      word: "cat",
+      e: "🐱"
+    },
+    d: {
+      fb: "duh",
+      word: "dog",
+      e: "🐶"
+    },
+    e: {
+      fb: "eh",
+      word: "egg",
+      e: "🥚"
+    },
+    f: {
+      fb: "fff",
+      word: "fish",
+      e: "🐟"
+    },
+    g: {
+      fb: "guh",
+      word: "goat",
+      e: "🐐"
+    },
+    h: {
+      fb: "huh",
+      word: "hat",
+      e: "🎩"
+    },
+    i: {
+      fb: "ih",
+      word: "insect",
+      e: "🐞"
+    },
+    j: {
+      fb: "juh",
+      word: "juice",
+      e: "🧃"
+    },
+    k: {
+      fb: "kuh",
+      word: "kite",
+      e: "🪁"
+    },
+    l: {
+      fb: "lll",
+      word: "lion",
+      e: "🦁"
+    },
+    m: {
+      fb: "mmm",
+      word: "moon",
+      e: "🌙"
+    },
+    n: {
+      fb: "nnn",
+      word: "nest",
+      e: "🪺"
+    },
+    o: {
+      fb: "aw",
+      word: "octopus",
+      e: "🐙"
+    },
+    p: {
+      fb: "puh",
+      word: "pig",
+      e: "🐷"
+    },
+    q: {
+      fb: "kwuh",
+      word: "queen",
+      e: "👸"
+    },
+    r: {
+      fb: "rrr",
+      word: "rabbit",
+      e: "🐰"
+    },
+    s: {
+      fb: "sss",
+      word: "sun",
+      e: "☀️"
+    },
+    t: {
+      fb: "tuh",
+      word: "tiger",
+      e: "🐯"
+    },
+    u: {
+      fb: "uh",
+      word: "umbrella",
+      e: "☂️"
+    },
+    v: {
+      fb: "vvv",
+      word: "van",
+      e: "🚐"
+    },
+    w: {
+      fb: "wuh",
+      word: "whale",
+      e: "🐳"
+    },
+    x: {
+      fb: "ks",
+      word: "fox",
+      e: "🦊"
+    },
+    y: {
+      fb: "yuh",
+      word: "yo-yo",
+      e: "🪀"
+    },
+    z: {
+      fb: "zzz",
+      word: "zebra",
+      e: "🦓"
+    }
+  };
+
+  // Kata CVC (konsonan-vokal-konsonan) untuk latihan blending, dikelompokkan per vokal pendek
+  const WORDS = [{
+    w: "cat",
+    e: "🐱"
+  }, {
+    w: "hat",
+    e: "🎩"
+  }, {
+    w: "bat",
+    e: "🦇"
+  }, {
+    w: "map",
+    e: "🗺️"
+  }, {
+    w: "van",
+    e: "🚐"
+  }, {
+    w: "jam",
+    e: "🍯"
+  }, {
+    w: "bag",
+    e: "🎒"
+  }, {
+    w: "pan",
+    e: "🍳"
+  }, {
+    w: "rat",
+    e: "🐀"
+  }, {
+    w: "cap",
+    e: "🧢"
+  }, {
+    w: "bed",
+    e: "🛏️"
+  }, {
+    w: "hen",
+    e: "🐔"
+  }, {
+    w: "pen",
+    e: "🖊️"
+  }, {
+    w: "net",
+    e: "🥅"
+  }, {
+    w: "web",
+    e: "🕸️"
+  }, {
+    w: "leg",
+    e: "🦵"
+  }, {
+    w: "jet",
+    e: "✈️"
+  }, {
+    w: "pig",
+    e: "🐷"
+  }, {
+    w: "lip",
+    e: "👄"
+  }, {
+    w: "bin",
+    e: "🗑️"
+  }, {
+    w: "pin",
+    e: "📌"
+  }, {
+    w: "zip",
+    e: "🤐"
+  }, {
+    w: "kid",
+    e: "🧒"
+  }, {
+    w: "six",
+    e: "6️⃣"
+  }, {
+    w: "dog",
+    e: "🐶"
+  }, {
+    w: "fox",
+    e: "🦊"
+  }, {
+    w: "box",
+    e: "📦"
+  }, {
+    w: "log",
+    e: "🪵"
+  }, {
+    w: "mop",
+    e: "🧹"
+  }, {
+    w: "pot",
+    e: "🍲"
+  }, {
+    w: "hot",
+    e: "🔥"
+  }, {
+    w: "sun",
+    e: "☀️"
+  }, {
+    w: "bus",
+    e: "🚌"
+  }, {
+    w: "cup",
+    e: "☕"
+  }, {
+    w: "bug",
+    e: "🐛"
+  }, {
+    w: "hug",
+    e: "🤗"
+  }, {
+    w: "nut",
+    e: "🥜"
+  }, {
+    w: "tub",
+    e: "🛁"
+  }];
+  const VOWELS = ["a", "e", "i", "o", "u"];
+  const CANDY = ["#FF6B6B", "#FFB020", "#3DBE6C", "#4D96FF", "#9B5DE5", "#F06595"];
+  const PRAISE = ["Great job!", "Awesome!", "Well done!", "You did it!", "Super!"];
+  const PHRASES = {
+    "phrase-find-letter": "Find the letter",
+    "phrase-which-says": "Which letter says",
+    "phrase-find-word": "Find the word",
+    "phrase-try-again": "Try again"
+  };
+
+  // ================= SUARA =================
+  let audioSrc = {};
+  let recordedKeys = new Set();
+  let fotoSrc = {};
+  let MY_WORDS = []; // kata buatan sendiri: { w, c } — c = "sh-i-p" (dieja) atau "" (kata utuh)
+
+  async function loadRecorded() {
+    try {
+      const res = await ST.list("snd:");
+      (res?.keys || []).forEach(k => recordedKeys.add(String(k).slice(4)));
+    } catch (e) {}
+  }
+  async function loadFoto() {
+    try {
+      const res = await ST.list("foto:");
+      for (const k of res?.keys || []) {
+        const r = await ST.get(k);
+        if (r?.value) fotoSrc[String(k).slice(5)] = r.value;
+      }
+    } catch (e) {}
+  }
+  async function getRecording(key) {
+    if (audioSrc[key]) return audioSrc[key];
+    if (!recordedKeys.has(key)) return null;
+    try {
+      const r = await ST.get("snd:" + key);
+      if (r?.value) {
+        audioSrc[key] = r.value;
+        return r.value;
+      }
+    } catch (e) {}
+    return null;
+  }
+  let cachedVoice = null;
+  function getVoice() {
+    if (cachedVoice) return cachedVoice;
+    const voices = window.speechSynthesis?.getVoices?.() || [];
+    cachedVoice = voices.find(v => v.lang === "en-US") || voices.find(v => v.lang?.startsWith("en")) || null;
+    return cachedVoice;
+  }
+  function playUrl(url) {
+    return new Promise(res => {
+      const a = new Audio(url);
+      a.onended = res;
+      a.onerror = res;
+      a.play().catch(res);
+    });
+  }
+  function speakAsync(text, rate = 0.8) {
+    return new Promise(res => {
+      if (!window.speechSynthesis) return res();
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = "en-US";
+      u.rate = rate;
+      u.pitch = 1.1;
+      const v = getVoice();
+      if (v) u.voice = v;
+      u.onend = res;
+      u.onerror = res;
+      window.speechSynthesis.speak(u);
+      setTimeout(res, 5000);
+    });
+  }
+  async function play(snd) {
+    const url = await getRecording(snd.key);
+    if (url) return playUrl(url);
+    return speakAsync(snd.fb, snd.rate || 0.8);
+  }
+  async function playSeq(items, gap = 250) {
+    for (const it of items) {
+      await play(it);
+      await new Promise(r => setTimeout(r, gap));
+    }
+  }
+  const sName = l => ({
+    key: "name-" + l.toLowerCase(),
+    fb: l.toUpperCase(),
+    rate: 0.8
+  });
+  const sSound = l => ({
+    key: "sound-" + l.toLowerCase(),
+    fb: LETTERS[l.toLowerCase()]?.fb || l,
+    rate: 0.7
+  });
+  const sWord = w => ({
+    key: "word-" + w,
+    fb: w,
+    rate: 0.75
+  });
+  const sChunk = c => c.length === 1 ? sSound(c) : {
+    key: "chunk-" + c,
+    fb: c,
+    rate: 0.7
+  };
+  const sPhrase = k => ({
+    key: k,
+    fb: PHRASES[k],
+    rate: 0.85
+  });
+  async function playPraise() {
+    const i = Math.floor(Math.random() * PRAISE.length);
+    await play({
+      key: "praise-" + i,
+      fb: PRAISE[i],
+      rate: 0.95
+    });
+    return PRAISE[i];
+  }
+  function blobKeDataUrl(blob) {
+    return new Promise((res, rej) => {
+      const r = new FileReader();
+      r.onload = () => res(r.result);
+      r.onerror = rej;
+      r.readAsDataURL(blob);
+    });
+  }
+  async function simpanRekamanBlob(key, blob) {
+    const dataUrl = await blobKeDataUrl(blob);
+    await ST.set("snd:" + key, dataUrl);
+    audioSrc[key] = dataUrl;
+    recordedKeys.add(key);
+  }
+  function pilihMimeRekam() {
+    return MediaRecorder.isTypeSupported("audio/webm;codecs=opus") ? "audio/webm;codecs=opus" : MediaRecorder.isTypeSupported("audio/mp4") ? "audio/mp4" : "";
+  }
+  function kecilkanFoto(file, maks = 480) {
+    return new Promise((res, rej) => {
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => {
+        const skala = Math.min(1, maks / Math.max(img.width, img.height));
+        const c = document.createElement("canvas");
+        c.width = Math.round(img.width * skala);
+        c.height = Math.round(img.height * skala);
+        c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+        URL.revokeObjectURL(url);
+        res(c.toDataURL("image/jpeg", 0.78));
+      };
+      img.onerror = () => {
+        URL.revokeObjectURL(url);
+        rej(new Error("Foto tidak bisa dibaca"));
+      };
+      img.src = url;
+    });
+  }
+
+  // Potongan bunyi (tiles) sebuah kata
+  function tilesOf(item) {
+    if (item.c === "") return [item.w]; // kata utuh
+    if (item.c) return item.c.split("-").filter(Boolean); // dieja manual
+    return item.w.split(""); // per huruf (CVC)
+  }
+
+  // ================= POIN HARIAN =================
+  function tgl(offset = 0) {
+    const d = new Date();
+    d.setDate(d.getDate() + offset);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  }
+  const DAILY_BONUS = 5;
+  async function loadPoints() {
+    try {
+      const r = await ST.get("points");
+      if (r?.value) return JSON.parse(r.value);
+    } catch (e) {}
+    return {
+      total: 0,
+      lastDate: null,
+      streak: 0
+    };
+  }
+  async function addPoints(p, score) {
+    const first = p.lastDate !== tgl(0);
+    const streak = first ? p.lastDate === tgl(-1) ? p.streak + 1 : 1 : p.streak;
+    const baru = {
+      total: p.total + score + (first ? DAILY_BONUS : 0),
+      lastDate: tgl(0),
+      streak
+    };
+    try {
+      await ST.set("points", JSON.stringify(baru));
+    } catch (e) {}
+    return {
+      baru,
+      bonus: first
+    };
+  }
+
+  // ================= UI DASAR =================
+  function Confetti({
+    trigger
+  }) {
+    if (!trigger) return null;
+    const bits = Array.from({
+      length: 18
+    }, (_, i) => ({
+      id: `${trigger}-${i}`,
+      left: 10 + Math.random() * 80,
+      delay: Math.random() * 0.25,
+      emoji: ["⭐", "🎉", "✨", "🌟", "🧡"][i % 5],
+      size: 22 + Math.random() * 20
+    }));
+    return /*#__PURE__*/React.createElement("div", {
+      style: {
+        position: "fixed",
+        inset: 0,
+        pointerEvents: "none",
+        overflow: "hidden",
+        zIndex: 50
+      }
+    }, bits.map(b => /*#__PURE__*/React.createElement("span", {
+      key: b.id,
+      style: {
+        position: "absolute",
+        left: `${b.left}%`,
+        top: "-40px",
+        fontSize: b.size,
+        animation: `fall 1.4s ease-in ${b.delay}s forwards`
+      }
+    }, b.emoji)));
+  }
+  function Chunky({
+    color = "#4D96FF",
+    onClick,
+    children,
+    style,
+    disabled
+  }) {
+    const [pressed, setPressed] = useState(false);
+    return /*#__PURE__*/React.createElement("button", {
+      onClick: onClick,
+      disabled: disabled,
+      onPointerDown: () => setPressed(true),
+      onPointerUp: () => setPressed(false),
+      onPointerLeave: () => setPressed(false),
+      style: {
+        background: disabled ? "#CBD5E1" : color,
+        color: "white",
+        border: "none",
+        borderRadius: 24,
+        boxShadow: pressed ? "0 2px 0 rgba(0,0,0,0.25)" : "0 6px 0 rgba(0,0,0,0.25)",
+        transform: pressed ? "translateY(4px)" : "translateY(0)",
+        transition: "transform 0.08s, box-shadow 0.08s",
+        cursor: disabled ? "default" : "pointer",
+        fontFamily: "inherit",
+        fontWeight: 700,
+        ...style
+      }
+    }, children);
+  }
+  function Pills({
+    items,
+    value,
+    onChange,
+    color = "#F97316"
+  }) {
+    return /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        gap: 6,
+        background: "white",
+        borderRadius: 18,
+        padding: 5,
+        boxShadow: "0 3px 0 rgba(0,0,0,0.1)",
+        flexWrap: "wrap",
+        justifyContent: "center"
+      }
+    }, items.map(t => /*#__PURE__*/React.createElement("button", {
+      key: t.id,
+      onClick: () => onChange(t.id),
+      style: {
+        border: "none",
+        borderRadius: 14,
+        padding: "8px 14px",
+        fontFamily: "inherit",
+        fontWeight: 800,
+        fontSize: 15,
+        cursor: "pointer",
+        background: value === t.id ? color : "transparent",
+        color: value === t.id ? "white" : "#64748B"
+      }
+    }, t.label)));
+  }
+
+  // Maskot versi English: sama, latar oranye muda
+  function Bunny({
+    size = 48
+  }) {
+    return /*#__PURE__*/React.createElement("svg", {
+      width: size,
+      height: size,
+      viewBox: "0 0 1024 1024",
+      "aria-hidden": "true"
+    }, /*#__PURE__*/React.createElement("rect", {
+      width: "1024",
+      height: "1024",
+      rx: "230",
+      fill: "#FFC48C"
+    }), /*#__PURE__*/React.createElement("rect", {
+      x: "318",
+      y: "120",
+      width: "150",
+      height: "380",
+      rx: "75",
+      fill: "#FFFFFF",
+      transform: "rotate(-8 393 310)"
+    }), /*#__PURE__*/React.createElement("rect", {
+      x: "358",
+      y: "170",
+      width: "70",
+      height: "270",
+      rx: "35",
+      fill: "#FFC4D6",
+      transform: "rotate(-8 393 310)"
+    }), /*#__PURE__*/React.createElement("path", {
+      d: "M560 400 C560 240 640 150 720 170 C800 190 820 300 760 330 C700 360 650 330 640 420 Z",
+      fill: "#FFFFFF"
+    }), /*#__PURE__*/React.createElement("path", {
+      d: "M600 380 C605 270 660 215 712 228 C760 240 768 300 728 318 C690 336 660 330 650 390 Z",
+      fill: "#FFC4D6"
+    }), /*#__PURE__*/React.createElement("ellipse", {
+      cx: "512",
+      cy: "610",
+      rx: "300",
+      ry: "270",
+      fill: "#FFFFFF"
+    }), /*#__PURE__*/React.createElement("g", {
+      className: "mata"
+    }, /*#__PURE__*/React.createElement("ellipse", {
+      cx: "400",
+      cy: "600",
+      rx: "40",
+      ry: "48",
+      fill: "#2B2B3A"
+    }), /*#__PURE__*/React.createElement("circle", {
+      cx: "414",
+      cy: "582",
+      r: "15",
+      fill: "#FFFFFF"
+    })), /*#__PURE__*/React.createElement("g", {
+      className: "mata"
+    }, /*#__PURE__*/React.createElement("ellipse", {
+      cx: "624",
+      cy: "600",
+      rx: "40",
+      ry: "48",
+      fill: "#2B2B3A"
+    }), /*#__PURE__*/React.createElement("circle", {
+      cx: "638",
+      cy: "582",
+      r: "15",
+      fill: "#FFFFFF"
+    })), /*#__PURE__*/React.createElement("ellipse", {
+      cx: "330",
+      cy: "690",
+      rx: "52",
+      ry: "32",
+      fill: "#FFB3C7"
+    }), /*#__PURE__*/React.createElement("ellipse", {
+      cx: "694",
+      cy: "690",
+      rx: "52",
+      ry: "32",
+      fill: "#FFB3C7"
+    }), /*#__PURE__*/React.createElement("ellipse", {
+      cx: "512",
+      cy: "668",
+      rx: "26",
+      ry: "18",
+      fill: "#FF7FA3"
+    }), /*#__PURE__*/React.createElement("path", {
+      d: "M512 684 Q512 716 478 720 M512 684 Q512 716 546 720",
+      stroke: "#2B2B3A",
+      strokeWidth: "14",
+      fill: "none",
+      strokeLinecap: "round"
+    }));
+  }
+  function Picture({
+    item,
+    size = 52
+  }) {
+    const foto = fotoSrc[item.w];
+    if (foto) {
+      return /*#__PURE__*/React.createElement("img", {
+        src: foto,
+        alt: item.w,
+        style: {
+          width: size * 3.2,
+          height: size * 3.2,
+          objectFit: "cover",
+          borderRadius: 18,
+          display: "block",
+          margin: "0 auto 6px",
+          boxShadow: "0 4px 0 rgba(0,0,0,0.12)"
+        }
+      });
+    }
+    return /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: size
+      }
+    }, item.e || "📖");
+  }
+
+  // Rekam beberapa suara berurutan (dipakai di Words dan Record)
+  function RecordQueue({
+    items,
+    onDone,
+    title = "Rekam suaranya sekarang?"
+  }) {
+    const [idx, setIdx] = useState(0);
+    const [status, setStatus] = useState("siap");
+    const [jml, setJml] = useState(0);
+    const ref = useRef({});
+    const tutup = () => {
+      ref.current.stream?.getTracks?.().forEach(t => t.stop());
+      ref.current = {};
+    };
+    useEffect(() => () => tutup(), []);
+    const mulaiItem = () => {
+      const mime = pilihMimeRekam();
+      const rec = mime ? new MediaRecorder(ref.current.stream, {
+        mimeType: mime
+      }) : new MediaRecorder(ref.current.stream);
+      const chunks = [];
+      rec.ondataavailable = e => e.data.size > 0 && chunks.push(e.data);
+      ref.current.rec = rec;
+      ref.current.chunks = chunks;
+      rec.start();
+      setStatus("rekam");
+    };
+    const mulai = async () => {
+      try {
+        ref.current.stream = await navigator.mediaDevices.getUserMedia({
+          audio: true
+        });
+        mulaiItem();
+      } catch (e) {
+        setStatus("gagal");
+      }
+    };
+    const stop = () => new Promise(res => {
+      const rec = ref.current.rec;
+      if (!rec || rec.state !== "recording") return res(null);
+      rec.onstop = () => res(new Blob(ref.current.chunks, {
+        type: rec.mimeType || "audio/webm"
+      }));
+      rec.stop();
+    });
+    const maju = ok => {
+      const n = jml + (ok ? 1 : 0);
+      if (idx + 1 >= items.length) {
+        tutup();
+        onDone(n);
+      } else {
+        setJml(n);
+        setIdx(idx + 1);
+        mulaiItem();
+      }
+    };
+    const simpanLanjut = async () => {
+      const blob = await stop();
+      let ok = false;
+      if (blob && blob.size > 0) {
+        try {
+          await simpanRekamanBlob(items[idx].key, blob);
+          ok = true;
+        } catch (e) {}
+      }
+      maju(ok);
+    };
+    const ulangi = async () => {
+      await stop();
+      mulaiItem();
+    };
+    const lewati = async () => {
+      await stop();
+      maju(false);
+    };
+    const berhenti = async () => {
+      await stop();
+      tutup();
+      onDone(jml);
+    };
+    if (status === "gagal") {
+      return /*#__PURE__*/React.createElement("div", {
+        style: {
+          display: "flex",
+          flexDirection: "column",
+          gap: 10,
+          alignItems: "center",
+          textAlign: "center"
+        }
+      }, /*#__PURE__*/React.createElement("div", {
+        style: {
+          fontSize: 14,
+          color: "#92400E"
+        }
+      }, "Mikrofon tidak bisa diakses di sini. Buka app dari ikon home screen ya, atau pakai 📁 Pilih File di tab Record."), /*#__PURE__*/React.createElement(Chunky, {
+        color: "#94A3B8",
+        onClick: () => onDone(0),
+        style: {
+          fontSize: 16,
+          padding: "10px 20px"
+        }
+      }, "Oke"));
+    }
+    if (status === "siap") {
+      return /*#__PURE__*/React.createElement("div", {
+        style: {
+          display: "flex",
+          flexDirection: "column",
+          gap: 10,
+          alignItems: "center"
+        }
+      }, /*#__PURE__*/React.createElement("div", {
+        style: {
+          fontSize: 15,
+          fontWeight: 800,
+          color: "#3B2F2F"
+        }
+      }, title), /*#__PURE__*/React.createElement("div", {
+        style: {
+          display: "flex",
+          gap: 6,
+          flexWrap: "wrap",
+          justifyContent: "center",
+          maxHeight: 120,
+          overflowY: "auto"
+        }
+      }, items.map(it => /*#__PURE__*/React.createElement("span", {
+        key: it.key,
+        style: {
+          background: "#F1F5F9",
+          borderRadius: 10,
+          padding: "4px 10px",
+          fontWeight: 800,
+          color: "#334155"
+        }
+      }, it.label))), /*#__PURE__*/React.createElement("div", {
+        style: {
+          display: "flex",
+          gap: 10,
+          flexWrap: "wrap",
+          justifyContent: "center"
+        }
+      }, /*#__PURE__*/React.createElement(Chunky, {
+        color: "#F06595",
+        onClick: mulai,
+        style: {
+          fontSize: 17,
+          padding: "12px 22px"
+        }
+      }, "🎤 Mulai rekam (", items.length, ")"), /*#__PURE__*/React.createElement(Chunky, {
+        color: "#94A3B8",
+        onClick: () => onDone(0),
+        style: {
+          fontSize: 16,
+          padding: "12px 18px"
+        }
+      }, "Nanti saja")));
+    }
+    const it = items[idx];
+    return /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        flexDirection: "column",
+        gap: 12,
+        alignItems: "center",
+        width: "100%"
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 14,
+        fontWeight: 800,
+        color: "#64748B"
+      }
+    }, idx + 1, " / ", items.length), /*#__PURE__*/React.createElement("div", {
+      style: {
+        width: "100%",
+        maxWidth: 300,
+        height: 8,
+        background: "#E2E8F0",
+        borderRadius: 8
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        width: `${idx / items.length * 100}%`,
+        height: "100%",
+        background: "#3DBE6C",
+        borderRadius: 8,
+        transition: "width 0.3s"
+      }
+    })), /*#__PURE__*/React.createElement("div", {
+      key: idx,
+      style: {
+        fontSize: 52,
+        fontWeight: 800,
+        color: "#3B2F2F",
+        letterSpacing: 2,
+        animation: "pop 0.3s ease",
+        textAlign: "center"
+      }
+    }, it.label), it.hint && /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 14,
+        color: "#64748B",
+        textAlign: "center",
+        marginTop: -6
+      }
+    }, it.hint), /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        alignItems: "center",
+        gap: 8,
+        color: "#DC2626",
+        fontWeight: 800
+      }
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
+        display: "inline-block",
+        width: 12,
+        height: 12,
+        borderRadius: 6,
+        background: "#DC2626",
+        animation: "denyut 1s infinite"
+      }
+    }), "Merekam... ucapkan sekarang"), /*#__PURE__*/React.createElement(Chunky, {
+      color: "#3DBE6C",
+      onClick: simpanLanjut,
+      style: {
+        fontSize: 20,
+        padding: "14px 28px"
+      }
+    }, "✅ Simpan & Lanjut"), /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        gap: 10,
+        flexWrap: "wrap",
+        justifyContent: "center"
+      }
+    }, /*#__PURE__*/React.createElement(Chunky, {
+      color: "#FFB020",
+      onClick: ulangi,
+      style: {
+        fontSize: 15,
+        padding: "9px 16px"
+      }
+    }, "🔁 Ulangi"), /*#__PURE__*/React.createElement(Chunky, {
+      color: "#94A3B8",
+      onClick: lewati,
+      style: {
+        fontSize: 15,
+        padding: "9px 16px"
+      }
+    }, "⏭ Lewati"), /*#__PURE__*/React.createElement(Chunky, {
+      color: "#334155",
+      onClick: berhenti,
+      style: {
+        fontSize: 15,
+        padding: "9px 16px"
+      }
+    }, "⏹ Selesai")));
+  }
+
+  // ================= MENU: LETTERS =================
+  function MenuLetters() {
+    const [upper, setUpper] = useState(true);
+    const [mode, setMode] = useState("sound"); // name | sound
+    const [active, setActive] = useState(null);
+    const [shown, setShown] = useState(null);
+    const tap = async l => {
+      setActive(l);
+      setShown(l);
+      if (mode === "name") await play(sName(l));else await playSeq([sSound(l), sWord(LETTERS[l.toLowerCase()].word)], 300);
+      setActive(null);
+    };
+    const info = shown ? LETTERS[shown.toLowerCase()] : null;
+    return /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: 16,
+        width: "100%",
+        maxWidth: 560
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        gap: 10,
+        flexWrap: "wrap",
+        justifyContent: "center"
+      }
+    }, /*#__PURE__*/React.createElement(Pills, {
+      value: upper ? "up" : "low",
+      onChange: v => setUpper(v === "up"),
+      items: [{
+        id: "up",
+        label: "ABC"
+      }, {
+        id: "low",
+        label: "abc"
+      }]
+    }), /*#__PURE__*/React.createElement(Pills, {
+      color: "#4D96FF",
+      value: mode,
+      onChange: m => {
+        setMode(m);
+        setShown(null);
+      },
+      items: [{
+        id: "sound",
+        label: "🔈 Sound"
+      }, {
+        id: "name",
+        label: "🔤 Name"
+      }]
+    })), /*#__PURE__*/React.createElement("div", {
+      style: {
+        minHeight: 64,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 12,
+        background: "white",
+        borderRadius: 20,
+        padding: "8px 18px",
+        boxShadow: "0 4px 0 rgba(0,0,0,0.08)"
+      }
+    }, info && mode === "sound" ? /*#__PURE__*/React.createElement("div", {
+      key: shown,
+      style: {
+        display: "flex",
+        alignItems: "center",
+        gap: 12,
+        animation: "pop 0.3s ease"
+      }
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 40,
+        fontWeight: 800,
+        color: "#F97316"
+      }
+    }, shown.toLowerCase()), /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 15,
+        color: "#94A3B8",
+        fontWeight: 700
+      }
+    }, "is for"), /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 34
+      }
+    }, info.e), /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 26,
+        fontWeight: 800,
+        color: "#3B2F2F"
+      }
+    }, info.word)) : /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 15,
+        color: "#94A3B8",
+        fontWeight: 700
+      }
+    }, mode === "sound" ? "Tap a letter to hear its sound" : "Tap a letter to hear its name")), /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fill, minmax(76px, 1fr))",
+        gap: 10,
+        width: "100%"
+      }
+    }, ABC.map((l, i) => /*#__PURE__*/React.createElement(Chunky, {
+      key: l,
+      color: CANDY[i % CANDY.length],
+      onClick: () => tap(l),
+      style: {
+        fontSize: 40,
+        padding: "16px 0",
+        borderRadius: 20,
+        transform: active === l ? "scale(1.08)" : undefined,
+        transition: "transform 0.15s"
+      }
+    }, upper ? l : l.toLowerCase()))));
+  }
+
+  // ================= MENU: WORDS (blending) =================
+  function MenuWords({
+    myWords,
+    setMyWords
+  }) {
+    const [filter, setFilter] = useState("all");
+    const all = [...WORDS.map(x => ({
+      ...x,
+      mine: false
+    })), ...myWords.map(x => ({
+      w: x.w,
+      c: x.c,
+      e: "📖",
+      mine: true
+    }))];
+    const list = all.filter(x => filter === "all" ? true : filter === "mine" ? x.mine : !x.mine && x.w[1] === filter);
+    const [pick, setPick] = useState(0);
+    const item = list[Math.min(pick, list.length - 1)] || null;
+    const [revealed, setRevealed] = useState(false);
+    const [busy, setBusy] = useState(false);
+    const [activeTile, setActiveTile] = useState(-1);
+    const [confetti, setConfetti] = useState(0);
+
+    // tambah kata
+    const [addMode, setAddMode] = useState(null); // null | {step:"name", foto} | {step:"record", items}
+    const [name, setName] = useState("");
+    const [whole, setWhole] = useState(false);
+    const [msg, setMsg] = useState("");
+    const fotoRef = useRef(null);
+    const tiles = item ? tilesOf(item) : [];
+    const blend = async () => {
+      if (busy || !item) return;
+      setBusy(true);
+      if (tiles.length > 1) {
+        for (let i = 0; i < tiles.length; i++) {
+          setActiveTile(i);
+          await play(sChunk(tiles[i]));
+          await new Promise(r => setTimeout(r, 180));
+        }
+      }
+      setActiveTile(-1);
+      await play(sWord(item.w));
+      setRevealed(item.w);
+      setConfetti(c => c + 1);
+      await playPraise();
+      setBusy(false);
+    };
+    const choose = i => {
+      setPick(i);
+      setRevealed(false);
+    };
+    const startAdd = foto => {
+      setName("");
+      setWhole(false);
+      setMsg("");
+      setAddMode({
+        step: "name",
+        foto
+      });
+    };
+    const onFoto = async e => {
+      const file = e.target.files?.[0];
+      e.target.value = "";
+      if (!file) return;
+      try {
+        startAdd(await kecilkanFoto(file));
+      } catch (err) {
+        setMsg("Foto tidak bisa dibaca, coba foto lain ya.");
+      }
+    };
+    const save = async () => {
+      setMsg("");
+      const raw = name.toLowerCase().trim();
+      if (!/^[a-z\-]{2,20}$/.test(raw)) {
+        setMsg("Tulis satu kata, huruf saja (boleh pakai - untuk mengeja: sh-i-p).");
+        return;
+      }
+      const w = raw.replace(/-/g, "");
+      const c = whole ? "" : raw.includes("-") ? raw : null;
+      if (addMode.foto) {
+        try {
+          await ST.set("foto:" + w, addMode.foto);
+          fotoSrc[w] = addMode.foto;
+        } catch (err) {
+          setMsg("Gagal menyimpan foto, memori HP mungkin penuh.");
+          return;
+        }
+      }
+      let baru = myWords;
+      if (!WORDS.some(x => x.w === w)) {
+        baru = [...myWords.filter(x => x.w !== w), c === null ? {
+          w
+        } : {
+          w,
+          c
+        }];
+        setMyWords(baru);
+        try {
+          await ST.set("my-words", JSON.stringify(baru));
+        } catch (err) {}
+      }
+      setFilter("all");
+      const idxBaru = [...WORDS.map(x => x.w), ...baru.map(x => x.w)].indexOf(w);
+      setPick(Math.max(0, idxBaru));
+      setRevealed(false);
+      const items = [];
+      if (!recordedKeys.has("word-" + w)) items.push({
+        key: "word-" + w,
+        label: w
+      });
+      const t = c === "" ? [] : c ? c.split("-").filter(Boolean) : w.split("");
+      t.forEach(x => {
+        const snd = sChunk(x);
+        if (!recordedKeys.has(snd.key) && !items.some(y => y.key === snd.key)) items.push({
+          key: snd.key,
+          label: x.length === 1 ? `/${x}/` : x,
+          hint: x.length === 1 ? `bunyi huruf ${x}, bukan namanya` : ""
+        });
+      });
+      if (items.length) setAddMode({
+        step: "record",
+        items
+      });else {
+        setAddMode(null);
+        setMsg(`✅ "${w}" ditambahkan!`);
+      }
+    };
+    const remove = async w => {
+      const baru = myWords.filter(x => x.w !== w);
+      setMyWords(baru);
+      try {
+        await ST.set("my-words", JSON.stringify(baru));
+      } catch (e) {}
+      if (fotoSrc[w]) {
+        delete fotoSrc[w];
+        try {
+          await ST.delete("foto:" + w);
+        } catch (e) {}
+      }
+      setPick(0);
+      setRevealed(false);
+    };
+    const filters = [{
+      id: "all",
+      label: "All"
+    }, ...VOWELS.map(v => ({
+      id: v,
+      label: `-${v}-`
+    })), ...(myWords.length ? [{
+      id: "mine",
+      label: "⭐ Mine"
+    }] : [])];
+    return /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: 16,
+        width: "100%",
+        maxWidth: 560
+      }
+    }, /*#__PURE__*/React.createElement(Confetti, {
+      trigger: confetti
+    }), /*#__PURE__*/React.createElement(Pills, {
+      value: filter,
+      onChange: f => {
+        setFilter(f);
+        setPick(0);
+        setRevealed(false);
+      },
+      items: filters
+    }), item && /*#__PURE__*/React.createElement("div", {
+      style: {
+        background: "white",
+        borderRadius: 28,
+        padding: "22px 18px",
+        width: "100%",
+        boxShadow: "0 8px 0 rgba(0,0,0,0.1)",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: 16
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        gap: 10,
+        flexWrap: "wrap",
+        justifyContent: "center"
+      }
+    }, tiles.map((t, i) => /*#__PURE__*/React.createElement(Chunky, {
+      key: `${item.w}-${i}`,
+      color: CANDY[i % CANDY.length],
+      onClick: () => play(tiles.length > 1 ? sChunk(t) : sWord(item.w)),
+      style: {
+        fontSize: 48,
+        padding: "14px 22px",
+        minWidth: 74,
+        letterSpacing: 2,
+        transform: activeTile === i ? "scale(1.18) rotate(-2deg)" : "scale(1)",
+        transition: "transform 0.18s ease",
+        filter: activeTile === i ? "brightness(1.1)" : "none"
+      }
+    }, t))), revealed !== item.w ? /*#__PURE__*/React.createElement(Chunky, {
+      color: "#3DBE6C",
+      onClick: blend,
+      disabled: busy,
+      style: {
+        fontSize: 24,
+        padding: "14px 32px"
+      }
+    }, busy ? "🔊 ..." : tiles.length > 1 ? "▶ Blend it!" : "▶ Read it!") : /*#__PURE__*/React.createElement("button", {
+      onClick: () => play(sWord(item.w)),
+      style: {
+        background: "#F0FDF4",
+        border: "6px solid #3DBE6C",
+        borderRadius: 24,
+        padding: "14px 28px",
+        fontFamily: "inherit",
+        cursor: "pointer",
+        animation: "pop 0.35s ease"
+      }
+    }, /*#__PURE__*/React.createElement(Picture, {
+      item: item
+    }), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 40,
+        fontWeight: 800,
+        color: "#166534",
+        letterSpacing: 2
+      }
+    }, item.w))), /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        gap: 6,
+        flexWrap: "wrap",
+        justifyContent: "center",
+        maxHeight: 170,
+        overflowY: "auto"
+      }
+    }, list.map((x, i) => /*#__PURE__*/React.createElement("div", {
+      key: x.w,
+      style: {
+        display: "flex",
+        alignItems: "center",
+        background: i === pick ? "#F97316" : "white",
+        borderRadius: 12,
+        boxShadow: "0 2px 0 rgba(0,0,0,0.08)"
+      }
+    }, /*#__PURE__*/React.createElement("button", {
+      onClick: () => choose(i),
+      style: {
+        border: "none",
+        background: "transparent",
+        fontFamily: "inherit",
+        padding: "7px 10px",
+        fontSize: 15,
+        fontWeight: 800,
+        cursor: "pointer",
+        color: i === pick ? "white" : "#334155",
+        display: "flex",
+        alignItems: "center",
+        gap: 5
+      }
+    }, fotoSrc[x.w] ? /*#__PURE__*/React.createElement("img", {
+      src: fotoSrc[x.w],
+      alt: "",
+      style: {
+        width: 22,
+        height: 22,
+        borderRadius: 6,
+        objectFit: "cover"
+      }
+    }) : x.e, " ", x.w), x.mine && /*#__PURE__*/React.createElement("button", {
+      onClick: () => remove(x.w),
+      style: {
+        border: "none",
+        background: "transparent",
+        color: i === pick ? "white" : "#DC2626",
+        cursor: "pointer",
+        fontWeight: 800,
+        padding: "0 8px 0 0"
+      }
+    }, "✕")))), addMode && /*#__PURE__*/React.createElement("div", {
+      style: {
+        width: "100%",
+        background: "white",
+        borderRadius: 24,
+        padding: 16,
+        boxShadow: "0 6px 0 rgba(0,0,0,0.1)",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: 12,
+        animation: "muncul 0.25s ease"
+      }
+    }, addMode.step === "name" ? /*#__PURE__*/React.createElement(React.Fragment, null, addMode.foto && /*#__PURE__*/React.createElement("img", {
+      src: addMode.foto,
+      alt: "",
+      style: {
+        width: 170,
+        height: 170,
+        objectFit: "cover",
+        borderRadius: 18
+      }
+    }), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 16,
+        fontWeight: 800,
+        color: "#3B2F2F"
+      }
+    }, addMode.foto ? "What is it? (tulis dalam bahasa Inggris)" : "Kata bahasa Inggris baru"), /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        gap: 8,
+        width: "100%"
+      }
+    }, /*#__PURE__*/React.createElement("input", {
+      value: name,
+      onChange: e => setName(e.target.value),
+      onKeyDown: e => e.key === "Enter" && save(),
+      placeholder: "e.g. chair, atau sh-i-p",
+      autoFocus: true,
+      style: {
+        flex: 1,
+        minWidth: 0,
+        border: "3px solid #E2E8F0",
+        borderRadius: 14,
+        padding: "10px 14px",
+        fontFamily: "inherit",
+        fontSize: 18,
+        fontWeight: 700,
+        outline: "none"
+      }
+    }), /*#__PURE__*/React.createElement(Chunky, {
+      color: "#3DBE6C",
+      onClick: save,
+      style: {
+        fontSize: 17,
+        padding: "10px 18px"
+      }
+    }, "Simpan")), /*#__PURE__*/React.createElement("label", {
+      style: {
+        display: "flex",
+        alignItems: "center",
+        gap: 8,
+        fontSize: 14,
+        color: "#475569",
+        fontWeight: 700
+      }
+    }, /*#__PURE__*/React.createElement("input", {
+      type: "checkbox",
+      checked: whole,
+      onChange: e => setWhole(e.target.checked),
+      style: {
+        width: 20,
+        height: 20
+      }
+    }), "Kata utuh (tidak dieja per bunyi)"), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 12,
+        color: "#94A3B8",
+        textAlign: "center",
+        lineHeight: 1.4
+      }
+    }, "Kata seperti ", /*#__PURE__*/React.createElement("b", null, "cat"), " dieja per huruf otomatis. Untuk bunyi gabungan, pakai tanda hubung: ", /*#__PURE__*/React.createElement("b", null, "sh-i-p"), ", ", /*#__PURE__*/React.createElement("b", null, "ch-ai-r"), ". Kata yang ejaannya tidak beraturan (apple, table) centang \"kata utuh\"."), /*#__PURE__*/React.createElement("button", {
+      onClick: () => setAddMode(null),
+      style: {
+        border: "none",
+        background: "transparent",
+        color: "#94A3B8",
+        fontFamily: "inherit",
+        fontWeight: 700,
+        cursor: "pointer"
+      }
+    }, "Batal")) : /*#__PURE__*/React.createElement(RecordQueue, {
+      items: addMode.items,
+      onDone: n => {
+        setAddMode(null);
+        setMsg(n > 0 ? `✅ Kata baru siap, ${n} suara terekam. Jangan lupa 💾 Ekspor ya!` : "✅ Kata baru ditambahkan.");
+      }
+    })), msg && !addMode && /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 14,
+        color: "#64748B",
+        textAlign: "center"
+      }
+    }, msg), /*#__PURE__*/React.createElement("input", {
+      ref: fotoRef,
+      type: "file",
+      accept: "image/*",
+      onChange: onFoto,
+      style: {
+        display: "none"
+      }
+    }), !addMode && /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        gap: 10,
+        flexWrap: "wrap",
+        justifyContent: "center"
+      }
+    }, /*#__PURE__*/React.createElement(Chunky, {
+      color: "#F06595",
+      onClick: () => fotoRef.current?.click(),
+      style: {
+        fontSize: 17,
+        padding: "10px 22px"
+      }
+    }, "📷 Photo a thing"), /*#__PURE__*/React.createElement(Chunky, {
+      color: "#4D96FF",
+      onClick: () => startAdd(null),
+      style: {
+        fontSize: 17,
+        padding: "10px 22px"
+      }
+    }, "➕ Add word")));
+  }
+
+  // ================= MENU: QUIZ =================
+  const LEVELS = [{
+    id: "easy",
+    label: "😊 Easy",
+    desc: "Huruf: dengar nama hurufnya",
+    type: "name",
+    n: 3,
+    mode: "random",
+    color: "#3DBE6C"
+  }, {
+    id: "medium",
+    label: "🤓 Medium",
+    desc: "Huruf: dengar bunyinya (phonics)",
+    type: "sound",
+    n: 3,
+    mode: "mixed",
+    color: "#FFB020"
+  }, {
+    id: "hard",
+    label: "🔥 Hard",
+    desc: "Kata pendek, pilihan campur",
+    type: "word",
+    n: 4,
+    mode: "mixed",
+    color: "#FF6B6B"
+  }, {
+    id: "expert",
+    label: "🏆 Expert",
+    desc: "Kata yang beda satu huruf saja!",
+    type: "word",
+    n: 4,
+    mode: "similar",
+    color: "#9B5DE5"
+  }];
+  const QUIZ_LEN = 10;
+  const CONFUSE = {
+    a: ["e", "u"],
+    b: ["d", "p"],
+    c: ["k", "s"],
+    d: ["b", "t"],
+    e: ["i", "a"],
+    f: ["v", "h"],
+    g: ["k", "j"],
+    h: ["f", "n"],
+    i: ["e", "y"],
+    j: ["g", "y"],
+    k: ["c", "g"],
+    l: ["r", "i"],
+    m: ["n", "w"],
+    n: ["m", "h"],
+    o: ["u", "a"],
+    p: ["b", "q"],
+    q: ["p", "k"],
+    r: ["l", "w"],
+    s: ["z", "c"],
+    t: ["d", "f"],
+    u: ["o", "a"],
+    v: ["f", "w"],
+    w: ["v", "m"],
+    x: ["z", "s"],
+    y: ["j", "v"],
+    z: ["s", "x"]
+  };
+  const pick1 = arr => arr[Math.floor(Math.random() * arr.length)];
+  const shuffle = arr => [...arr].sort(() => Math.random() - 0.5);
+  function chooseDistractors(target, similar, random, n, mode) {
+    const out = [];
+    const add = x => {
+      if (x && x !== target && !out.includes(x) && out.length < n) out.push(x);
+    };
+    if (mode === "similar") shuffle(similar).forEach(add);else if (mode === "mixed") shuffle(similar).slice(0, Math.ceil(n / 2)).forEach(add);
+    shuffle(random).forEach(add);
+    return out;
+  }
+  const quizWords = () => [...WORDS.map(x => x.w), ...MY_WORDS.map(x => x.w).filter(w => w.length <= 8)];
+  function wordDistractors(target, n, mode) {
+    const pool = quizWords();
+    const variants = [];
+    for (let i = 0; i < target.length; i++) {
+      const ch = target[i];
+      const swaps = VOWELS.includes(ch) ? VOWELS.filter(v => v !== ch) : CONFUSE[ch] || [];
+      swaps.forEach(s => variants.push(target.slice(0, i) + s + target.slice(i + 1)));
+    }
+    const realClose = pool.filter(w => w !== target && w.length === target.length && [...w].filter((ch, i) => ch !== target[i]).length === 1);
+    const sameStart = pool.filter(w => w !== target && w[0] === target[0]);
+    const similar = mode === "similar" ? [...realClose, ...variants] : [...realClose, ...sameStart, ...variants.slice(0, 2)];
+    return chooseDistractors(target, similar, pool, n, mode);
+  }
+  const quizKey = (type, t) => type === "name" ? "name-" + t.toLowerCase() : type === "sound" ? "sound-" + t : "word-" + t;
+  const quizPool = type => type === "name" ? ABC : type === "sound" ? ABC.map(l => l.toLowerCase()) : quizWords();
+
+  // Hanya pakai target yang sudah direkam (kalau sudah ada rekamannya)
+  function makeQuestion(cfg, avoid = []) {
+    const all = quizPool(cfg.type);
+    const rec = all.filter(t => recordedKeys.has(quizKey(cfg.type, t)));
+    const pool = rec.length ? rec : all;
+    const fresh = pool.filter(t => !avoid.includes(t));
+    const target = pick1(fresh.length ? fresh : pool);
+    let distract;
+    if (cfg.type === "word") distract = wordDistractors(target, cfg.n - 1, cfg.mode);else {
+      const lower = target.toLowerCase();
+      const sim = (CONFUSE[lower] || []).map(x => cfg.type === "name" ? x.toUpperCase() : x);
+      distract = chooseDistractors(target, sim, all, cfg.n - 1, cfg.mode);
+    }
+    return {
+      type: cfg.type,
+      target,
+      options: shuffle([target, ...distract])
+    };
+  }
+  function makeQuiz(levelId) {
+    const cfg = LEVELS.find(l => l.id === levelId);
+    const qs = [];
+    for (let i = 0; i < QUIZ_LEN; i++) qs.push(makeQuestion(cfg, qs.slice(-3).map(q => q.target)));
+    return qs;
+  }
+  async function ask(q) {
+    if (q.type === "name") await playSeq([sPhrase("phrase-find-letter"), sName(q.target)], 150);else if (q.type === "sound") await playSeq([sPhrase("phrase-which-says"), sSound(q.target)], 200);else await playSeq([sPhrase("phrase-find-word"), sWord(q.target)], 150);
+  }
+  function PointsBadge({
+    p
+  }) {
+    return /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        gap: 10,
+        background: "white",
+        borderRadius: 16,
+        padding: "8px 16px",
+        boxShadow: "0 3px 0 rgba(0,0,0,0.1)",
+        fontSize: 16,
+        fontWeight: 800,
+        color: "#334155"
+      }
+    }, /*#__PURE__*/React.createElement("span", null, "🪙 ", p.total), /*#__PURE__*/React.createElement("span", null, "🔥 ", p.streak, " day", p.streak === 1 ? "" : "s"));
+  }
+  function MenuQuiz() {
+    const [phase, setPhase] = useState("setup");
+    const [level, setLevel] = useState("easy");
+    const [qs, setQs] = useState([]);
+    const [no, setNo] = useState(0);
+    const [score, setScore] = useState(0);
+    const [first, setFirst] = useState(true);
+    const [wrong, setWrong] = useState(null);
+    const [confetti, setConfetti] = useState(0);
+    const [praise, setPraise] = useState("");
+    const [lock, setLock] = useState(false);
+    const [pts, setPts] = useState({
+      total: 0,
+      lastDate: null,
+      streak: 0
+    });
+    const [res, setRes] = useState(null);
+    useEffect(() => {
+      loadPoints().then(setPts);
+    }, []);
+    const start = lv => {
+      const q = makeQuiz(lv);
+      setLevel(lv);
+      setQs(q);
+      setNo(0);
+      setScore(0);
+      setFirst(true);
+      setWrong(null);
+      setPraise("");
+      setLock(false);
+      setRes(null);
+      setPhase("play");
+      setTimeout(() => ask(q[0]), 500);
+    };
+    const skip = () => {
+      if (lock) return;
+      const cfg = LEVELS.find(l => l.id === level);
+      const baru = makeQuestion(cfg, qs.map(x => x.target));
+      const q2 = [...qs];
+      q2[no] = baru;
+      setQs(q2);
+      setFirst(true);
+      setWrong(null);
+      setTimeout(() => ask(baru), 250);
+    };
+    const answer = async opt => {
+      if (lock) return;
+      const q = qs[no];
+      if (opt === q.target) {
+        setLock(true);
+        const s2 = first ? score + 1 : score;
+        if (first) setScore(s2);
+        setConfetti(c => c + 1);
+        setPraise(await playPraise());
+        setTimeout(async () => {
+          setPraise("");
+          if (no + 1 >= QUIZ_LEN) {
+            const r = await addPoints(pts, s2);
+            setPts(r.baru);
+            setRes(r);
+            setPhase("done");
+          } else {
+            setNo(no + 1);
+            setFirst(true);
+            setWrong(null);
+            setLock(false);
+            setTimeout(() => ask(qs[no + 1]), 350);
+          }
+        }, 1100);
+      } else {
+        setFirst(false);
+        setWrong(opt);
+        play(sPhrase("phrase-try-again"));
+        setTimeout(() => setWrong(null), 700);
+      }
+    };
+    if (phase === "setup") {
+      return /*#__PURE__*/React.createElement("div", {
+        style: {
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: 14,
+          width: "100%",
+          maxWidth: 430
+        }
+      }, /*#__PURE__*/React.createElement(PointsBadge, {
+        p: pts
+      }), pts.lastDate !== tgl(0) && /*#__PURE__*/React.createElement("div", {
+        style: {
+          background: "#FFEDD5",
+          border: "2px solid #FDBA74",
+          borderRadius: 14,
+          padding: "8px 14px",
+          fontSize: 14,
+          fontWeight: 700,
+          color: "#9A3412"
+        }
+      }, "🎁 First quiz today: +", DAILY_BONUS, " bonus points!"), /*#__PURE__*/React.createElement("div", {
+        style: {
+          fontSize: 20,
+          fontWeight: 800,
+          color: "#3B2F2F"
+        }
+      }, "Choose a level"), LEVELS.map(lv => /*#__PURE__*/React.createElement(Chunky, {
+        key: lv.id,
+        color: lv.color,
+        onClick: () => start(lv.id),
+        style: {
+          fontSize: 24,
+          padding: "16px 0",
+          width: "100%"
+        }
+      }, lv.label, /*#__PURE__*/React.createElement("div", {
+        style: {
+          fontSize: 14,
+          fontWeight: 700,
+          opacity: 0.9
+        }
+      }, lv.desc, " · ", QUIZ_LEN, " soal"))));
+    }
+    if (phase === "done") {
+      const good = score >= 8;
+      return /*#__PURE__*/React.createElement("div", {
+        style: {
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: 16,
+          maxWidth: 430,
+          width: "100%"
+        }
+      }, /*#__PURE__*/React.createElement(Confetti, {
+        trigger: good ? 1 : 0
+      }), /*#__PURE__*/React.createElement(PointsBadge, {
+        p: pts
+      }), /*#__PURE__*/React.createElement("div", {
+        style: {
+          background: "white",
+          borderRadius: 32,
+          padding: "26px 34px",
+          textAlign: "center",
+          boxShadow: "0 8px 0 rgba(0,0,0,0.12)",
+          animation: "pop 0.35s ease"
+        }
+      }, /*#__PURE__*/React.createElement("div", {
+        style: {
+          fontSize: 56
+        }
+      }, good ? "🏆" : score >= 5 ? "🌟" : "💪"), /*#__PURE__*/React.createElement("div", {
+        style: {
+          fontSize: 40,
+          fontWeight: 800,
+          color: "#3B2F2F"
+        }
+      }, score, " / ", QUIZ_LEN), /*#__PURE__*/React.createElement("div", {
+        style: {
+          fontSize: 18,
+          fontWeight: 700,
+          color: "#64748B",
+          marginBottom: 10
+        }
+      }, good ? "Amazing!" : score >= 5 ? "Good job, keep going!" : "Let's try again!"), res && /*#__PURE__*/React.createElement("div", {
+        style: {
+          background: "#FEF9C3",
+          borderRadius: 16,
+          padding: "10px 14px",
+          fontSize: 16,
+          fontWeight: 800,
+          color: "#854D0E"
+        }
+      }, "🪙 +", score, " points", res.bonus && /*#__PURE__*/React.createElement("div", null, "🎁 +", DAILY_BONUS, " daily bonus!"))), /*#__PURE__*/React.createElement("div", {
+        style: {
+          display: "flex",
+          gap: 12
+        }
+      }, /*#__PURE__*/React.createElement(Chunky, {
+        color: "#3DBE6C",
+        onClick: () => start(level),
+        style: {
+          fontSize: 20,
+          padding: "14px 24px"
+        }
+      }, "🔁 Play again"), /*#__PURE__*/React.createElement(Chunky, {
+        color: "#94A3B8",
+        onClick: () => setPhase("setup"),
+        style: {
+          fontSize: 20,
+          padding: "14px 24px"
+        }
+      }, "Levels")));
+    }
+    const q = qs[no];
+    const big = q.type !== "word";
+    return /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: 18,
+        width: "100%",
+        maxWidth: 540
+      }
+    }, /*#__PURE__*/React.createElement(Confetti, {
+      trigger: confetti
+    }), /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        alignItems: "center",
+        gap: 12
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 16,
+        fontWeight: 800,
+        color: "#64748B"
+      }
+    }, no + 1, " / ", QUIZ_LEN), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 16
+      }
+    }, "⭐".repeat(score))), /*#__PURE__*/React.createElement("div", {
+      style: {
+        width: "100%",
+        maxWidth: 300,
+        height: 10,
+        background: "#E2E8F0",
+        borderRadius: 8
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        width: `${no / QUIZ_LEN * 100}%`,
+        height: "100%",
+        background: "#F97316",
+        borderRadius: 8,
+        transition: "width 0.3s"
+      }
+    })), /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        gap: 10,
+        flexWrap: "wrap",
+        justifyContent: "center"
+      }
+    }, /*#__PURE__*/React.createElement(Chunky, {
+      color: "#9B5DE5",
+      onClick: () => ask(q),
+      style: {
+        fontSize: 20,
+        padding: "14px 26px"
+      }
+    }, "🔊 Listen again"), /*#__PURE__*/React.createElement(Chunky, {
+      color: "#94A3B8",
+      onClick: skip,
+      disabled: lock,
+      style: {
+        fontSize: 18,
+        padding: "14px 20px"
+      }
+    }, "⏭ Skip")), praise && /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 28,
+        fontWeight: 800,
+        color: "#3DBE6C",
+        animation: "pop 0.3s ease"
+      }
+    }, praise, " 🎉"), /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        gap: 12,
+        flexWrap: "wrap",
+        justifyContent: "center",
+        width: "100%"
+      }
+    }, q.options.map((o, k) => /*#__PURE__*/React.createElement(Chunky, {
+      key: `${no}-${o}`,
+      color: wrong === o ? "#94A3B8" : CANDY[k % CANDY.length],
+      onClick: () => answer(o),
+      style: {
+        fontSize: big ? 64 : 38,
+        padding: big ? "22px 0" : "20px 14px",
+        minWidth: big ? 100 : 120,
+        flex: big ? "0 1 100px" : "0 1 auto",
+        letterSpacing: big ? 0 : 2,
+        animation: wrong === o ? "wiggle 0.4s ease" : "none"
+      }
+    }, o))));
+  }
+
+  // ================= MENU: RECORD (untuk orang tua) =================
+  function soundList(myWords) {
+    const words = new Set([...WORDS.map(x => x.w), ...Object.values(LETTERS).map(x => x.word), ...myWords.map(x => x.w)]);
+    const chunks = new Set();
+    myWords.forEach(x => {
+      if (x.c) x.c.split("-").filter(c => c.length > 1).forEach(c => chunks.add(c));
+    });
+    return {
+      sound: ABC.map(l => ({
+        key: "sound-" + l.toLowerCase(),
+        label: `/${l.toLowerCase()}/`,
+        fb: LETTERS[l.toLowerCase()].fb,
+        hint: `bunyi huruf ${l.toLowerCase()} seperti di "${LETTERS[l.toLowerCase()].word}", bukan namanya`
+      })),
+      name: ABC.map(l => ({
+        key: "name-" + l.toLowerCase(),
+        label: l,
+        fb: l,
+        hint: "nama huruf dalam bahasa Inggris"
+      })),
+      word: [...words].sort().map(w => ({
+        key: "word-" + w,
+        label: w,
+        fb: w
+      })),
+      chunk: [...chunks].sort().map(c => ({
+        key: "chunk-" + c,
+        label: c,
+        fb: c
+      })),
+      phrase: [...Object.entries(PHRASES).map(([k, v]) => ({
+        key: k,
+        label: `"${v}"`,
+        fb: v
+      })), ...PRAISE.map((p, i) => ({
+        key: "praise-" + i,
+        label: `"${p}"`,
+        fb: p
+      }))]
+    };
+  }
+  function MenuRecord({
+    myWords
+  }) {
+    const [, force] = useReducer(x => x + 1, 0);
+    const [cat, setCat] = useState("sound");
+    const [sel, setSel] = useState(null);
+    const [queue, setQueue] = useState(null);
+    const [msg, setMsg] = useState("");
+    const [busyBk, setBusyBk] = useState(false);
+    const [bkMsg, setBkMsg] = useState("");
+    const fileRef = useRef(null);
+    const importRef = useRef(null);
+    const lists = soundList(myWords);
+    const items = lists[cat] || [];
+    const left = items.filter(it => !recordedKeys.has(it.key));
+    const cats = [{
+      id: "sound",
+      label: "Sounds"
+    }, {
+      id: "name",
+      label: "Names"
+    }, {
+      id: "word",
+      label: "Words"
+    }, ...(lists.chunk.length ? [{
+      id: "chunk",
+      label: "Chunks"
+    }] : []), {
+      id: "phrase",
+      label: "Phrases"
+    }];
+    const onFile = async e => {
+      const file = e.target.files?.[0];
+      e.target.value = "";
+      if (!file || !sel) return;
+      if (file.size > 3_000_000) {
+        setMsg("File terlalu besar (maks ~3 MB).");
+        return;
+      }
+      try {
+        await simpanRekamanBlob(sel.key, file);
+        setMsg("✅ Tersimpan dari file!");
+        force();
+      } catch (err) {
+        setMsg("Gagal menyimpan file.");
+      }
+    };
+    const del = async () => {
+      try {
+        await ST.delete("snd:" + sel.key);
+      } catch (e) {}
+      recordedKeys.delete(sel.key);
+      delete audioSrc[sel.key];
+      setMsg("Rekaman dihapus, kembali pakai suara robot.");
+      force();
+    };
+    const exportAll = async () => {
+      setBusyBk(true);
+      setBkMsg("Mengumpulkan data...");
+      try {
+        const data = {
+          app: "lingoly-en",
+          version: 1,
+          date: new Date().toISOString(),
+          sounds: {},
+          foto: {},
+          settings: {}
+        };
+        for (const pre of ["snd:", "foto:"]) {
+          const r = await ST.list(pre);
+          for (const k of r?.keys || []) {
+            const v = await ST.get(k);
+            if (v?.value) (pre === "snd:" ? data.sounds : data.foto)[k] = v.value;
+          }
+        }
+        for (const k of ["my-words", "points"]) {
+          const v = await ST.get(k);
+          if (v?.value) data.settings[k] = v.value;
+        }
+        const n = Object.keys(data.sounds).length;
+        const blob = new Blob([JSON.stringify(data)], {
+          type: "application/json"
+        });
+        const fname = "lingoly-english-backup.json";
+        const file = new File([blob], fname, {
+          type: "application/json"
+        });
+        if (navigator.canShare && navigator.canShare({
+          files: [file]
+        }) && navigator.share) {
+          await navigator.share({
+            files: [file],
+            title: "Lingoly English backup"
+          });
+        } else {
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = fname;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          setTimeout(() => URL.revokeObjectURL(url), 5000);
+        }
+        setBkMsg(`✅ ${n} rekaman diekspor. Simpan file-nya di Files/Drive ya.`);
+      } catch (e) {
+        setBkMsg("Gagal mengekspor: " + (e?.message || e));
+      }
+      setBusyBk(false);
+    };
+    const importAll = e => {
+      const file = e.target.files?.[0];
+      e.target.value = "";
+      if (!file) return;
+      setBusyBk(true);
+      setBkMsg("Membaca cadangan...");
+      const r = new FileReader();
+      r.onload = async () => {
+        try {
+          const d = JSON.parse(r.result);
+          if (d.app !== "lingoly-en") throw new Error(d.app === "lingoly" ? "Ini cadangan Lingoly Indonesia, bukan English" : "Bukan file cadangan Lingoly English");
+          let n = 0;
+          for (const [k, v] of Object.entries(d.sounds || {})) {
+            await ST.set(k, v);
+            const key = String(k).slice(4);
+            recordedKeys.add(key);
+            audioSrc[key] = v;
+            n++;
+          }
+          for (const [k, v] of Object.entries(d.foto || {})) {
+            await ST.set(k, v);
+            fotoSrc[String(k).slice(5)] = v;
+          }
+          for (const [k, v] of Object.entries(d.settings || {})) await ST.set(k, v);
+          setBkMsg(`✅ ${n} rekaman dipulihkan! Tutup dan buka lagi app untuk melihat kata & poin.`);
+          force();
+        } catch (err) {
+          setBkMsg("Gagal mengimpor: " + (err?.message || err));
+        }
+        setBusyBk(false);
+      };
+      r.readAsText(file);
+    };
+    return /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: 14,
+        width: "100%",
+        maxWidth: 560
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        background: "#FFEDD5",
+        border: "2px solid #FDBA74",
+        borderRadius: 16,
+        padding: "10px 14px",
+        fontSize: 14,
+        color: "#9A3412",
+        lineHeight: 1.45
+      }
+    }, "🎤 ", /*#__PURE__*/React.createElement("b", null, "Untuk Ayah/Bunda:"), " rekam suaramu sendiri. Yang sudah terisi (✅) dipakai di semua permainan.", /*#__PURE__*/React.createElement("br", null), "🔈 ", /*#__PURE__*/React.createElement("b", null, "Sounds"), " paling penting: rekam ", /*#__PURE__*/React.createElement("b", null, "bunyi"), " hurufnya, bukan namanya. Contoh: huruf b dibaca pendek \"b'\" seperti di awal \"ball\", bukan \"bi\".", /*#__PURE__*/React.createElement("br", null), "📱 Rekaman English tersimpan di perangkat ini, terpisah dari rekaman bahasa Indonesia."), queue ? /*#__PURE__*/React.createElement("div", {
+      style: {
+        background: "white",
+        borderRadius: 28,
+        padding: 22,
+        width: "100%",
+        boxShadow: "0 8px 0 rgba(0,0,0,0.12)",
+        animation: "muncul 0.25s ease"
+      }
+    }, /*#__PURE__*/React.createElement(RecordQueue, {
+      items: queue,
+      title: "⚡ Rekam Kilat",
+      onDone: n => {
+        setQueue(null);
+        setMsg(`⚡ Selesai, ${n} rekaman tersimpan. Jangan lupa 💾 Ekspor ya!`);
+        force();
+      }
+    })) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Pills, {
+      color: "#4D96FF",
+      value: cat,
+      onChange: c => {
+        setCat(c);
+        setSel(null);
+        setMsg("");
+      },
+      items: cats
+    }), /*#__PURE__*/React.createElement(Chunky, {
+      color: "#F06595",
+      onClick: () => {
+        setSel(null);
+        setQueue(left.length ? left : items);
+      },
+      style: {
+        fontSize: 17,
+        padding: "12px 24px"
+      }
+    }, "⚡ Rekam Kilat — ", left.length ? `${left.length} tersisa` : "rekam ulang semua"), /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        gap: 6,
+        flexWrap: "wrap",
+        justifyContent: "center",
+        maxHeight: 240,
+        overflowY: "auto"
+      }
+    }, items.map(it => {
+      const done = recordedKeys.has(it.key);
+      return /*#__PURE__*/React.createElement("button", {
+        key: it.key,
+        onClick: () => {
+          setSel(it);
+          setMsg("");
+        },
+        style: {
+          border: sel?.key === it.key ? "3px solid #4D96FF" : "3px solid transparent",
+          borderRadius: 12,
+          padding: "6px 12px",
+          fontFamily: "inherit",
+          fontWeight: 700,
+          fontSize: 15,
+          cursor: "pointer",
+          background: done ? "#DCFCE7" : "white",
+          color: "#334155",
+          boxShadow: "0 2px 0 rgba(0,0,0,0.08)"
+        }
+      }, it.label, " ", done ? "✅" : "");
+    })), sel && /*#__PURE__*/React.createElement("div", {
+      style: {
+        background: "white",
+        borderRadius: 24,
+        padding: 18,
+        width: "100%",
+        boxShadow: "0 6px 0 rgba(0,0,0,0.1)",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: 10
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 24,
+        fontWeight: 800,
+        color: "#3B2F2F"
+      }
+    }, sel.label), sel.hint && /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 13,
+        color: "#64748B",
+        textAlign: "center"
+      }
+    }, sel.hint), /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        gap: 10,
+        flexWrap: "wrap",
+        justifyContent: "center"
+      }
+    }, /*#__PURE__*/React.createElement(Chunky, {
+      color: "#FF6B6B",
+      onClick: () => setQueue([sel]),
+      style: {
+        fontSize: 17,
+        padding: "11px 20px"
+      }
+    }, "🔴 Rekam"), /*#__PURE__*/React.createElement(Chunky, {
+      color: "#FFB020",
+      onClick: () => fileRef.current?.click(),
+      style: {
+        fontSize: 17,
+        padding: "11px 20px"
+      }
+    }, "📁 Pilih File"), /*#__PURE__*/React.createElement(Chunky, {
+      color: "#9B5DE5",
+      onClick: () => play(sel),
+      style: {
+        fontSize: 17,
+        padding: "11px 20px"
+      }
+    }, "🔊 Dengar"), recordedKeys.has(sel.key) && /*#__PURE__*/React.createElement(Chunky, {
+      color: "#94A3B8",
+      onClick: del,
+      style: {
+        fontSize: 17,
+        padding: "11px 20px"
+      }
+    }, "🗑️ Hapus")), /*#__PURE__*/React.createElement("input", {
+      ref: fileRef,
+      type: "file",
+      accept: "audio/*",
+      onChange: onFile,
+      style: {
+        display: "none"
+      }
+    })), msg && /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 14,
+        color: "#64748B",
+        textAlign: "center"
+      }
+    }, msg), /*#__PURE__*/React.createElement("div", {
+      style: {
+        width: "100%",
+        background: "white",
+        borderRadius: 20,
+        padding: 14,
+        boxShadow: "0 4px 0 rgba(0,0,0,0.08)",
+        display: "flex",
+        flexDirection: "column",
+        gap: 10,
+        alignItems: "center"
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 13,
+        fontWeight: 800,
+        color: "#94A3B8",
+        textTransform: "uppercase",
+        letterSpacing: 1
+      }
+    }, "🛟 Cadangan"), /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        gap: 10,
+        flexWrap: "wrap",
+        justifyContent: "center"
+      }
+    }, /*#__PURE__*/React.createElement(Chunky, {
+      color: "#4D96FF",
+      onClick: exportAll,
+      disabled: busyBk,
+      style: {
+        fontSize: 16,
+        padding: "10px 20px"
+      }
+    }, "💾 Ekspor semua"), /*#__PURE__*/React.createElement(Chunky, {
+      color: "#3DBE6C",
+      onClick: () => importRef.current?.click(),
+      disabled: busyBk,
+      style: {
+        fontSize: 16,
+        padding: "10px 20px"
+      }
+    }, "📂 Impor cadangan"), /*#__PURE__*/React.createElement("input", {
+      ref: importRef,
+      type: "file",
+      accept: ".json,application/json",
+      onChange: importAll,
+      style: {
+        display: "none"
+      }
+    })), bkMsg && /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 13,
+        color: "#64748B",
+        textAlign: "center"
+      }
+    }, bkMsg), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 12,
+        color: "#94A3B8",
+        textAlign: "center"
+      }
+    }, "Ekspor menyimpan rekaman + foto + kata + poin ke satu file (terpisah dari cadangan Lingoly Indonesia)."))));
+  }
+
+  // ================= APP =================
+  function App({
+    switcher
+  }) {
+    const [tab, setTab] = useState("letters");
+    const [myWords, setMyWords] = useState([]);
+    const [, force] = useReducer(x => x + 1, 0);
+    MY_WORDS = myWords;
+    useEffect(() => {
+      try {
+        navigator.storage?.persist?.();
+      } catch (e) {}
+      Promise.all([loadRecorded(), loadFoto()]).then(force);
+      (async () => {
+        try {
+          const r = await ST.get("my-words");
+          if (r?.value) setMyWords(JSON.parse(r.value));
+        } catch (e) {}
+      })();
+      const load = () => getVoice();
+      load();
+      window.speechSynthesis?.addEventListener?.("voiceschanged", load);
+      return () => window.speechSynthesis?.removeEventListener?.("voiceschanged", load);
+    }, []);
+    const tabs = [{
+      id: "letters",
+      label: "Letters",
+      icon: "🔤"
+    }, {
+      id: "words",
+      label: "Words",
+      icon: "🧩"
+    }, {
+      id: "quiz",
+      label: "Quiz",
+      icon: "🎯"
+    }, {
+      id: "record",
+      label: "Record",
+      icon: "🎤"
+    }];
+    return /*#__PURE__*/React.createElement("div", {
+      style: {
+        minHeight: "100vh",
+        background: "linear-gradient(180deg, #FFE8D6 0%, #FFF8DC 100%)",
+        fontFamily: "'Baloo 2', 'Comic Sans MS', system-ui, sans-serif",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        padding: "20px 16px 130px"
+      }
+    }, /*#__PURE__*/React.createElement("style", null, `
+          @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&display=swap');
+          @keyframes pop { 0% { transform: scale(0.85); } 60% { transform: scale(1.04); } 100% { transform: scale(1); } }
+          @keyframes wiggle { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
+          @keyframes fall { to { transform: translateY(110vh) rotate(300deg); opacity: 0.6; } }
+          @keyframes hop { 0%, 100% { transform: translateY(0); } 30% { transform: translateY(-7px) rotate(-3deg); } 50% { transform: translateY(0); } }
+          @keyframes muncul { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+          @keyframes denyut { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.55; transform: scale(1.25); } }
+          @keyframes kedip { 0%, 90%, 100% { transform: scaleY(1); } 93%, 97% { transform: scaleY(0.12); } }
+          .mata { transform-box: fill-box; transform-origin: center; animation: kedip 4.5s infinite; }
+          button:focus-visible { outline: 4px solid #1D4ED8; outline-offset: 2px; }
+          @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+        `), /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        alignItems: "center",
+        gap: 12,
+        margin: "4px 0 12px"
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        animation: "hop 1.8s ease-in-out infinite"
+      }
+    }, /*#__PURE__*/React.createElement(Bunny, {
+      size: 54
+    })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h1", {
+      style: {
+        fontSize: 30,
+        fontWeight: 800,
+        color: "#3B2F2F",
+        margin: 0,
+        lineHeight: 1.05
+      }
+    }, "Lingoly ", /*#__PURE__*/React.createElement("span", {
+      style: {
+        color: "#F97316"
+      }
+    }, "English")), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 14,
+        fontWeight: 700,
+        color: "#78716C"
+      }
+    }, "Let's read! 📚 ", /*#__PURE__*/React.createElement("span", {
+      style: {
+        opacity: 0.5,
+        fontSize: 11
+      }
+    }, "v14")))), switcher, /*#__PURE__*/React.createElement("div", {
+      key: tab,
+      style: {
+        width: "100%",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        animation: "muncul 0.28s ease"
+      }
+    }, tab === "letters" && /*#__PURE__*/React.createElement(MenuLetters, null), tab === "words" && /*#__PURE__*/React.createElement(MenuWords, {
+      myWords: myWords,
+      setMyWords: setMyWords
+    }), tab === "quiz" && /*#__PURE__*/React.createElement(MenuQuiz, null), tab === "record" && /*#__PURE__*/React.createElement(MenuRecord, {
+      myWords: myWords
+    })), /*#__PURE__*/React.createElement("nav", {
+      style: {
+        position: "fixed",
+        bottom: 0,
+        left: 0,
+        right: 0,
+        background: "white",
+        boxShadow: "0 -4px 16px rgba(0,0,0,0.08)",
+        display: "flex",
+        justifyContent: "center",
+        gap: 8,
+        padding: "10px 10px calc(10px + env(safe-area-inset-bottom))"
+      }
+    }, tabs.map(t => /*#__PURE__*/React.createElement("button", {
+      key: t.id,
+      onClick: () => setTab(t.id),
+      style: {
+        flex: 1,
+        maxWidth: 110,
+        border: "none",
+        borderRadius: 18,
+        padding: "8px 0",
+        fontFamily: "inherit",
+        fontWeight: 800,
+        fontSize: 13,
+        cursor: "pointer",
+        background: tab === t.id ? "#F97316" : "#F5F5F4",
+        color: tab === t.id ? "white" : "#78716C",
+        boxShadow: tab === t.id ? "0 4px 0 rgba(0,0,0,0.2)" : "none"
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 24
+      }
+    }, t.icon), t.label))));
+  }
+  return App;
+})();
+
+// ================= PEMILIH BAHASA =================
+function LangSwitch({
+  lang,
+  onChange
+}) {
+  const opsi = [{
+    id: "id",
+    label: "🇮🇩 Indonesia",
+    warna: "#1E3A5F"
+  }, {
+    id: "en",
+    label: "🇬🇧 English",
+    warna: "#F97316"
+  }];
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 4,
+      background: "white",
+      borderRadius: 999,
+      padding: 4,
+      boxShadow: "0 3px 0 rgba(0,0,0,0.1)",
+      marginBottom: 18
+    }
+  }, opsi.map(o => /*#__PURE__*/React.createElement("button", {
+    key: o.id,
+    onClick: () => onChange(o.id),
+    style: {
+      border: "none",
+      borderRadius: 999,
+      padding: "7px 16px",
+      fontFamily: "inherit",
+      fontWeight: 800,
+      fontSize: 14,
+      cursor: "pointer",
+      transition: "background 0.2s",
+      background: lang === o.id ? o.warna : "transparent",
+      color: lang === o.id ? "white" : "#64748B"
+    }
+  }, o.label)));
+}
+function App() {
+  const [lang, setLang] = useState(() => {
+    try {
+      return localStorage.getItem("lingoly-lang") === "en" ? "en" : "id";
+    } catch (e) {
+      return "id";
+    }
+  });
+  const ganti = l => {
+    try {
+      window.speechSynthesis?.cancel?.();
+    } catch (e) {}
+    setLang(l);
+    try {
+      localStorage.setItem("lingoly-lang", l);
+    } catch (e) {}
+  };
+  const switcher = /*#__PURE__*/React.createElement(LangSwitch, {
+    lang: lang,
+    onChange: ganti
+  });
+  return lang === "en" ? /*#__PURE__*/React.createElement(EnglishApp, {
+    switcher: switcher
+  }) : /*#__PURE__*/React.createElement(IndonesiaApp, {
+    switcher: switcher
+  });
 }
 ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(App));
 </script>
