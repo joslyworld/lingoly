@@ -1926,7 +1926,35 @@ function PoinBadge({
     }
   }, /*#__PURE__*/React.createElement("span", null, "🪙 ", poin.total), /*#__PURE__*/React.createElement("span", null, "🔥 ", poin.streak, " hari"));
 }
-function MenuTebak() {
+function MenuTebak({
+  customKata,
+  keRekam
+}) {
+  const [sub, setSub] = useState("bunyi");
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      gap: 18,
+      width: "100%"
+    }
+  }, /*#__PURE__*/React.createElement(Pills, {
+    value: sub,
+    onChange: setSub,
+    items: [{
+      id: "bunyi",
+      label: "🔊 Tebak Bunyi"
+    }, {
+      id: "gambar",
+      label: "🖼️ Tebak Gambar"
+    }]
+  }), sub === "bunyi" && /*#__PURE__*/React.createElement(TebakBunyi, null), sub === "gambar" && /*#__PURE__*/React.createElement(TebakGambar, {
+    customKata: customKata,
+    keRekam: keRekam
+  }));
+}
+function TebakBunyi() {
   const [fase, setFase] = useState("setup");
   const [level, setLevel] = useState("mudah");
   const [soal, setSoal] = useState([]);
@@ -2468,7 +2496,7 @@ function RekamSuara({
         const r = await window.storage.get(k);
         if (r?.value) isi.sounds[k] = r.value;
       }
-      for (const pk of ["custom-suku", "bacaan-list", "poin-data"]) {
+      for (const pk of ["custom-suku", "bacaan-list", "poin-data", "cerita-custom", "baca-nilai"]) {
         const v = await kvGet(pk);
         if (v) isi.pengaturan[pk] = v;
       }
@@ -3027,7 +3055,7 @@ function RekamSuara({
       textAlign: "center",
       lineHeight: 1.4
     }
-  }, "Ekspor menyimpan semua rekaman + foto + kosa kata + poin ke satu file. Simpan file-nya di Files/Drive, lalu Impor untuk memulihkan di perangkat/wadah lain."))));
+  }, "Ekspor menyimpan semua rekaman + foto + kosa kata + cerita + poin ke satu file. Simpan file-nya di Files/Drive, lalu Impor untuk memulihkan di perangkat/wadah lain."))));
 }
 
 // ================= APP =================
@@ -3161,6 +3189,133 @@ const CERITA = [
   e: "🍞",
   kalimat: ["Ibu membuat roti cokelat yang harum.", "Ibu meminta Laras mengantar roti ke rumah nenek.", "Laras berjalan hati-hati sambil membawa keranjang.", "Di jalan, dia bertemu anjing kecil yang lucu.", "Anjing itu mengikuti Laras sampai rumah nenek.", "Nenek senang menerima roti dari Laras.", "Nenek juga memberi anjing itu semangkuk air.", "Laras pulang dan bercerita kepada ibu."],
   tanya: ["Laras mengantar apa untuk nenek?", "Siapa yang Laras temui di jalan?", "Apa yang nenek berikan kepada anjing?"]
+},
+// ========== TOKOH FAVORIT (cerita buatan sendiri dengan tokoh Disney & Marvel) ==========
+// ---------- Tingkat 1 ----------
+{
+  id: "t-elsa-salju",
+  tema: "tokoh",
+  level: 1,
+  judul: "Elsa dan Salju",
+  e: "❄️",
+  kalimat: ["Elsa suka salju.", "Elsa buat salju.", "Anna ikut main.", "Anna dan Elsa senang."],
+  tanya: ["Elsa suka apa?", "Siapa yang ikut main?"]
+}, {
+  id: "t-olaf-wortel",
+  tema: "tokoh",
+  level: 1,
+  judul: "Olaf dan Wortel",
+  e: "⛄",
+  kalimat: ["Ini Olaf.", "Olaf suka wortel.", "Wortel itu hidung Olaf.", "Olaf tidak mau makan hidung."],
+  tanya: ["Hidung Olaf terbuat dari apa?", "Kenapa Olaf tidak mau makan wortelnya?"]
+}, {
+  id: "t-simba-lari",
+  tema: "tokoh",
+  level: 1,
+  judul: "Simba Lari",
+  e: "🦁",
+  kalimat: ["Simba anak singa.", "Simba suka lari.", "Simba lari ke batu.", "Ayah Simba bangga."],
+  tanya: ["Simba itu anak apa?", "Simba suka apa?"]
+}, {
+  id: "t-hulk-kuat",
+  tema: "tokoh",
+  level: 1,
+  judul: "Hulk Kuat",
+  e: "💚",
+  kalimat: ["Hulk besar.", "Hulk kuat.", "Hulk angkat batu.", "Hulk bantu teman."],
+  tanya: ["Hulk mengangkat apa?", "Hulk membantu siapa?"]
+}, {
+  id: "t-thor-palu",
+  tema: "tokoh",
+  level: 1,
+  judul: "Thor dan Palu",
+  e: "⚡",
+  kalimat: ["Thor punya palu.", "Palu Thor besar.", "Ada petir.", "Thor terbang tinggi."],
+  tanya: ["Thor punya apa?", "Apa yang Thor lakukan waktu ada petir?"]
+},
+// ---------- Tingkat 2 ----------
+{
+  id: "t-nemo",
+  tema: "tokoh",
+  level: 2,
+  judul: "Nemo Berenang",
+  e: "🐠",
+  kalimat: ["Nemo ikan kecil berwarna oranye.", "Nemo tinggal di laut.", "Ayah Nemo bernama Marlin.", "Nemo suka berenang jauh.", "Ayah selalu menjaga Nemo.", "Nemo sayang ayahnya."],
+  tanya: ["Nemo tinggal di mana?", "Siapa nama ayah Nemo?", "Apa yang ayah lakukan untuk Nemo?"]
+}, {
+  id: "t-moana-laut",
+  tema: "tokoh",
+  level: 2,
+  judul: "Moana dan Laut",
+  e: "🌊",
+  kalimat: ["Moana tinggal di pulau.", "Dia suka bermain di pantai.", "Laut itu biru dan luas.", "Moana naik perahu kecil.", "Moana tidak takut ombak.", "Moana anak yang berani."],
+  tanya: ["Moana tinggal di mana?", "Moana naik apa?", "Apakah Moana takut ombak?"]
+}, {
+  id: "t-spiderman",
+  tema: "tokoh",
+  level: 2,
+  judul: "Spiderman Menolong",
+  e: "🕷️",
+  kalimat: ["Spiderman pahlawan kota.", "Dia bisa memanjat dinding.", "Ada kucing di atas pohon.", "Kucing itu takut turun.", "Spiderman memanjat pohon.", "Kucing itu selamat."],
+  tanya: ["Spiderman bisa memanjat apa?", "Kucingnya ada di mana?", "Bagaimana Spiderman menolong kucing?"]
+}, {
+  id: "t-olaf-panas",
+  tema: "tokoh",
+  level: 2,
+  judul: "Olaf Kepanasan",
+  e: "⛄",
+  kalimat: ["Olaf suka musim panas.", "Dia pergi ke pantai.", "Hari itu panas sekali.", "Olaf mulai meleleh.", "Elsa membuat awan salju.", "Olaf dingin lagi."],
+  tanya: ["Olaf pergi ke mana?", "Kenapa Olaf meleleh?", "Bagaimana Elsa menolong Olaf?"]
+}, {
+  id: "t-ironman",
+  tema: "tokoh",
+  level: 2,
+  judul: "Iron Man Terbang",
+  e: "🤖",
+  kalimat: ["Iron Man punya baju besi.", "Bajunya bisa terbang.", "Iron Man terbang di langit.", "Dia melihat ada anak hilang.", "Iron Man mengantar anak itu pulang.", "Ibu anak itu senang."],
+  tanya: ["Baju Iron Man terbuat dari apa?", "Siapa yang dilihat Iron Man?", "Ke mana anak itu diantar?"]
+},
+// ---------- Tingkat 3 ----------
+{
+  id: "t-simba-berani",
+  tema: "tokoh",
+  level: 3,
+  judul: "Simba Belajar Berani",
+  e: "🦁",
+  kalimat: ["Simba adalah anak singa yang tinggal di padang rumput.", "Ayahnya, Mufasa, adalah raja yang bijaksana.", "Suatu hari Simba bermain terlalu jauh dari rumah.", "Tiba-tiba terdengar suara yang menakutkan.", "Simba merasa takut dan ingin menangis.", "Lalu dia teringat pesan ayahnya untuk selalu berani.", "Simba menarik napas dan berjalan pulang dengan tenang.", "Ayahnya bangga melihat Simba."],
+  tanya: ["Siapa nama ayah Simba?", "Kenapa Simba merasa takut?", "Apa pesan ayah yang Simba ingat?"]
+}, {
+  id: "t-elsa-istana",
+  tema: "tokoh",
+  level: 3,
+  judul: "Elsa dan Istana Es",
+  e: "❄️",
+  kalimat: ["Elsa memiliki kekuatan membuat es dan salju.", "Suatu hari Elsa membangun istana es yang sangat indah.", "Anna datang mengunjungi kakaknya.", "Mereka berdua bermain seluncur di lantai es.", "Olaf ikut bermain dan terpeleset berkali-kali.", "Semua tertawa melihat Olaf.", "Sore hari Elsa membuat salju turun perlahan.", "Mereka pulang dengan hati gembira."],
+  tanya: ["Elsa membangun apa?", "Siapa yang datang berkunjung?", "Kenapa semua tertawa?"]
+}, {
+  id: "t-kapten",
+  tema: "tokoh",
+  level: 3,
+  judul: "Kapten Amerika dan Perisai",
+  e: "🛡️",
+  kalimat: ["Kapten Amerika mempunyai perisai berbentuk bulat.", "Perisainya berwarna merah, putih, dan biru.", "Suatu hari ada jembatan yang hampir runtuh.", "Banyak orang ketakutan di atas jembatan itu.", "Kapten Amerika segera datang menolong.", "Dia memakai perisainya untuk menahan batu yang jatuh.", "Semua orang berhasil menyeberang dengan selamat.", "Mereka berterima kasih kepada Kapten Amerika."],
+  tanya: ["Apa warna perisai Kapten Amerika?", "Apa yang terjadi pada jembatan?", "Bagaimana Kapten Amerika menolong orang-orang?"]
+}, {
+  id: "t-hulk-sabar",
+  tema: "tokoh",
+  level: 3,
+  judul: "Hulk Belajar Sabar",
+  e: "💚",
+  kalimat: ["Hulk adalah pahlawan yang sangat kuat.", "Tetapi Hulk mudah sekali marah.", "Suatu hari menara balok buatannya roboh.", "Hulk ingin berteriak dan memukul meja.", "Temannya, Thor, mengajak Hulk menarik napas panjang.", "Hulk menghitung sampai sepuluh dengan pelan.", "Hatinya menjadi tenang kembali.", "Mereka membangun menara balok yang baru bersama-sama."],
+  tanya: ["Kenapa Hulk marah?", "Apa yang Thor ajarkan?", "Kalau kamu marah, apa yang bisa kamu lakukan?"]
+}, {
+  id: "t-moana-pulau",
+  tema: "tokoh",
+  level: 3,
+  judul: "Moana Menemukan Pulau",
+  e: "🌊",
+  kalimat: ["Moana berlayar dengan perahu kecil di tengah laut.", "Ayam peliharaannya, Heihei, ikut menemani.", "Angin bertiup kencang dan ombak semakin tinggi.", "Moana berpegangan erat pada tiang perahu.", "Setelah badai reda, langit kembali cerah.", "Di kejauhan Moana melihat sebuah pulau hijau.", "Dia mendayung perahunya ke pulau itu.", "Moana senang karena berhasil menemukan pulau baru."],
+  tanya: ["Siapa yang menemani Moana?", "Apa yang terjadi di tengah laut?", "Apa yang Moana temukan?"]
 }];
 
 // Pecah satu kata (boleh berimbuhan tanda hubung, mis. "tiba-tiba") jadi suku kata
@@ -3182,11 +3337,336 @@ const NILAI = [{
   label: "Masih perlu dibantu",
   warna: "#94A3B8"
 }];
-function MenuBaca({
-  customKata,
-  keRekam
+
+// ================= CERITAKU: cerita buatan / upload orang tua =================
+const EMOJI_CERITA = ["📖", "🐱", "🐶", "🦁", "🐰", "🐟", "🌳", "🏠", "🚗", "⚽", "🌈", "⭐", "❄️", "🦸", "👸", "🦖"];
+
+// Pecah teks jadi kalimat (titik, tanda tanya, tanda seru, atau baris baru)
+function pecahKalimat(teks) {
+  return (teks.replace(/\s+/g, " ").match(/[^.!?]+[.!?]*/g) || []).map(k => k.trim()).filter(k => /[a-zA-Z]/.test(k));
+}
+
+// Tentukan tingkat otomatis dari jumlah kalimat & suku kata terpanjang
+function analisisCerita(kalimat) {
+  let maks = 0,
+    kataTerpanjang = "";
+  kalimat.forEach(k => k.split(" ").forEach(w => {
+    const n = sukuKataKata(w).length;
+    const bersih = w.replace(/[^a-zA-Z\-]/g, "");
+    if (n > maks || n === maks && bersih.length > kataTerpanjang.length) {
+      maks = n;
+      kataTerpanjang = bersih;
+    }
+  }));
+  const n = kalimat.length;
+  const level = maks <= 2 && n <= 5 ? 1 : maks <= 3 && n <= 7 ? 2 : 3;
+  return {
+    level,
+    maks,
+    kataTerpanjang,
+    n
+  };
+}
+
+// Format file .txt / tempel teks:
+//   # Judul Cerita
+//   Kalimat satu. Kalimat dua.
+//   ? Pertanyaan pancingan (opsional, boleh lebih dari satu)
+// Beberapa cerita boleh dalam satu file (tiap cerita diawali "#").
+function parseFileCerita(teks) {
+  const hasil = [];
+  let cur = null;
+  const tutup = () => {
+    if (cur && cur.isi.trim()) {
+      const kalimat = pecahKalimat(cur.isi);
+      if (kalimat.length) hasil.push({
+        judul: cur.judul,
+        kalimat,
+        tanya: cur.tanya
+      });
+    }
+  };
+  teks.replace(/\r/g, "").split("\n").forEach(baris => {
+    const b = baris.trim();
+    if (b.startsWith("#")) {
+      tutup();
+      cur = {
+        judul: b.replace(/^#+/, "").trim() || "Cerita tanpa judul",
+        isi: "",
+        tanya: []
+      };
+    } else if (b.startsWith("?")) {
+      if (!cur) cur = {
+        judul: "Cerita tanpa judul",
+        isi: "",
+        tanya: []
+      };
+      const t = b.replace(/^\?+/, "").trim();
+      if (t) cur.tanya.push(t.endsWith("?") ? t : t + "?");
+    } else if (b) {
+      if (!cur) cur = {
+        judul: "Cerita tanpa judul",
+        isi: "",
+        tanya: []
+      };
+      cur.isi += " " + b;
+    }
+  });
+  tutup();
+  return hasil;
+}
+function buatCeritaKu({
+  judul,
+  kalimat,
+  tanya,
+  e,
+  levelManual
 }) {
-  const [sub, setSub] = useState("cerita");
+  const a = analisisCerita(kalimat);
+  return {
+    id: "c-" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+    tema: "ceritaku",
+    level: levelManual || a.level,
+    judul: judul || "Cerita tanpa judul",
+    e: e || "📖",
+    kalimat,
+    tanya: tanya && tanya.length ? tanya : ["Ceritanya tentang apa?", "Siapa saja yang ada di cerita?"]
+  };
+}
+function FormCerita({
+  onSimpan,
+  onBatal
+}) {
+  const [judul, setJudul] = useState("");
+  const [isi, setIsi] = useState("");
+  const [tanya, setTanya] = useState("");
+  const [emoji, setEmoji] = useState("📖");
+  const [levelManual, setLevelManual] = useState(0); // 0 = otomatis
+  const [pesan, setPesan] = useState("");
+  const fileRef = useRef(null);
+  const kalimat = pecahKalimat(isi);
+  const a = kalimat.length ? analisisCerita(kalimat) : null;
+  const simpan = () => {
+    if (!kalimat.length) {
+      setPesan("Isi ceritanya dulu ya.");
+      return;
+    }
+    onSimpan([buatCeritaKu({
+      judul: judul.trim(),
+      kalimat,
+      e: emoji,
+      levelManual,
+      tanya: tanya.split("\n").map(t => t.trim()).filter(Boolean).map(t => t.endsWith("?") ? t : t + "?")
+    })]);
+  };
+  const pilihFile = ev => {
+    const file = ev.target.files?.[0];
+    ev.target.value = "";
+    if (!file) return;
+    const r = new FileReader();
+    r.onload = () => {
+      const daftar = parseFileCerita(String(r.result || ""));
+      if (!daftar.length) {
+        setPesan("Tidak ada cerita yang terbaca. Cek formatnya ya (lihat contoh di bawah).");
+        return;
+      }
+      onSimpan(daftar.map(d => buatCeritaKu({
+        ...d,
+        e: emoji
+      })));
+    };
+    r.onerror = () => setPesan("File tidak bisa dibaca.");
+    r.readAsText(file);
+  };
+  const input = {
+    width: "100%",
+    boxSizing: "border-box",
+    border: "3px solid #E2E8F0",
+    borderRadius: 14,
+    padding: "10px 14px",
+    fontFamily: "inherit",
+    fontSize: 16,
+    fontWeight: 700,
+    outline: "none",
+    color: "#1E3A5F"
+  };
+  const lbl = {
+    fontSize: 13,
+    fontWeight: 800,
+    color: "#64748B",
+    alignSelf: "flex-start"
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: "100%",
+      maxWidth: 540,
+      background: "white",
+      borderRadius: 24,
+      padding: 16,
+      boxSizing: "border-box",
+      boxShadow: "0 6px 0 rgba(0,0,0,0.1)",
+      display: "flex",
+      flexDirection: "column",
+      gap: 10,
+      animation: "muncul 0.25s ease"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 18,
+      fontWeight: 800,
+      color: "#1E3A5F"
+    }
+  }, "➕ Tambah cerita sendiri"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: "#EFF6FF",
+      borderRadius: 16,
+      padding: 12,
+      display: "flex",
+      flexDirection: "column",
+      gap: 8,
+      alignItems: "center"
+    }
+  }, /*#__PURE__*/React.createElement(Chunky, {
+    color: "#4D96FF",
+    onClick: () => fileRef.current?.click(),
+    style: {
+      fontSize: 16,
+      padding: "10px 20px"
+    }
+  }, "📂 Upload file cerita (.txt)"), /*#__PURE__*/React.createElement("input", {
+    ref: fileRef,
+    type: "file",
+    accept: ".txt,text/plain",
+    onChange: pilihFile,
+    style: {
+      display: "none"
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: "#475569",
+      lineHeight: 1.5,
+      width: "100%"
+    }
+  }, "Format file (satu file boleh berisi banyak cerita):", /*#__PURE__*/React.createElement("pre", {
+    style: {
+      background: "white",
+      borderRadius: 10,
+      padding: "8px 10px",
+      margin: "6px 0 0",
+      fontSize: 12,
+      whiteSpace: "pre-wrap",
+      fontFamily: "ui-monospace, Menlo, monospace",
+      color: "#334155"
+    }
+  }, "# Judul Cerita\nKalimat satu. Kalimat dua. Kalimat tiga.\n? Pertanyaan untuk orang tua (opsional)\n\n# Judul Cerita Berikutnya\n..."))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      textAlign: "center",
+      fontSize: 13,
+      color: "#94A3B8",
+      fontWeight: 800
+    }
+  }, "atau ketik / tempel di sini"), /*#__PURE__*/React.createElement("span", {
+    style: lbl
+  }, "Judul"), /*#__PURE__*/React.createElement("input", {
+    value: judul,
+    onChange: ev => setJudul(ev.target.value),
+    placeholder: "misal: Kucing Belang",
+    style: input
+  }), /*#__PURE__*/React.createElement("span", {
+    style: lbl
+  }, "Gambar sampul"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexWrap: "wrap",
+      gap: 6
+    }
+  }, EMOJI_CERITA.map(em => /*#__PURE__*/React.createElement("button", {
+    key: em,
+    onClick: () => setEmoji(em),
+    style: {
+      fontSize: 24,
+      width: 44,
+      height: 44,
+      borderRadius: 12,
+      cursor: "pointer",
+      border: emoji === em ? "3px solid #4D96FF" : "3px solid transparent",
+      background: "#F8FAFC"
+    }
+  }, em))), /*#__PURE__*/React.createElement("span", {
+    style: lbl
+  }, "Isi cerita"), /*#__PURE__*/React.createElement("textarea", {
+    value: isi,
+    onChange: ev => setIsi(ev.target.value),
+    rows: 5,
+    placeholder: "Ini Bobi. Bobi kucing. Bobi suka susu.",
+    style: {
+      ...input,
+      resize: "vertical",
+      lineHeight: 1.5
+    }
+  }), a && /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13,
+      color: "#475569",
+      background: "#F8FAFC",
+      borderRadius: 12,
+      padding: "8px 12px",
+      lineHeight: 1.5
+    }
+  }, a.n, " kalimat · kata terpanjang ", /*#__PURE__*/React.createElement("b", null, a.kataTerpanjang), " (", a.maks, " suku kata) → tingkat otomatis ", /*#__PURE__*/React.createElement("b", null, LEVEL_CERITA.find(l => l.id === a.level).label)), /*#__PURE__*/React.createElement("span", {
+    style: lbl
+  }, "Tingkat"), /*#__PURE__*/React.createElement(Pills, {
+    value: levelManual,
+    onChange: setLevelManual,
+    items: [{
+      id: 0,
+      label: "🤖 Otomatis"
+    }, ...LEVEL_CERITA.map(l => ({
+      id: l.id,
+      label: l.label
+    }))]
+  }), /*#__PURE__*/React.createElement("span", {
+    style: lbl
+  }, "Pertanyaan untuk orang tua (opsional, satu per baris)"), /*#__PURE__*/React.createElement("textarea", {
+    value: tanya,
+    onChange: ev => setTanya(ev.target.value),
+    rows: 2,
+    placeholder: "Siapa nama kucingnya?\nBobi suka minum apa?",
+    style: {
+      ...input,
+      resize: "vertical",
+      lineHeight: 1.5
+    }
+  }), pesan && /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13,
+      color: "#DC2626",
+      textAlign: "center"
+    }
+  }, pesan), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 10,
+      justifyContent: "center"
+    }
+  }, /*#__PURE__*/React.createElement(Chunky, {
+    color: "#3DBE6C",
+    onClick: simpan,
+    style: {
+      fontSize: 17,
+      padding: "11px 24px"
+    }
+  }, "💾 Simpan cerita"), /*#__PURE__*/React.createElement(Chunky, {
+    color: "#94A3B8",
+    onClick: onBatal,
+    style: {
+      fontSize: 17,
+      padding: "11px 20px"
+    }
+  }, "Batal")));
+}
+function MenuBaca() {
   return /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
@@ -3195,22 +3675,10 @@ function MenuBaca({
       gap: 18,
       width: "100%"
     }
-  }, /*#__PURE__*/React.createElement(Pills, {
-    value: sub,
-    onChange: setSub,
-    items: [{
-      id: "cerita",
-      label: "📖 Cerita"
-    }, {
-      id: "gambar",
-      label: "🖼️ Tebak Gambar"
-    }]
-  }), sub === "cerita" && /*#__PURE__*/React.createElement(BacaCerita, null), sub === "gambar" && /*#__PURE__*/React.createElement(TebakGambar, {
-    customKata: customKata,
-    keRekam: keRekam
-  }));
+  }, /*#__PURE__*/React.createElement(BacaCerita, null));
 }
 function BacaCerita() {
+  const [tema, setTema] = useState("umum");
   const [level, setLevel] = useState(1);
   const [cerita, setCerita] = useState(null);
   const [idx, setIdx] = useState(0);
@@ -3225,6 +3693,9 @@ function BacaCerita() {
   const [hasil, setHasil] = useState(null);
   const [lihatTeks, setLihatTeks] = useState(false);
   const [confetti, setConfetti] = useState(0);
+  const [ceritaKu, setCeritaKu] = useState([]);
+  const [form, setForm] = useState(false);
+  const [info, setInfo] = useState("");
   useEffect(() => {
     muatPoin().then(setPoin);
     kvGet("baca-nilai").then(v => {
@@ -3232,7 +3703,30 @@ function BacaCerita() {
         if (v) setNilai(JSON.parse(v));
       } catch (e) {}
     });
+    kvGet("cerita-custom").then(v => {
+      try {
+        if (v) setCeritaKu(JSON.parse(v));
+      } catch (e) {}
+    });
   }, []);
+  const semuaCerita = [...CERITA, ...ceritaKu];
+  const simpanCerita = async daftarBaru => {
+    const baru = [...ceritaKu, ...daftarBaru];
+    setCeritaKu(baru);
+    await kvSet("cerita-custom", JSON.stringify(baru));
+    setForm(false);
+    setTema("ceritaku");
+    setLevel(daftarBaru[0].level);
+    const ringkas = LEVEL_CERITA.map(l => [l.label, daftarBaru.filter(c => c.level === l.id).length]).filter(([, n]) => n).map(([lab, n]) => `${n} ${lab}`).join(", ");
+    setInfo(`✅ ${daftarBaru.length} cerita ditambahkan (${ringkas}).`);
+  };
+  const hapusCerita = async c => {
+    if (!window.confirm(`Hapus cerita "${c.judul}"?`)) return;
+    const baru = ceritaKu.filter(x => x.id !== c.id);
+    setCeritaKu(baru);
+    await kvSet("cerita-custom", JSON.stringify(baru));
+    setInfo("");
+  };
   const mulai = c => {
     setCerita(c);
     setIdx(0);
@@ -3275,7 +3769,12 @@ function BacaCerita() {
 
   // ----- daftar cerita -----
   if (!cerita) {
-    const daftar = CERITA.filter(c => c.level === level);
+    if (form) return /*#__PURE__*/React.createElement(FormCerita, {
+      onSimpan: simpanCerita,
+      onBatal: () => setForm(false)
+    });
+    const diTema = semuaCerita.filter(c => (c.tema || "umum") === tema);
+    const daftar = diTema.filter(c => c.level === level);
     return /*#__PURE__*/React.createElement("div", {
       style: {
         display: "flex",
@@ -3288,11 +3787,25 @@ function BacaCerita() {
     }, /*#__PURE__*/React.createElement(PoinBadge, {
       poin: poin
     }), /*#__PURE__*/React.createElement(Pills, {
+      color: "#9B5DE5",
+      value: tema,
+      onChange: setTema,
+      items: [{
+        id: "umum",
+        label: "📚 Cerita Umum"
+      }, {
+        id: "tokoh",
+        label: "🦸 Tokoh Favorit"
+      }, {
+        id: "ceritaku",
+        label: "⭐ Ceritaku"
+      }]
+    }), /*#__PURE__*/React.createElement(Pills, {
       value: level,
       onChange: setLevel,
       items: LEVEL_CERITA.map(l => ({
         id: l.id,
-        label: l.label
+        label: `${l.label} (${diTema.filter(c => c.level === l.id).length})`
       }))
     }), /*#__PURE__*/React.createElement("div", {
       style: {
@@ -3300,7 +3813,31 @@ function BacaCerita() {
         color: "#64748B",
         fontWeight: 700
       }
-    }, LEVEL_CERITA.find(l => l.id === level).desc), /*#__PURE__*/React.createElement("div", {
+    }, LEVEL_CERITA.find(l => l.id === level).desc), info && /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 14,
+        color: "#166534",
+        fontWeight: 700,
+        textAlign: "center"
+      }
+    }, info), tema === "ceritaku" && /*#__PURE__*/React.createElement(Chunky, {
+      color: "#9B5DE5",
+      onClick: () => {
+        setInfo("");
+        setForm(true);
+      },
+      style: {
+        fontSize: 17,
+        padding: "11px 22px"
+      }
+    }, "➕ Tambah / upload cerita"), tema === "ceritaku" && daftar.length === 0 && /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 14,
+        color: "#94A3B8",
+        textAlign: "center",
+        lineHeight: 1.5
+      }
+    }, diTema.length ? "Belum ada cerita di tingkat ini, coba tingkat lain." : "Belum ada cerita. Tambahkan cerita buatanmu sendiri di sini!"), /*#__PURE__*/React.createElement("div", {
       style: {
         display: "grid",
         gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
@@ -3309,10 +3846,33 @@ function BacaCerita() {
       }
     }, daftar.map((c, i) => {
       const b = nilai[c.id]?.bintang || 0;
-      return /*#__PURE__*/React.createElement("button", {
+      return /*#__PURE__*/React.createElement("div", {
         key: c.id,
+        style: {
+          position: "relative",
+          display: "flex"
+        }
+      }, c.tema === "ceritaku" && /*#__PURE__*/React.createElement("button", {
+        onClick: () => hapusCerita(c),
+        "aria-label": "Hapus cerita",
+        style: {
+          position: "absolute",
+          top: 6,
+          right: 6,
+          zIndex: 1,
+          width: 28,
+          height: 28,
+          borderRadius: 14,
+          border: "none",
+          background: "#FEE2E2",
+          color: "#DC2626",
+          fontWeight: 800,
+          cursor: "pointer"
+        }
+      }, "✕"), /*#__PURE__*/React.createElement("button", {
         onClick: () => mulai(c),
         style: {
+          flex: 1,
           background: "white",
           border: "none",
           borderRadius: 22,
@@ -3354,7 +3914,7 @@ function BacaCerita() {
         style: {
           opacity: n <= b ? 1 : 0.2
         }
-      }, "⭐"))));
+      }, "⭐")))));
     })));
   }
   const kembali = /*#__PURE__*/React.createElement("button", {
@@ -3586,7 +4146,7 @@ function BacaCerita() {
   }
 
   // ----- selesai -----
-  const urutan = CERITA.filter(c => c.level === cerita.level);
+  const urutan = semuaCerita.filter(c => c.level === cerita.level && (c.tema || "umum") === (cerita.tema || "umum"));
   const berikut = urutan[urutan.findIndex(c => c.id === cerita.id) + 1];
   return /*#__PURE__*/React.createElement("div", {
     style: {
@@ -4158,7 +4718,7 @@ function IndonesiaApp({
       opacity: 0.5,
       fontSize: 11
     }
-  }, "v15")))), switcher, /*#__PURE__*/React.createElement("div", {
+  }, "v17")))), switcher, /*#__PURE__*/React.createElement("div", {
     key: mode,
     style: {
       width: "100%",
@@ -4172,10 +4732,10 @@ function IndonesiaApp({
     setCustomSuku: setCustomSuku,
     customKata: customKata,
     setCustomKata: setCustomKata
-  }), mode === "baca" && /*#__PURE__*/React.createElement(MenuBaca, {
+  }), mode === "baca" && /*#__PURE__*/React.createElement(MenuBaca, null), mode === "tebak" && /*#__PURE__*/React.createElement(MenuTebak, {
     customKata: customKata,
     keRekam: () => setMode("rekam")
-  }), mode === "tebak" && /*#__PURE__*/React.createElement(MenuTebak, null), mode === "rekam" && /*#__PURE__*/React.createElement(RekamSuara, {
+  }), mode === "rekam" && /*#__PURE__*/React.createElement(RekamSuara, {
     customSuku: customSuku,
     customKata: customKata
   })), /*#__PURE__*/React.createElement("nav", {
@@ -6641,7 +7201,7 @@ const EnglishApp = (() => {
         opacity: 0.5,
         fontSize: 11
       }
-    }, "v15")))), switcher, /*#__PURE__*/React.createElement("div", {
+    }, "v17")))), switcher, /*#__PURE__*/React.createElement("div", {
       key: tab,
       style: {
         width: "100%",
