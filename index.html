@@ -2272,6 +2272,14 @@ function daftarSuara(customSuku, customKata) {
       key: "frasa-cobalagi",
       label: '"Coba lagi ya"',
       fb: "Coba lagi ya"
+    }, {
+      key: "frasa-iniapa",
+      label: '"Ini apa?"',
+      fb: "Ini apa?"
+    }, {
+      key: "frasa-ceritakan",
+      label: '"Sekarang ceritakan ke Ayah atau Bunda ya!"',
+      fb: "Sekarang ceritakan ke Ayah atau Bunda ya!"
     }, ...PRAISE.map((p, i) => ({
       key: "pujian-" + i,
       label: `"${p}"`,
@@ -3023,6 +3031,1027 @@ function RekamSuara({
 }
 
 // ================= APP =================
+// ================= MENU: BACA =================
+// Cerita bertingkat: anak membaca per kalimat (tanpa suara), lalu menceritakan ulang ke orang tua.
+// Orang tua memberi nilai bintang. Tingkat 1 hanya memakai kata maksimal 2 suku kata.
+const LEVEL_CERITA = [{
+  id: 1,
+  label: "😊 Mudah",
+  desc: "3–5 kalimat, kata maks. 2 suku kata",
+  color: "#3DBE6C"
+}, {
+  id: 2,
+  label: "🤓 Sedang",
+  desc: "5–7 kalimat, kata maks. 3 suku kata",
+  color: "#FFB020"
+}, {
+  id: 3,
+  label: "🔥 Sulit",
+  desc: "8 kalimat, kata lebih panjang",
+  color: "#FF6B6B"
+}];
+const CERITA = [
+// ---------- Tingkat 1 ----------
+{
+  id: "bola-biru",
+  level: 1,
+  judul: "Bola Biru",
+  e: "⚽",
+  kalimat: ["Ini bola.", "Bola itu biru.", "Dodi suka bola.", "Dodi main bola."],
+  tanya: ["Apa warna bolanya?", "Siapa yang suka bola?"]
+}, {
+  id: "kucing-lapar",
+  level: 1,
+  judul: "Kucing Lapar",
+  e: "🐱",
+  kalimat: ["Ada kucing.", "Kucing itu lapar.", "Ibu beri ikan.", "Kucing makan ikan.", "Kucing kenyang."],
+  tanya: ["Kenapa kucingnya mau makan?", "Ibu memberi makan apa?"]
+}, {
+  id: "pagi-hari",
+  level: 1,
+  judul: "Pagi Hari",
+  e: "🌞",
+  kalimat: ["Hari sudah pagi.", "Rara bangun.", "Rara mandi.", "Rara makan roti."],
+  tanya: ["Siapa yang bangun?", "Rara makan apa?"]
+}, {
+  id: "ke-pasar",
+  level: 1,
+  judul: "Ke Pasar",
+  e: "🧺",
+  kalimat: ["Ibu ke pasar.", "Sani ikut ibu.", "Ibu beli sayur.", "Sani beli kue."],
+  tanya: ["Ibu pergi ke mana?", "Sani beli apa?"]
+}, {
+  id: "hujan",
+  level: 1,
+  judul: "Hujan",
+  e: "☔",
+  kalimat: ["Hari ini hujan.", "Doni bawa payung.", "Payung Doni merah.", "Doni tidak basah."],
+  tanya: ["Hari ini cuacanya apa?", "Apa warna payung Doni?", "Kenapa Doni tidak basah?"]
+},
+// ---------- Tingkat 2 ----------
+{
+  id: "kelinci-kebun",
+  level: 2,
+  judul: "Kelinci di Kebun",
+  e: "🐰",
+  kalimat: ["Ada kelinci di kebun.", "Kelinci itu putih.", "Dia suka makan wortel.", "Pak tani melihat kelinci.", "Kelinci lari ke semak.", "Pak tani tertawa."],
+  tanya: ["Apa warna kelincinya?", "Kelinci suka makan apa?", "Ke mana kelinci lari?"]
+}, {
+  id: "membantu-ibu",
+  level: 2,
+  judul: "Membantu Ibu",
+  e: "🍳",
+  kalimat: ["Hari Minggu Rina di rumah.", "Ibu sedang memasak.", "Rina membantu ibu.", "Rina mencuci sayuran.", "Ibu senang sekali.", "Ibu memeluk Rina."],
+  tanya: ["Ibu sedang apa?", "Rina membantu apa?", "Bagaimana perasaan ibu?"]
+}, {
+  id: "taman",
+  level: 2,
+  judul: "Taman Bermain",
+  e: "🛝",
+  kalimat: ["Budi pergi ke taman.", "Di taman ada ayunan.", "Budi naik ayunan.", "Ayunan bergerak tinggi.", "Budi tertawa gembira.", "Lalu Budi pulang."],
+  tanya: ["Budi pergi ke mana?", "Budi naik apa?", "Bagaimana perasaan Budi?"]
+}, {
+  id: "ikan-kecil",
+  level: 2,
+  judul: "Ikan Kecil",
+  e: "🐟",
+  kalimat: ["Di kolam ada ikan kecil.", "Warnanya oranye.", "Ikan itu berenang ke sana kemari.", "Kakak memberi makan ikan.", "Ikan makan dengan lahap."],
+  tanya: ["Ikannya ada di mana?", "Apa warna ikannya?", "Siapa yang memberi makan?"]
+}, {
+  id: "tidur-siang",
+  level: 2,
+  judul: "Tidur Siang",
+  e: "😴",
+  kalimat: ["Adik mengantuk.", "Ibu membaca buku cerita.", "Adik memeluk boneka.", "Tidak lama adik tidur.", "Ibu menutup pintu dengan pelan."],
+  tanya: ["Adik merasa apa?", "Adik memeluk apa?", "Apa yang ibu lakukan?"]
+},
+// ---------- Tingkat 3 ----------
+{
+  id: "sekolah",
+  level: 3,
+  judul: "Hari Pertama Sekolah",
+  e: "🏫",
+  kalimat: ["Hari ini Nina mulai bersekolah.", "Dia memakai seragam baru.", "Di depan kelas, Nina merasa malu.", "Ibu guru tersenyum dan menyapanya.", "Nina berkenalan dengan teman baru bernama Tia.", "Mereka bermain bersama saat istirahat.", "Pulang sekolah, Nina bercerita kepada ayah.", "Nina tidak sabar menunggu besok."],
+  tanya: ["Kenapa Nina merasa malu?", "Siapa teman baru Nina?", "Kenapa Nina tidak sabar menunggu besok?"]
+}, {
+  id: "kucing-hilang",
+  level: 3,
+  judul: "Kucing yang Hilang",
+  e: "🐈",
+  kalimat: ["Sore itu kucing Raka tidak pulang.", "Raka mencari ke halaman belakang.", "Dia juga bertanya kepada tetangga.", "Tiba-tiba terdengar suara mengeong.", "Ternyata kucingnya terjebak di atas pohon.", "Ayah mengambil tangga dan menolongnya.", "Raka memeluk kucingnya erat-erat.", "Sejak hari itu, Raka selalu menjaga kucingnya."],
+  tanya: ["Di mana kucing Raka ditemukan?", "Bagaimana ayah menolong kucingnya?", "Apa yang Raka lakukan sejak hari itu?"]
+}, {
+  id: "menanam",
+  level: 3,
+  judul: "Menanam Pohon",
+  e: "🌱",
+  kalimat: ["Kakek mengajak Sari menanam pohon mangga.", "Mereka menggali lubang di halaman.", "Sari memasukkan bibit ke dalam lubang.", "Kakek menutup lubang dengan tanah.", "Setiap pagi Sari menyiram pohon itu.", "Lama-lama pohon mangga tumbuh tinggi.", "Kakek berkata, pohon itu akan berbuah.", "Sari tidak sabar ingin mencicipi mangganya."],
+  tanya: ["Pohon apa yang ditanam?", "Apa yang Sari lakukan setiap pagi?", "Kenapa Sari tidak sabar?"]
+}, {
+  id: "pantai",
+  level: 3,
+  judul: "Piknik di Pantai",
+  e: "🏖️",
+  kalimat: ["Hari Minggu keluarga Bima pergi ke pantai.", "Mereka membawa tikar dan bekal makanan.", "Bima membangun istana pasir bersama adiknya.", "Ombak datang dan meruntuhkan istana itu.", "Bima tidak marah, dia malah tertawa.", "Mereka membangun istana yang lebih besar.", "Sore hari matahari terbenam dengan indah.", "Bima pulang dengan hati senang."],
+  tanya: ["Bima membangun apa?", "Apa yang terjadi pada istana pasirnya?", "Apakah Bima marah? Kenapa?"]
+}, {
+  id: "roti-nenek",
+  level: 3,
+  judul: "Roti untuk Nenek",
+  e: "🍞",
+  kalimat: ["Ibu membuat roti cokelat yang harum.", "Ibu meminta Laras mengantar roti ke rumah nenek.", "Laras berjalan hati-hati sambil membawa keranjang.", "Di jalan, dia bertemu anjing kecil yang lucu.", "Anjing itu mengikuti Laras sampai rumah nenek.", "Nenek senang menerima roti dari Laras.", "Nenek juga memberi anjing itu semangkuk air.", "Laras pulang dan bercerita kepada ibu."],
+  tanya: ["Laras mengantar apa untuk nenek?", "Siapa yang Laras temui di jalan?", "Apa yang nenek berikan kepada anjing?"]
+}];
+
+// Pecah satu kata (boleh berimbuhan tanda hubung, mis. "tiba-tiba") jadi suku kata
+function sukuKataKata(kataRaw) {
+  const bersih = kataRaw.toLowerCase().replace(/[^a-z\-]/g, "");
+  if (!bersih) return [];
+  return bersih.split("-").filter(Boolean).flatMap(bagian => pecahSuku(bagian));
+}
+const NILAI = [{
+  bintang: 3,
+  label: "Paham semua",
+  warna: "#3DBE6C"
+}, {
+  bintang: 2,
+  label: "Paham sebagian",
+  warna: "#FFB020"
+}, {
+  bintang: 1,
+  label: "Masih perlu dibantu",
+  warna: "#94A3B8"
+}];
+function MenuBaca({
+  customKata,
+  keRekam
+}) {
+  const [sub, setSub] = useState("cerita");
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      gap: 18,
+      width: "100%"
+    }
+  }, /*#__PURE__*/React.createElement(Pills, {
+    value: sub,
+    onChange: setSub,
+    items: [{
+      id: "cerita",
+      label: "📖 Cerita"
+    }, {
+      id: "gambar",
+      label: "🖼️ Tebak Gambar"
+    }]
+  }), sub === "cerita" && /*#__PURE__*/React.createElement(BacaCerita, null), sub === "gambar" && /*#__PURE__*/React.createElement(TebakGambar, {
+    customKata: customKata,
+    keRekam: keRekam
+  }));
+}
+function BacaCerita() {
+  const [level, setLevel] = useState(1);
+  const [cerita, setCerita] = useState(null);
+  const [idx, setIdx] = useState(0);
+  const [tahap, setTahap] = useState("baca"); // baca | cerita | selesai
+  const [kataAktif, setKataAktif] = useState(null);
+  const [nilai, setNilai] = useState({});
+  const [poin, setPoin] = useState({
+    total: 0,
+    lastDate: null,
+    streak: 0
+  });
+  const [hasil, setHasil] = useState(null);
+  const [lihatTeks, setLihatTeks] = useState(false);
+  const [confetti, setConfetti] = useState(0);
+  useEffect(() => {
+    muatPoin().then(setPoin);
+    kvGet("baca-nilai").then(v => {
+      try {
+        if (v) setNilai(JSON.parse(v));
+      } catch (e) {}
+    });
+  }, []);
+  const mulai = c => {
+    setCerita(c);
+    setIdx(0);
+    setTahap("baca");
+    setKataAktif(null);
+    setHasil(null);
+    setLihatTeks(false);
+  };
+  const lanjut = () => {
+    setKataAktif(null);
+    if (idx + 1 < cerita.kalimat.length) setIdx(idx + 1);else {
+      setTahap("cerita");
+      play("frasa-ceritakan", "Sekarang ceritakan ke Ayah atau Bunda ya!", 0.9);
+    }
+  };
+  const beriNilai = async bintang => {
+    const lama = nilai[cerita.id]?.bintang || 0;
+    const baru = {
+      ...nilai,
+      [cerita.id]: {
+        bintang: Math.max(lama, bintang),
+        terakhir: bintang,
+        tgl: tglHariIni()
+      }
+    };
+    setNilai(baru);
+    await kvSet("baca-nilai", JSON.stringify(baru));
+    const res = await tambahPoin(poin, bintang);
+    setPoin(res.baru);
+    setHasil({
+      bintang,
+      bonus: res.bonusHarian
+    });
+    setTahap("selesai");
+    if (bintang >= 2) {
+      setConfetti(c => c + 1);
+      playPraise();
+    }
+  };
+
+  // ----- daftar cerita -----
+  if (!cerita) {
+    const daftar = CERITA.filter(c => c.level === level);
+    return /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: 14,
+        width: "100%",
+        maxWidth: 540
+      }
+    }, /*#__PURE__*/React.createElement(PoinBadge, {
+      poin: poin
+    }), /*#__PURE__*/React.createElement(Pills, {
+      value: level,
+      onChange: setLevel,
+      items: LEVEL_CERITA.map(l => ({
+        id: l.id,
+        label: l.label
+      }))
+    }), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 14,
+        color: "#64748B",
+        fontWeight: 700
+      }
+    }, LEVEL_CERITA.find(l => l.id === level).desc), /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
+        gap: 12,
+        width: "100%"
+      }
+    }, daftar.map((c, i) => {
+      const b = nilai[c.id]?.bintang || 0;
+      return /*#__PURE__*/React.createElement("button", {
+        key: c.id,
+        onClick: () => mulai(c),
+        style: {
+          background: "white",
+          border: "none",
+          borderRadius: 22,
+          padding: "16px 12px",
+          boxShadow: "0 6px 0 rgba(0,0,0,0.1)",
+          cursor: "pointer",
+          fontFamily: "inherit",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: 6,
+          animation: `muncul 0.3s ease ${i * 0.04}s both`
+        }
+      }, /*#__PURE__*/React.createElement("div", {
+        style: {
+          fontSize: 44
+        }
+      }, c.e), /*#__PURE__*/React.createElement("div", {
+        style: {
+          fontSize: 17,
+          fontWeight: 800,
+          color: "#1E3A5F",
+          textAlign: "center",
+          lineHeight: 1.15
+        }
+      }, c.judul), /*#__PURE__*/React.createElement("div", {
+        style: {
+          fontSize: 12,
+          color: "#94A3B8",
+          fontWeight: 700
+        }
+      }, c.kalimat.length, " kalimat"), /*#__PURE__*/React.createElement("div", {
+        style: {
+          fontSize: 16,
+          letterSpacing: 1
+        }
+      }, [1, 2, 3].map(n => /*#__PURE__*/React.createElement("span", {
+        key: n,
+        style: {
+          opacity: n <= b ? 1 : 0.2
+        }
+      }, "⭐"))));
+    })));
+  }
+  const kembali = /*#__PURE__*/React.createElement("button", {
+    onClick: () => setCerita(null),
+    style: {
+      border: "none",
+      background: "transparent",
+      color: "#64748B",
+      fontFamily: "inherit",
+      fontWeight: 800,
+      fontSize: 15,
+      cursor: "pointer",
+      alignSelf: "flex-start"
+    }
+  }, "← Daftar cerita");
+
+  // ----- membaca per kalimat -----
+  if (tahap === "baca") {
+    const kalimat = cerita.kalimat[idx];
+    const kata = kalimat.split(" ");
+    return /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: 16,
+        width: "100%",
+        maxWidth: 560
+      }
+    }, kembali, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 20,
+        fontWeight: 800,
+        color: "#1E3A5F"
+      }
+    }, cerita.e, " ", cerita.judul), /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        gap: 8
+      }
+    }, cerita.kalimat.map((_, i) => /*#__PURE__*/React.createElement("span", {
+      key: i,
+      style: {
+        width: i === idx ? 26 : 12,
+        height: 12,
+        borderRadius: 6,
+        transition: "all 0.25s",
+        background: i < idx ? "#3DBE6C" : i === idx ? "#FFB020" : "#E2E8F0"
+      }
+    }))), /*#__PURE__*/React.createElement("div", {
+      key: idx,
+      style: {
+        background: "white",
+        borderRadius: 28,
+        padding: "30px 22px",
+        width: "100%",
+        minHeight: 170,
+        boxShadow: "0 8px 0 rgba(0,0,0,0.1)",
+        display: "flex",
+        flexWrap: "wrap",
+        gap: "10px 14px",
+        justifyContent: "center",
+        alignContent: "center",
+        animation: "muncul 0.3s ease"
+      }
+    }, kata.map((k, i) => {
+      const aktif = kataAktif === i;
+      const suku = aktif ? sukuKataKata(k) : null;
+      return /*#__PURE__*/React.createElement("button", {
+        key: i,
+        onClick: () => setKataAktif(aktif ? null : i),
+        style: {
+          border: "none",
+          background: aktif ? "#FEF3C7" : "transparent",
+          borderRadius: 12,
+          padding: "2px 6px",
+          cursor: "pointer",
+          fontFamily: "inherit",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center"
+        }
+      }, /*#__PURE__*/React.createElement("span", {
+        style: {
+          fontSize: 38,
+          fontWeight: 800,
+          color: "#1E3A5F",
+          lineHeight: 1.2
+        }
+      }, k), suku && suku.length > 0 && /*#__PURE__*/React.createElement("span", {
+        style: {
+          display: "flex",
+          gap: 3,
+          animation: "pop 0.25s ease"
+        }
+      }, suku.map((s, j) => /*#__PURE__*/React.createElement("span", {
+        key: j,
+        style: {
+          background: CANDY[j % CANDY.length],
+          color: "white",
+          borderRadius: 8,
+          padding: "1px 8px",
+          fontSize: 18,
+          fontWeight: 800
+        }
+      }, s))));
+    })), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 13,
+        color: "#94A3B8",
+        fontWeight: 700
+      }
+    }, "💡 Sentuh kata yang sulit untuk melihat suku katanya"), /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        gap: 12
+      }
+    }, idx > 0 && /*#__PURE__*/React.createElement(Chunky, {
+      color: "#94A3B8",
+      onClick: () => {
+        setKataAktif(null);
+        setIdx(idx - 1);
+      },
+      style: {
+        fontSize: 22,
+        padding: "14px 22px"
+      }
+    }, "◀"), /*#__PURE__*/React.createElement(Chunky, {
+      color: "#3DBE6C",
+      onClick: lanjut,
+      style: {
+        fontSize: 22,
+        padding: "14px 30px"
+      }
+    }, idx + 1 < cerita.kalimat.length ? "Kalimat berikutnya ▶" : "Selesai membaca ✓")));
+  }
+
+  // ----- menceritakan ulang + nilai orang tua -----
+  if (tahap === "cerita") {
+    return /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: 16,
+        width: "100%",
+        maxWidth: 540
+      }
+    }, kembali, /*#__PURE__*/React.createElement("div", {
+      style: {
+        animation: "hop 1.8s ease-in-out infinite"
+      }
+    }, /*#__PURE__*/React.createElement(Bunny, {
+      size: 84
+    })), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 26,
+        fontWeight: 800,
+        color: "#1E3A5F",
+        textAlign: "center",
+        lineHeight: 1.2
+      }
+    }, "Hebat! Sekarang ceritakan ke Ayah atau Bunda ya! 🗣️"), /*#__PURE__*/React.createElement("div", {
+      style: {
+        background: "#FEF3C7",
+        border: "2px solid #FCD34D",
+        borderRadius: 18,
+        padding: "12px 16px",
+        width: "100%",
+        color: "#92400E",
+        fontSize: 15,
+        lineHeight: 1.5
+      }
+    }, /*#__PURE__*/React.createElement("b", null, "Untuk Ayah/Bunda:"), " minta anak menceritakan isi cerita dengan kata-katanya sendiri. Kalau dia bingung, bantu dengan pertanyaan ini:", /*#__PURE__*/React.createElement("ul", {
+      style: {
+        margin: "6px 0 0",
+        paddingLeft: 20
+      }
+    }, cerita.tanya.map((t, i) => /*#__PURE__*/React.createElement("li", {
+      key: i
+    }, t)))), /*#__PURE__*/React.createElement("button", {
+      onClick: () => setLihatTeks(!lihatTeks),
+      style: {
+        border: "none",
+        background: "transparent",
+        color: "#4D96FF",
+        fontFamily: "inherit",
+        fontWeight: 800,
+        fontSize: 14,
+        cursor: "pointer"
+      }
+    }, lihatTeks ? "Sembunyikan cerita" : "📄 Lihat isi cerita"), lihatTeks && /*#__PURE__*/React.createElement("div", {
+      style: {
+        background: "white",
+        borderRadius: 18,
+        padding: "12px 16px",
+        width: "100%",
+        fontSize: 16,
+        color: "#334155",
+        lineHeight: 1.6
+      }
+    }, cerita.kalimat.join(" ")), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 16,
+        fontWeight: 800,
+        color: "#1E3A5F"
+      }
+    }, "Seberapa paham ceritanya?"), /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        flexDirection: "column",
+        gap: 10,
+        width: "100%",
+        maxWidth: 380
+      }
+    }, NILAI.map(n => /*#__PURE__*/React.createElement(Chunky, {
+      key: n.bintang,
+      color: n.warna,
+      onClick: () => beriNilai(n.bintang),
+      style: {
+        fontSize: 19,
+        padding: "13px 0",
+        display: "flex",
+        justifyContent: "center",
+        gap: 10,
+        alignItems: "center"
+      }
+    }, /*#__PURE__*/React.createElement("span", null, "⭐".repeat(n.bintang)), " ", n.label))));
+  }
+
+  // ----- selesai -----
+  const urutan = CERITA.filter(c => c.level === cerita.level);
+  const berikut = urutan[urutan.findIndex(c => c.id === cerita.id) + 1];
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      gap: 16,
+      width: "100%",
+      maxWidth: 430
+    }
+  }, /*#__PURE__*/React.createElement(Confetti, {
+    trigger: confetti
+  }), /*#__PURE__*/React.createElement(PoinBadge, {
+    poin: poin
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: "white",
+      borderRadius: 32,
+      padding: "26px 30px",
+      textAlign: "center",
+      boxShadow: "0 8px 0 rgba(0,0,0,0.12)",
+      animation: "pop 0.35s ease",
+      width: "100%"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 46
+    }
+  }, "⭐".repeat(hasil.bintang)), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 22,
+      fontWeight: 800,
+      color: "#1E3A5F",
+      margin: "6px 0"
+    }
+  }, hasil.bintang === 3 ? "Luar biasa, paham semua!" : hasil.bintang === 2 ? "Bagus, sudah paham sebagian!" : "Tidak apa-apa, besok coba lagi ya!"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: "#FEF9C3",
+      borderRadius: 16,
+      padding: "10px 14px",
+      fontSize: 16,
+      fontWeight: 800,
+      color: "#854D0E"
+    }
+  }, "🪙 +", hasil.bintang, " poin", hasil.bonus && /*#__PURE__*/React.createElement("div", null, "🎁 +", BONUS_HARIAN, " bonus harian!"))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 12,
+      flexWrap: "wrap",
+      justifyContent: "center"
+    }
+  }, /*#__PURE__*/React.createElement(Chunky, {
+    color: "#4D96FF",
+    onClick: () => mulai(cerita),
+    style: {
+      fontSize: 18,
+      padding: "13px 20px"
+    }
+  }, "🔁 Baca lagi"), berikut && /*#__PURE__*/React.createElement(Chunky, {
+    color: "#3DBE6C",
+    onClick: () => mulai(berikut),
+    style: {
+      fontSize: 18,
+      padding: "13px 20px"
+    }
+  }, "Cerita berikutnya ▶"), /*#__PURE__*/React.createElement(Chunky, {
+    color: "#94A3B8",
+    onClick: () => setCerita(null),
+    style: {
+      fontSize: 18,
+      padding: "13px 20px"
+    }
+  }, "Daftar")));
+}
+
+// ----- Tebak Gambar: lihat gambar, pilih kata yang tepat (pakai suara rekaman) -----
+const LEVEL_GAMBAR = [{
+  id: "mudah",
+  label: "😊 Mudah",
+  desc: "3 pilihan kata yang berbeda jauh",
+  n: 3,
+  modus: "acak",
+  color: "#3DBE6C"
+}, {
+  id: "sulit",
+  label: "🔥 Sulit",
+  desc: "4 pilihan kata yang mirip-mirip",
+  n: 4,
+  modus: "mirip",
+  color: "#FF6B6B"
+}];
+const MIN_GAMBAR = 3;
+function poolGambar(customKata) {
+  const custom = customKata.map(w => w.replace(/-/g, "")).filter(w => fotoSrc[w]).map(w => ({
+    w,
+    foto: fotoSrc[w]
+  }));
+  const semua = [...KATA_BAWAAN.map(x => ({
+    w: x.w,
+    e: x.e,
+    foto: fotoSrc[x.w] || null
+  })), ...custom];
+  return {
+    semua,
+    terekam: semua.filter(x => recordedKeys.has("kata-" + x.w))
+  };
+}
+function TebakGambar({
+  customKata,
+  keRekam
+}) {
+  const [fase, setFase] = useState("setup");
+  const [level, setLevel] = useState("mudah");
+  const [soal, setSoal] = useState([]);
+  const [no, setNo] = useState(0);
+  const [skor, setSkor] = useState(0);
+  const [pertama, setPertama] = useState(true);
+  const [salah, setSalah] = useState(null);
+  const [benar, setBenar] = useState(false);
+  const [kunci, setKunci] = useState(false);
+  const [confetti, setConfetti] = useState(0);
+  const [poin, setPoin] = useState({
+    total: 0,
+    lastDate: null,
+    streak: 0
+  });
+  const [hasil, setHasil] = useState(null);
+  useEffect(() => {
+    muatPoin().then(setPoin);
+  }, []);
+  const {
+    semua,
+    terekam
+  } = poolGambar(customKata);
+  const buatSatu = (cfg, hindari) => {
+    const segar = terekam.filter(x => !hindari.includes(x.w));
+    const item = acak1(segar.length ? segar : terekam);
+    const pengecoh = cfg.modus === "mirip" ? pengecohKata(item.w, cfg.n - 1, "mirip") : pilihPengecoh(item.w, [], semua.map(x => x.w), cfg.n - 1, "acak");
+    return {
+      item,
+      opsi: kocok([item.w, ...pengecoh])
+    };
+  };
+  const tanya = () => play("frasa-iniapa", "Ini apa?", 0.9);
+  const mulai = lv => {
+    const cfg = LEVEL_GAMBAR.find(l => l.id === lv);
+    const s = [];
+    for (let i = 0; i < JUMLAH_SOAL; i++) s.push(buatSatu(cfg, s.slice(-2).map(q => q.item.w)));
+    setLevel(lv);
+    setSoal(s);
+    setNo(0);
+    setSkor(0);
+    setPertama(true);
+    setSalah(null);
+    setBenar(false);
+    setKunci(false);
+    setHasil(null);
+    setFase("main");
+    setTimeout(tanya, 400);
+  };
+  const ganti = () => {
+    if (kunci) return;
+    const cfg = LEVEL_GAMBAR.find(l => l.id === level);
+    const s2 = [...soal];
+    s2[no] = buatSatu(cfg, soal.map(q => q.item.w));
+    setSoal(s2);
+    setPertama(true);
+    setSalah(null);
+  };
+  const bantuan = () => {
+    setPertama(false);
+    const q = soal[no];
+    play("kata-" + q.item.w, q.item.w, 0.75);
+  };
+  const jawab = async pilihan => {
+    if (kunci) return;
+    const q = soal[no];
+    if (pilihan === q.item.w) {
+      setKunci(true);
+      setBenar(true);
+      const skorBaru = pertama ? skor + 1 : skor;
+      setSkor(skorBaru);
+      setConfetti(c => c + 1);
+      await play("kata-" + q.item.w, q.item.w, 0.75);
+      await playPraise();
+      setTimeout(async () => {
+        setBenar(false);
+        if (no + 1 >= JUMLAH_SOAL) {
+          const res = await tambahPoin(poin, skorBaru);
+          setPoin(res.baru);
+          setHasil(res);
+          setFase("selesai");
+        } else {
+          setNo(no + 1);
+          setPertama(true);
+          setSalah(null);
+          setKunci(false);
+          setTimeout(tanya, 300);
+        }
+      }, 500);
+    } else {
+      setPertama(false);
+      setSalah(pilihan);
+      play("frasa-cobalagi", "Coba lagi ya", 0.9);
+      setTimeout(() => setSalah(null), 700);
+    }
+  };
+  if (fase === "setup") {
+    const kurang = terekam.length < MIN_GAMBAR;
+    return /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: 14,
+        width: "100%",
+        maxWidth: 430
+      }
+    }, /*#__PURE__*/React.createElement(PoinBadge, {
+      poin: poin
+    }), kurang ? /*#__PURE__*/React.createElement("div", {
+      style: {
+        background: "#FEF3C7",
+        border: "2px solid #FCD34D",
+        borderRadius: 18,
+        padding: "14px 16px",
+        color: "#92400E",
+        fontSize: 15,
+        lineHeight: 1.5,
+        textAlign: "center"
+      }
+    }, /*#__PURE__*/React.createElement("b", null, "Untuk Ayah/Bunda:"), " Tebak Gambar memakai suara rekamanmu. Rekam dulu suara minimal ", MIN_GAMBAR, " kata bergambar (sekarang baru ", terekam.length, "), misalnya kaki, buku, bola. Kata dari 📷 Foto benda juga bisa dipakai.", /*#__PURE__*/React.createElement("div", {
+      style: {
+        marginTop: 10
+      }
+    }, /*#__PURE__*/React.createElement(Chunky, {
+      color: "#F06595",
+      onClick: keRekam,
+      style: {
+        fontSize: 16,
+        padding: "10px 20px"
+      }
+    }, "🎤 Ke menu Rekam"))) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 20,
+        fontWeight: 800,
+        color: "#1E3A5F"
+      }
+    }, "Lihat gambar, pilih katanya!"), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 13,
+        color: "#94A3B8",
+        fontWeight: 700
+      }
+    }, terekam.length, " kata bergambar sudah direkam"), LEVEL_GAMBAR.map(lv => /*#__PURE__*/React.createElement(Chunky, {
+      key: lv.id,
+      color: lv.color,
+      onClick: () => mulai(lv.id),
+      style: {
+        fontSize: 24,
+        padding: "16px 0",
+        width: "100%"
+      }
+    }, lv.label, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 14,
+        fontWeight: 700,
+        opacity: 0.9
+      }
+    }, lv.desc, " · ", JUMLAH_SOAL, " soal")))));
+  }
+  if (fase === "selesai") {
+    const bagus = skor >= 8;
+    return /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: 16,
+        maxWidth: 430,
+        width: "100%"
+      }
+    }, /*#__PURE__*/React.createElement(Confetti, {
+      trigger: bagus ? 1 : 0
+    }), /*#__PURE__*/React.createElement(PoinBadge, {
+      poin: poin
+    }), /*#__PURE__*/React.createElement("div", {
+      style: {
+        background: "white",
+        borderRadius: 32,
+        padding: "26px 34px",
+        textAlign: "center",
+        boxShadow: "0 8px 0 rgba(0,0,0,0.12)",
+        animation: "pop 0.35s ease"
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 56
+      }
+    }, bagus ? "🏆" : skor >= 5 ? "🌟" : "💪"), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 40,
+        fontWeight: 800,
+        color: "#1E3A5F"
+      }
+    }, skor, " / ", JUMLAH_SOAL), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 18,
+        fontWeight: 700,
+        color: "#64748B",
+        marginBottom: 10
+      }
+    }, bagus ? "Luar biasa!" : skor >= 5 ? "Bagus, terus berlatih!" : "Ayo coba lagi, pasti bisa!"), hasil && /*#__PURE__*/React.createElement("div", {
+      style: {
+        background: "#FEF9C3",
+        borderRadius: 16,
+        padding: "10px 14px",
+        fontSize: 16,
+        fontWeight: 800,
+        color: "#854D0E"
+      }
+    }, "🪙 +", skor, " poin", hasil.bonusHarian && /*#__PURE__*/React.createElement("div", null, "🎁 +", BONUS_HARIAN, " bonus harian!"))), /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        gap: 12
+      }
+    }, /*#__PURE__*/React.createElement(Chunky, {
+      color: "#3DBE6C",
+      onClick: () => mulai(level),
+      style: {
+        fontSize: 20,
+        padding: "14px 24px"
+      }
+    }, "🔁 Main lagi"), /*#__PURE__*/React.createElement(Chunky, {
+      color: "#94A3B8",
+      onClick: () => setFase("setup"),
+      style: {
+        fontSize: 20,
+        padding: "14px 24px"
+      }
+    }, "Ganti level")));
+  }
+  const q = soal[no];
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      gap: 16,
+      width: "100%",
+      maxWidth: 540
+    }
+  }, /*#__PURE__*/React.createElement(Confetti, {
+    trigger: confetti
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 12
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 16,
+      fontWeight: 800,
+      color: "#64748B"
+    }
+  }, "Soal ", no + 1, " / ", JUMLAH_SOAL), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 16
+    }
+  }, "⭐".repeat(skor))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: "100%",
+      maxWidth: 300,
+      height: 10,
+      background: "#E2E8F0",
+      borderRadius: 8
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: `${no / JUMLAH_SOAL * 100}%`,
+      height: "100%",
+      background: "#FFB020",
+      borderRadius: 8,
+      transition: "width 0.3s"
+    }
+  })), /*#__PURE__*/React.createElement("div", {
+    key: no,
+    style: {
+      background: "white",
+      borderRadius: 32,
+      padding: 22,
+      minWidth: 220,
+      minHeight: 200,
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      boxShadow: benar ? "0 0 0 8px #3DBE6C, 0 8px 0 rgba(0,0,0,0.1)" : "0 8px 0 rgba(0,0,0,0.1)",
+      animation: "pop 0.35s ease",
+      transition: "box-shadow 0.2s"
+    }
+  }, q.item.foto ? /*#__PURE__*/React.createElement("img", {
+    src: q.item.foto,
+    alt: "",
+    style: {
+      width: 200,
+      height: 200,
+      objectFit: "cover",
+      borderRadius: 20
+    }
+  }) : /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 120,
+      lineHeight: 1
+    }
+  }, q.item.e)), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 12,
+      flexWrap: "wrap",
+      justifyContent: "center",
+      width: "100%"
+    }
+  }, q.opsi.map((o, k) => /*#__PURE__*/React.createElement(Chunky, {
+    key: `${no}-${o}`,
+    color: salah === o ? "#94A3B8" : CANDY[k % CANDY.length],
+    onClick: () => jawab(o),
+    style: {
+      fontSize: 34,
+      padding: "16px 18px",
+      minWidth: 120,
+      letterSpacing: 1,
+      animation: salah === o ? "wiggle 0.4s ease" : "none"
+    }
+  }, o))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 10,
+      flexWrap: "wrap",
+      justifyContent: "center"
+    }
+  }, /*#__PURE__*/React.createElement(Chunky, {
+    color: "#9B5DE5",
+    onClick: bantuan,
+    disabled: kunci,
+    style: {
+      fontSize: 16,
+      padding: "10px 18px"
+    }
+  }, "💡 Bantuan suara"), /*#__PURE__*/React.createElement(Chunky, {
+    color: "#94A3B8",
+    onClick: ganti,
+    disabled: kunci,
+    style: {
+      fontSize: 16,
+      padding: "10px 18px"
+    }
+  }, "⏭ Ganti soal")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: "#94A3B8",
+      fontWeight: 700
+    }
+  }, "Pakai Bantuan suara: jawaban benar tidak dapat bintang"));
+}
 function IndonesiaApp({
   switcher
 }) {
@@ -3062,6 +4091,10 @@ function IndonesiaApp({
     id: "babibu",
     label: "Ba-Bi-Bu",
     icon: "🗣️"
+  }, {
+    id: "baca",
+    label: "Baca",
+    icon: "📖"
   }, {
     id: "tebak",
     label: "Tebak",
@@ -3125,7 +4158,7 @@ function IndonesiaApp({
       opacity: 0.5,
       fontSize: 11
     }
-  }, "v14")))), switcher, /*#__PURE__*/React.createElement("div", {
+  }, "v15")))), switcher, /*#__PURE__*/React.createElement("div", {
     key: mode,
     style: {
       width: "100%",
@@ -3139,6 +4172,9 @@ function IndonesiaApp({
     setCustomSuku: setCustomSuku,
     customKata: customKata,
     setCustomKata: setCustomKata
+  }), mode === "baca" && /*#__PURE__*/React.createElement(MenuBaca, {
+    customKata: customKata,
+    keRekam: () => setMode("rekam")
   }), mode === "tebak" && /*#__PURE__*/React.createElement(MenuTebak, null), mode === "rekam" && /*#__PURE__*/React.createElement(RekamSuara, {
     customSuku: customSuku,
     customKata: customKata
@@ -5605,7 +6641,7 @@ const EnglishApp = (() => {
         opacity: 0.5,
         fontSize: 11
       }
-    }, "v14")))), switcher, /*#__PURE__*/React.createElement("div", {
+    }, "v15")))), switcher, /*#__PURE__*/React.createElement("div", {
       key: tab,
       style: {
         width: "100%",
