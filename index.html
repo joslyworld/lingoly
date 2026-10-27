@@ -1926,6 +1926,198 @@ function PoinBadge({
     }
   }, /*#__PURE__*/React.createElement("span", null, "🪙 ", poin.total), /*#__PURE__*/React.createElement("span", null, "🔥 ", poin.streak, " hari"));
 }
+
+// ================= PENGAMAN SALAH PENCET (dipakai semua kuis) =================
+let kuisAktif = false;
+function useTandaiKuis(aktif) {
+  useEffect(() => {
+    kuisAktif = aktif;
+    return () => {
+      kuisAktif = false;
+    };
+  }, [aktif]);
+}
+// Pindah menu dengan aman: kalau kuis sedang berjalan, tanya dulu
+function keluarAman(aksi) {
+  if (!kuisAktif) return aksi();
+  window.dispatchEvent(new CustomEvent("lingoly-keluar", {
+    detail: aksi
+  }));
+}
+function bacaPengaman() {
+  try {
+    return localStorage.getItem("lingoly-pengaman") !== "0";
+  } catch (e) {
+    return true;
+  }
+}
+// Jawaban dipilih dulu (disorot), baru dikirim setelah tombol konfirmasi ditekan
+function usePilihJawab(onJawab) {
+  const [pilih, setPilih] = useState(null);
+  const pengaman = bacaPengaman();
+  const ketuk = o => {
+    if (!pengaman) return onJawab(o);
+    setPilih(o);
+  };
+  const konfirmasi = () => {
+    const o = pilih;
+    setPilih(null);
+    if (o !== null) onJawab(o);
+  };
+  const batal = () => setPilih(null);
+  return {
+    pilih,
+    ketuk,
+    konfirmasi,
+    batal
+  };
+}
+// Gaya tombol pilihan: yang dipilih membesar + bingkai, yang lain meredup
+function gayaPilihan(pilih, o) {
+  if (pilih === null) return {};
+  return pilih === o ? {
+    transform: "scale(1.12)",
+    outline: "5px solid #1E3A5F",
+    outlineOffset: 3
+  } : {
+    opacity: 0.45
+  };
+}
+function BarKonfirmasi({
+  pilih,
+  onYa,
+  onBatal,
+  labelYa = "✓ Jawab",
+  labelBatal = "✕ Ganti"
+}) {
+  if (pilih === null) return null;
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 12,
+      alignItems: "center",
+      animation: "pop 0.25s ease"
+    }
+  }, /*#__PURE__*/React.createElement(Chunky, {
+    color: "#3DBE6C",
+    onClick: onYa,
+    style: {
+      fontSize: 26,
+      padding: "14px 36px"
+    }
+  }, labelYa), /*#__PURE__*/React.createElement(Chunky, {
+    color: "#94A3B8",
+    onClick: onBatal,
+    style: {
+      fontSize: 17,
+      padding: "12px 18px"
+    }
+  }, labelBatal));
+}
+function TogglePengaman() {
+  const [on, setOn] = useState(bacaPengaman());
+  const ubah = () => {
+    const v = !on;
+    setOn(v);
+    try {
+      localStorage.setItem("lingoly-pengaman", v ? "1" : "0");
+    } catch (e) {}
+  };
+  return /*#__PURE__*/React.createElement("button", {
+    onClick: ubah,
+    style: {
+      border: "none",
+      borderRadius: 16,
+      padding: "8px 14px",
+      cursor: "pointer",
+      fontFamily: "inherit",
+      background: on ? "#DCFCE7" : "#F1F5F9",
+      color: on ? "#166534" : "#64748B",
+      fontSize: 14,
+      fontWeight: 700,
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      gap: 2,
+      boxShadow: "0 3px 0 rgba(0,0,0,0.08)"
+    }
+  }, /*#__PURE__*/React.createElement("span", null, "🛡️ Cegah salah pencet: ", /*#__PURE__*/React.createElement("b", null, on ? "Nyala" : "Mati")), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 11,
+      opacity: 0.8
+    }
+  }, on ? "Pilih jawaban dulu, lalu tekan ✓ untuk mengirim" : "Jawaban langsung terkirim saat ditekan"));
+}
+function ModalKeluar({
+  onLanjut,
+  onKeluar
+}) {
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: "fixed",
+      inset: 0,
+      background: "rgba(15,23,42,0.45)",
+      zIndex: 100,
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      padding: 16,
+      fontFamily: "'Baloo 2', 'Comic Sans MS', system-ui, sans-serif"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: "white",
+      borderRadius: 28,
+      padding: "24px 22px",
+      width: "100%",
+      maxWidth: 360,
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      gap: 14,
+      animation: "pop 0.3s ease",
+      boxShadow: "0 10px 0 rgba(0,0,0,0.15)"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 48
+    }
+  }, "🤔"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 22,
+      fontWeight: 800,
+      color: "#1E3A5F",
+      textAlign: "center",
+      lineHeight: 1.2
+    }
+  }, "Kuisnya belum selesai"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 14,
+      color: "#64748B",
+      textAlign: "center"
+    }
+  }, "Kalau keluar sekarang, kuis ini harus diulang dari awal."), /*#__PURE__*/React.createElement(Chunky, {
+    color: "#3DBE6C",
+    onClick: onLanjut,
+    style: {
+      fontSize: 24,
+      padding: "16px 0",
+      width: "100%"
+    }
+  }, "▶ Lanjut main"), /*#__PURE__*/React.createElement("button", {
+    onClick: onKeluar,
+    style: {
+      border: "none",
+      background: "transparent",
+      color: "#94A3B8",
+      fontFamily: "inherit",
+      fontWeight: 700,
+      fontSize: 15,
+      cursor: "pointer",
+      textDecoration: "underline"
+    }
+  }, "Keluar dari kuis")));
+}
 function MenuTebak({
   customKata,
   keRekam
@@ -1941,7 +2133,7 @@ function MenuTebak({
     }
   }, /*#__PURE__*/React.createElement(Pills, {
     value: sub,
-    onChange: setSub,
+    onChange: v => keluarAman(() => setSub(v)),
     items: [{
       id: "bunyi",
       label: "🔊 Tebak Bunyi"
@@ -1962,6 +2154,7 @@ function TebakBunyi() {
   const [skor, setSkor] = useState(0);
   const [pertamaKali, setPertamaKali] = useState(true);
   const [salah, setSalah] = useState(null);
+  useTandaiKuis(fase === "main");
   const [confetti, setConfetti] = useState(0);
   const [praise, setPraise] = useState("");
   const [kunci, setKunci] = useState(false);
@@ -1990,6 +2183,7 @@ function TebakBunyi() {
   };
   const gantiSoal = () => {
     if (kunci) return;
+    pj.batal();
     const cfg = LEVEL.find(l => l.id === level);
     const baru = buatSatuSoal(cfg, soal.map(x => x.target));
     const s2 = [...soal];
@@ -2034,6 +2228,7 @@ function TebakBunyi() {
       setTimeout(() => setSalah(null), 700);
     }
   };
+  const pj = usePilihJawab(o => jawab(o));
   if (fase === "setup") {
     const sudahHariIni = poin.lastDate === tglHariIni();
     return /*#__PURE__*/React.createElement("div", {
@@ -2057,7 +2252,7 @@ function TebakBunyi() {
         fontWeight: 700,
         color: "#92400E"
       }
-    }, "🎁 Kuis pertama hari ini: bonus +", BONUS_HARIAN, " poin!"), /*#__PURE__*/React.createElement("div", {
+    }, "🎁 Kuis pertama hari ini: bonus +", BONUS_HARIAN, " poin!"), /*#__PURE__*/React.createElement(TogglePengaman, null), /*#__PURE__*/React.createElement("div", {
       style: {
         fontSize: 20,
         fontWeight: 800,
@@ -2236,16 +2431,22 @@ function TebakBunyi() {
   }, q.opsi.map((o, k) => /*#__PURE__*/React.createElement(Chunky, {
     key: `${no}-${o}`,
     color: salah === o ? "#94A3B8" : CANDY[k % CANDY.length],
-    onClick: () => jawab(o),
+    onClick: () => !kunci && pj.ketuk(o),
     style: {
       fontSize: besar ? 64 : 36,
       padding: besar ? "22px 0" : "20px 10px",
       minWidth: besar ? 100 : 120,
       flex: besar ? "0 1 100px" : "0 1 auto",
       letterSpacing: besar ? 0 : 2,
-      animation: salah === o ? "wiggle 0.4s ease" : "none"
+      animation: salah === o ? "wiggle 0.4s ease" : "none",
+      transition: "transform 0.15s, opacity 0.15s",
+      ...gayaPilihan(pj.pilih, o)
     }
-  }, o))));
+  }, o))), /*#__PURE__*/React.createElement(BarKonfirmasi, {
+    pilih: pj.pilih,
+    onYa: pj.konfirmasi,
+    onBatal: pj.batal
+  }));
 }
 
 // ================= MENU: REKAM SUARA =================
@@ -4265,6 +4466,7 @@ function TebakGambar({
   const [skor, setSkor] = useState(0);
   const [pertama, setPertama] = useState(true);
   const [salah, setSalah] = useState(null);
+  useTandaiKuis(fase === "main");
   const [benar, setBenar] = useState(false);
   const [kunci, setKunci] = useState(false);
   const [confetti, setConfetti] = useState(0);
@@ -4309,6 +4511,7 @@ function TebakGambar({
   };
   const ganti = () => {
     if (kunci) return;
+    pj.batal();
     const cfg = LEVEL_GAMBAR.find(l => l.id === level);
     const s2 = [...soal];
     s2[no] = buatSatu(cfg, soal.map(q => q.item.w));
@@ -4354,6 +4557,7 @@ function TebakGambar({
       setTimeout(() => setSalah(null), 700);
     }
   };
+  const pj = usePilihJawab(o => jawab(o));
   if (fase === "setup") {
     const kurang = terekam.length < MIN_GAMBAR;
     return /*#__PURE__*/React.createElement("div", {
@@ -4389,7 +4593,7 @@ function TebakGambar({
         fontSize: 16,
         padding: "10px 20px"
       }
-    }, "🎤 Ke menu Rekam"))) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    }, "🎤 Ke menu Rekam"))) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(TogglePengaman, null), /*#__PURE__*/React.createElement("div", {
       style: {
         fontSize: 20,
         fontWeight: 800,
@@ -4573,15 +4777,21 @@ function TebakGambar({
   }, q.opsi.map((o, k) => /*#__PURE__*/React.createElement(Chunky, {
     key: `${no}-${o}`,
     color: salah === o ? "#94A3B8" : CANDY[k % CANDY.length],
-    onClick: () => jawab(o),
+    onClick: () => !kunci && pj.ketuk(o),
     style: {
       fontSize: 34,
       padding: "16px 18px",
       minWidth: 120,
       letterSpacing: 1,
-      animation: salah === o ? "wiggle 0.4s ease" : "none"
+      animation: salah === o ? "wiggle 0.4s ease" : "none",
+      transition: "transform 0.15s, opacity 0.15s",
+      ...gayaPilihan(pj.pilih, o)
     }
-  }, o))), /*#__PURE__*/React.createElement("div", {
+  }, o))), /*#__PURE__*/React.createElement(BarKonfirmasi, {
+    pilih: pj.pilih,
+    onYa: pj.konfirmasi,
+    onBatal: pj.batal
+  }), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 10,
@@ -4718,7 +4928,7 @@ function IndonesiaApp({
       opacity: 0.5,
       fontSize: 11
     }
-  }, "v17")))), switcher, /*#__PURE__*/React.createElement("div", {
+  }, "v18")))), switcher, /*#__PURE__*/React.createElement("div", {
     key: mode,
     style: {
       width: "100%",
@@ -4753,7 +4963,7 @@ function IndonesiaApp({
     }
   }, tabs.map(t => /*#__PURE__*/React.createElement("button", {
     key: t.id,
-    onClick: () => setMode(t.id),
+    onClick: () => keluarAman(() => setMode(t.id)),
     style: {
       flex: 1,
       maxWidth: 100,
@@ -6413,6 +6623,7 @@ const EnglishApp = (() => {
     const [score, setScore] = useState(0);
     const [first, setFirst] = useState(true);
     const [wrong, setWrong] = useState(null);
+    useTandaiKuis(phase === "play");
     const [confetti, setConfetti] = useState(0);
     const [praise, setPraise] = useState("");
     const [lock, setLock] = useState(false);
@@ -6441,6 +6652,7 @@ const EnglishApp = (() => {
     };
     const skip = () => {
       if (lock) return;
+      pj.batal();
       const cfg = LEVELS.find(l => l.id === level);
       const baru = makeQuestion(cfg, qs.map(x => x.target));
       const q2 = [...qs];
@@ -6481,6 +6693,7 @@ const EnglishApp = (() => {
         setTimeout(() => setWrong(null), 700);
       }
     };
+    const pj = usePilihJawab(o => answer(o));
     if (phase === "setup") {
       return /*#__PURE__*/React.createElement("div", {
         style: {
@@ -6503,7 +6716,7 @@ const EnglishApp = (() => {
           fontWeight: 700,
           color: "#9A3412"
         }
-      }, "🎁 First quiz today: +", DAILY_BONUS, " bonus points!"), /*#__PURE__*/React.createElement("div", {
+      }, "🎁 First quiz today: +", DAILY_BONUS, " bonus points!"), /*#__PURE__*/React.createElement(TogglePengaman, null), /*#__PURE__*/React.createElement("div", {
         style: {
           fontSize: 20,
           fontWeight: 800,
@@ -6682,16 +6895,24 @@ const EnglishApp = (() => {
     }, q.options.map((o, k) => /*#__PURE__*/React.createElement(Chunky, {
       key: `${no}-${o}`,
       color: wrong === o ? "#94A3B8" : CANDY[k % CANDY.length],
-      onClick: () => answer(o),
+      onClick: () => !lock && pj.ketuk(o),
       style: {
         fontSize: big ? 64 : 38,
         padding: big ? "22px 0" : "20px 14px",
         minWidth: big ? 100 : 120,
         flex: big ? "0 1 100px" : "0 1 auto",
         letterSpacing: big ? 0 : 2,
-        animation: wrong === o ? "wiggle 0.4s ease" : "none"
+        animation: wrong === o ? "wiggle 0.4s ease" : "none",
+        transition: "transform 0.15s, opacity 0.15s",
+        ...gayaPilihan(pj.pilih, o)
       }
-    }, o))));
+    }, o))), /*#__PURE__*/React.createElement(BarKonfirmasi, {
+      pilih: pj.pilih,
+      onYa: pj.konfirmasi,
+      onBatal: pj.batal,
+      labelYa: "✓ OK",
+      labelBatal: "✕ Change"
+    }));
   }
 
   // ================= MENU: RECORD (untuk orang tua) =================
@@ -7201,7 +7422,7 @@ const EnglishApp = (() => {
         opacity: 0.5,
         fontSize: 11
       }
-    }, "v17")))), switcher, /*#__PURE__*/React.createElement("div", {
+    }, "v18")))), switcher, /*#__PURE__*/React.createElement("div", {
       key: tab,
       style: {
         width: "100%",
@@ -7230,7 +7451,7 @@ const EnglishApp = (() => {
       }
     }, tabs.map(t => /*#__PURE__*/React.createElement("button", {
       key: t.id,
-      onClick: () => setTab(t.id),
+      onClick: () => keluarAman(() => setTab(t.id)),
       style: {
         flex: 1,
         maxWidth: 110,
@@ -7303,7 +7524,13 @@ function App() {
       return "id";
     }
   });
-  const ganti = l => {
+  const [keluar, setKeluar] = useState(null); // aksi yang menunggu konfirmasi
+  useEffect(() => {
+    const h = e => setKeluar(() => e.detail);
+    window.addEventListener("lingoly-keluar", h);
+    return () => window.removeEventListener("lingoly-keluar", h);
+  }, []);
+  const ganti = l => keluarAman(() => {
     try {
       window.speechSynthesis?.cancel?.();
     } catch (e) {}
@@ -7311,16 +7538,24 @@ function App() {
     try {
       localStorage.setItem("lingoly-lang", l);
     } catch (e) {}
-  };
+  });
   const switcher = /*#__PURE__*/React.createElement(LangSwitch, {
     lang: lang,
     onChange: ganti
   });
-  return lang === "en" ? /*#__PURE__*/React.createElement(EnglishApp, {
+  return /*#__PURE__*/React.createElement(React.Fragment, null, lang === "en" ? /*#__PURE__*/React.createElement(EnglishApp, {
     switcher: switcher
   }) : /*#__PURE__*/React.createElement(IndonesiaApp, {
     switcher: switcher
-  });
+  }), keluar && /*#__PURE__*/React.createElement(ModalKeluar, {
+    onLanjut: () => setKeluar(null),
+    onKeluar: () => {
+      const aksi = keluar;
+      setKeluar(null);
+      kuisAktif = false;
+      aksi();
+    }
+  }));
 }
 ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(App));
 </script>
