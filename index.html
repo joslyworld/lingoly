@@ -204,6 +204,103 @@ const KATA_BAWAAN = [{
 }, {
   w: "sepatu",
   e: "👟"
+},
+// --- kata dengan "ng" ---
+{
+  w: "singa",
+  e: "🦁"
+}, {
+  w: "jagung",
+  e: "🌽"
+}, {
+  w: "kucing",
+  e: "🐱"
+}, {
+  w: "kambing",
+  e: "🐐"
+}, {
+  w: "payung",
+  e: "☂️"
+}, {
+  w: "gunung",
+  e: "⛰️"
+}, {
+  w: "bintang",
+  e: "⭐"
+}, {
+  w: "burung",
+  e: "🐦"
+}, {
+  w: "kangguru",
+  e: "🦘"
+}, {
+  w: "pisang",
+  e: "🍌"
+}, {
+  w: "udang",
+  e: "🦐"
+}, {
+  w: "piring",
+  e: "🍽️"
+}, {
+  w: "anjing",
+  e: "🐶"
+}, {
+  w: "kentang",
+  e: "🥔"
+}, {
+  w: "terong",
+  e: "🍆"
+}, {
+  w: "keranjang",
+  e: "🧺"
+}, {
+  w: "tangan",
+  e: "✋"
+}, {
+  w: "hidung",
+  e: "👃"
+}, {
+  w: "tangga",
+  e: "🪜"
+}, {
+  w: "elang",
+  e: "🦅"
+}, {
+  w: "kerang",
+  e: "🐚"
+}, {
+  w: "semangka",
+  e: "🍉"
+}, {
+  w: "mangga",
+  e: "🥭"
+}, {
+  w: "jangkrik",
+  e: "🦗"
+}, {
+  w: "cacing",
+  e: "🪱"
+},
+// --- kata dengan "ny" ---
+{
+  w: "nyamuk",
+  e: "🦟"
+}, {
+  w: "penyu",
+  e: "🐢"
+}, {
+  w: "monyet",
+  e: "🐵"
+}, {
+  w: "senyum",
+  e: "😊"
+}, {
+  w: "nyanyi",
+  e: "🎤"
+}, {
+  w: "nyenyak",
+  e: "😴"
 }];
 
 // ================= PEMENGGALAN SUKU KATA =================
@@ -1279,6 +1376,7 @@ function Bacaan({
   const [pesanFoto, setPesanFoto] = useState("");
   const fotoRef = useRef(null);
   const [pilihIdx, setPilihIdx] = useState(0);
+  const [saring, setSaring] = useState("semua");
   const [selesai, setSelesai] = useState(false);
   const [sibuk, setSibuk] = useState(false);
   const [confetti, setConfetti] = useState(0);
@@ -1469,7 +1567,21 @@ function Bacaan({
       color: "#166534",
       letterSpacing: 2
     }
-  }, item.w))), /*#__PURE__*/React.createElement("div", {
+  }, item.w))), /*#__PURE__*/React.createElement(Pills, {
+    color: "#9B5DE5",
+    value: saring,
+    onChange: setSaring,
+    items: [{
+      id: "semua",
+      label: `Semua (${semua.length})`
+    }, {
+      id: "ng",
+      label: `ng (${semua.filter(x => x.w.includes("ng")).length})`
+    }, {
+      id: "ny",
+      label: `ny (${semua.filter(x => x.w.includes("ny")).length})`
+    }]
+  }), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 6,
@@ -1478,7 +1590,7 @@ function Bacaan({
       maxHeight: 170,
       overflowY: "auto"
     }
-  }, semua.map((x, i) => /*#__PURE__*/React.createElement("div", {
+  }, semua.map((x, i) => saring !== "semua" && !x.w.includes(saring) ? null : /*#__PURE__*/React.createElement("div", {
     key: x.raw || x.w,
     style: {
       display: "flex",
@@ -1741,7 +1853,7 @@ const LEVEL = [{
   color: "#9B5DE5"
 }];
 const JUMLAH_SOAL = 10;
-const KONSONAN_TEBAK = KONSONAN.filter(k => k.length === 1);
+const KONSONAN_TEBAK = KONSONAN.filter(k => k.length === 1 || k === "ng" || k === "ny");
 
 // Huruf yang sering tertukar (bentuk atau bunyi mirip)
 const MIRIP = {
@@ -1770,7 +1882,9 @@ const MIRIP = {
   w: ["m", "v"],
   x: ["k", "z"],
   y: ["v", "j"],
-  z: ["s", "x"]
+  z: ["s", "x"],
+  ng: ["n", "g"],
+  ny: ["n", "y"] // pengecoh untuk suku kata nga/nya: na, ga, ya
 };
 const acak1 = arr => arr[Math.floor(Math.random() * arr.length)];
 const kocok = arr => [...arr].sort(() => Math.random() - 0.5);
@@ -4928,7 +5042,7 @@ function IndonesiaApp({
       opacity: 0.5,
       fontSize: 11
     }
-  }, "v18")))), switcher, /*#__PURE__*/React.createElement("div", {
+  }, "v19")))), switcher, /*#__PURE__*/React.createElement("div", {
     key: mode,
     style: {
       width: "100%",
@@ -7422,7 +7536,7 @@ const EnglishApp = (() => {
         opacity: 0.5,
         fontSize: 11
       }
-    }, "v18")))), switcher, /*#__PURE__*/React.createElement("div", {
+    }, "v19")))), switcher, /*#__PURE__*/React.createElement("div", {
       key: tab,
       style: {
         width: "100%",
